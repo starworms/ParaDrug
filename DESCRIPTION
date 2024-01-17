@@ -1,0 +1,21 @@
+Package: ParaDrug
+Type: Package
+Title: Anthelmintic Drug Efficacy on Soil‐Transmitted Helminth Infections in Humans.
+Version: 0.1
+Maintainer: Jan Wijffels <jwijffels@bnosac.be>
+Authors@R: c(
+    person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be'), 
+    person('Bruno', 'Levecke', role = c('aut', 'cph'), email = 'info@starworms.org'),
+    person('BNOSAC', role = 'cph'),
+    person('Laboratory of Parasitology Ghent University', role = 'cph'))
+Description: Standardises reporting and interpreting of the anthelmintic drug efficacy data obtained during preventive chemotherapy programs 
+    aimed at eliminating and controlling soil‐transmitted helminth infections infections in humans.
+    Supports program managers in analysing, interpreting and summarizing drug efficacy data as recommended by the WHO, 
+    and this without the need of any prior knowledge on statistical software.
+License: Apache License (>= 2.0)
+URL: https://github.com/starworms/ParaDrug
+Encoding: UTF-8
+RoxygenNote: 7.1.2
+Imports:
+    shiny,
+    knitr
