@@ -1,0 +1,270 @@
+library(shiny)
+library(colourpicker)
+shinyUI(fluidPage(
+  #tags$head(includeScript("GoogleAnalytics.js")), 
+  # Application title
+  titlePanel(h2("ParaDrug 1.0 - Test Phase")),
+  sidebarLayout(
+    sidebarPanel(
+      h4('Upload data', style="color:#EB4C4C"),
+      fileInput('file1', 'Choose Excel file to upload',accept = c(".xls",".XLS", ".xlsx")),
+      h4('General Information',style="color:#EB4C4C"),
+      selectInput("NTD", label = "Disease:", choices = list("Schistosomiasis" = 1, "Soil-transmitted helminthiasis" = 2), selected = 1), 
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Sdrug", label = "Anthelmintic drug:", choices = list("Praziquantel (1x 40 mg/kg)" = 1, "Other" = 2), selected = 1)),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("STHdrug", label = "Anthelmintic drug:", choices = list("Albendazole (1x 400 mg)" = 1, "Mebendazole (1x 500 mg)" = 2, "Other" = 3), selected = 1)),
+      br(),
+      h4('Baseline information',style="color:#EB4C4C"),
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Shbas", label = p(em("S. haematobium"), "eggs per 10 ml of urine:"), choices= "")),
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Smbas", label = p(em("S. mansoni"), "eggs per gram of stool:"), choices="")),
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Sjbas", label = p(em("S. japonicum"), "eggs per gram of stool:"), choices="")),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("Rbas", label = p(em("Ascaris lumbricoides"), "eggs per gram of stool:"), choices="")),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("Tbas", label = p(em("Trichuris trichiura"), "eggs per gram of stool:"), choices="")),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("Hbas", label = "Hookworm eggs per gram of stool:", "")),
+      h6(textOutput('smix')),
+      br(),
+      h4('Follow-up information',style="color:#EB4C4C"),
+      selectInput("followup", "Number of days between the baseline and the follow-up survey: ",""), 
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Shfol", label = p(em("S. haematobium"), "eggs per 10 ml of urine:"), "")),
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Smfol", label = p(em("S. mansoni"), "eggs per gram of stool:"), "")),
+      conditionalPanel(condition = "input.NTD == '1'", selectInput("Sjfol", label = p(em("S. japonicum"), "eggs per gram of stool:"), "")),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("Rfol", label = p(em("Ascaris lumbricoides"), "eggs per gram of stool:"),choices= "")),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("Tfol", label = p(em("Trichuris trichiura"), "eggs per gram of stool:"), choices="")),
+      conditionalPanel(condition = "input.NTD == '2'", selectInput("Hfol", label = "Hookworm eggs per gram of stool:",choices= ""))
+    #  br(),
+    #  actionButton("do", "Analyze data",class = "butt"),
+    #  tags$head(tags$style(".butt{background-color:#EB4C4C;} .butt{color: white;}"))
+    ),
+    mainPanel(tabsetPanel(
+      tabPanel(
+        h4(strong("Introduction"),tags$style(type = "text/css", "a{color:#EB4C4C;}")),h4('Background', style="color:#EB4C4C"),
+        p('The most prevalent neglected tropical diseases (NTDs) include schistosomiasis (',em('Schistosoma haematobium, S. mansoni'), 'and' ,em('S. japonicum'),') and soil-transmitted helmintiasis (',em('Ascaris lumbricoides'),',',em('Trichuris trichiura'), ', and the hookworms',em('Ancylostoma duodenale'),'and', em('Necator americanus'), '). 
+    The main strategy for controlling the morbidity caused by these diseases are preventive chemotherapy (PC) programs, in which anthelmintic drugs (praziquantel for schistosomiasis, and albendazole or mebendazole for soil-transmitted helminthiasis) are periodically administered to children (', a('WHO et al., 2011', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/44671/1/9789241548267_eng.pdf'),'). Fueled by the', a('London Declaration on NTDs', style="color:#EB4C4C",href='http://unitingtocombatntds.org/sites/default/files/document/london_declaration_on_ntds.pdf'), ',  the coverage of children in PC programs has substantially increased 
+          (', a('WHO et al., 2016', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/251908/1/WER9149_50.pdf?ua=1'),'), and an upscale is underway with the ultimate goal to include at least 75% of the children in all endemic countries by 2020 (', a('WHO et al., 2012', style="color:#EB4C4C",href='http://www.who.int/neglected_diseases/NTD_RoadMap_2012_Fullversion.pdf'),'). 
+          However, a major concern is that this high drug pressure will cause anthelmintic drug resistance, and hence will reduce the impact of the PC programs. Therefore, 
+thoroughly designed monitoring systems are needed, allowing to detect changes in anthelmintic drug efficacy that may arise through the evolution of drug resistance in these worms. '),
+        p('Currently, the reduction in egg counts following drug administration, the egg reduction rate (ERR), is the recommended method for
+          monitoring the efficacy of anthelmintic drugs against both schistosomes and soil-transmitted helminths. However, the efficacy data available have 
+been obtained through a variety of
+widely differing study protocols, which impedes drawing readily conclusions on the emergence of 
+          anthelmintic resistance (', a('Vercruysse et al., 2011', style="color:#EB4C4C",href='http://www.sciencedirect.com/science/article/pii/S2211320711000042?via%3Dihub'),
+          '). As a response to this lack of standardization, World Health Organization (WHO) has developed guidelines on how to assess drug efficacy of anthelmintic drugs used in PC programs against both schistosomiasis and soil-transmitted helminthiasis (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). This WHO document provides guidance on when and how to assess the efficacy of anthelmintic drugs, including detailed recommendations on the indicators of efficacy, the sample size, the follow-up period, the laboratory methods, the statistical analysis and the final interpretation of the data collected.'),
+               
+        br(),h4('Goal of ParaDrug 1.0', style="color:#EB4C4C"),
+        p('ParaDrug 1.0 aims to further standardize reporting and interpreting the anthelmintic drug efficacy data obtained during PC programs. 
+          It supports program managers in analysing, interpreting and summarizing drug efficacy data as recommended by the WHO, and this without the need of 
+          any prior knowledge on statistical softwares.'), br(),h4('Work with ParaDrug 1.0',style="color:#EB4C4C"),
+        p('     ',strong("Step 1"), ': verify whether your data meet the requirements in the', em('My data'),'tab'),
+        p('     ',strong("Step 2"), ': upload your data in the top left corner of this this tool'),
+        p('     ',strong("Step 3"), ': indicate which disease has been targetted and which anthelmintic drug has been admininistered in the general information section of the side panel'),
+        p('     ',strong("Step 4"), ': match both baseline and follow-up information in the side panel with the corresponding headers of your data set'),
+        p('     ',strong("Step 5"), ': press',em('calculate baseline statstics'),'in the corresponding tab to obtain the baseline statistics'),
+        p('     ',strong("Step 6"), ': press',em('calculate drug efficacy'),'in the corresponding tab to obtain the drug efficacy'),
+        p('     ',strong("Step 7"), ': customize and download your report in the',em('report'),'tab'),
+        p('     ',strong("Step 8 (Optional)"), ': consult the',em('Parameters'),'tab to gain more insight into the calculation of the different parameters'),
+        p('     ',strong("Note"),': summarizing the results and creating the report will take about 20 seconds.'),
+        br(),
+        h4('Data use and ownership',style="color:#EB4C4C"), 
+        p('ParaDrug 1.0 is solely designed as a data analysis and reporting tool. It will analyze the data uploaded and generate a corresponding report, but it will under no circumstances store the data in any form. Users
+will retain full ownership on their data.'),
+        br(),
+        h4('Contact us',style="color:#EB4C4C"), 
+        p('info@starworms.org'),
+        br(),
+#        p(strong('Address')),
+#        p('Laboratory of Parasitology'),
+#        p('Salisburylaan 133'),
+#        p('9820 Merelbeke'),
+#        p('Belgium'),
+#        br(),
+        h4('Reference ParaDrug 1.0',style="color:#EB4C4C"), 
+        # p(strong('E-mail')),
+          p('Levecke B (2017). ParaDrug 1.0. Available at: http://www.starworms.org'),
+br(),
+        h4('Further reading',style="color:#EB4C4C"), 
+        br(),
+        p(a(strong('Levecke B, et al. (2014).'),style="color:black",href='http://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0003204'),'Assessment of anthelmintic efficacy of mebendazole in
+school children in six countries where soil-transmitted helminths are endemic. PLoS Negl. Trop. Dis. 8: e3204.'),
+          br(),
+        p(a(strong('Levecke B, et al. (2015).'), style="color:black",href='http://www.sciencedirect.com/science/article/pii/S0065308X15000081?via%3Dihub'),'Mathematical inference on helminth egg counts in stool and its applications in mass drug administration programmes to control soil-transmitted helminthiasis in public health. Adv. Parasitol. 87: 197-247.'),
+        br(),
+        p(a(strong('Vercruysse J, et al. (2011).'),style="color:black",href='http://www.sciencedirect.com/science/article/pii/S2211320711000042?via%3Dihub'), 'Is anthelmintic resistance a concern for the control of human soil-transmitted helminths? Int. J. Parasitol. Drugs and Drug Resistance 1: 14-27.'),
+        br(),
+        p(a(strong('Vercruysse J, et al. (2011).'),style="color:black",href='http://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0000948'),'Assessment of the anthelmintic efficacy of albendazole
+in school children in seven countries where soil-transmitted helminths are endemic. PloS Negl. Trop. Dis. 5: e948.'),
+        br(),
+        p(a(strong('World Health Organization (2013).'),style="color:black", href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'Assessing the efficacy of anthelminthic drugs against schistosomiasis and soil-transmitted helminthiasis. World Health Organization, Geneva, Switzerland.'),
+        br(),
+        h4('Acknowledgements',style="color:#EB4C4C"), 
+        p('ParaDrug 1.0 is developed by Bruno Levecke. The development of this tool was financed by the Bill & Melinda Gates Foundation and the Research Foundation - Flanders (FWO).'),
+      br(),
+      fluidRow(
+         column(4,a(href='http://www.starworms.org/',img(src="combo2.jpg", height = 182, width = 300))),
+         column(4,a(href='https://www.ugent.be/en',img(src="Ugent.jpg", height = 180, width = 200))),
+         column(4,a(href='http://www.fwo.be/en',img(src="FWO.jpg", height = 90, width = 230)))
+
+      )),
+      
+      tabPanel(h4(strong("My data"),tags$style(type = "text/css", "a{color:#EB4C4C;}")),
+       h4('Required data',style="color:#EB4C4C"), 
+        p(strong('Egg counts')),
+        p('The tool analyzes egg count data collected during trials designed to assess the efficacy of anthelmintic drugs by means of egg reduction rate 
+(= the reduction in egg excretion after drug administration). Hence the file should contain at least egg counts before and after drug administration.'),
+        p('The data should be expressed in number of eggs per gram of stool in case of',
+        em('Schistosoma mansoni,'), em('S. japonicum'),'and the soil-transmitted helminths, and in number of eggs per 10 ml of urine in case of', em('S. haematobium.')),
+        br(),
+        p(strong('Follow-up period')),
+        p('The follow-up period is the number of days between the drug administration and the examination of a follow-up stool/urine sample. Although this information is not required to calculate the drug efficacy, it is important to readily interpret the drug efficacy results. The recommended follow-up period to assess the efficacy of an anthelmintic drug against schistosomiasis and soil-transmitted helminthiasis is between 14 and 21 days. Any values outside this interval may undermine the interpretation of the results.'),
+        br(),
+               
+      h4('Required format',style="color:#EB4C4C"), 
+      p(strong('File extension')),
+      p('ParaDrug 1.0 can analyse data entered in either xls or xlsx files.'),
+      br(),
+      p(strong('Identification of the worksheet')),
+      p('There is no need to provide a specific name to the worksheet containing the data. ParaDrug 1.0 will always select the first worksheet in your xls(x) file. 
+        Hence, in case you have multiple worksheets in your file, you will need to place the worksheet contaning the raw data first.'),
+      br(),
+      p(strong('Headers')), 
+      p('Once uploaded, ParaDrug 1.0 will identify the first row of each column as a header, and will read the remaining rows as data entries. 
+        It is therefore essential that each parameter/column is given a unique name.'),
+      br(),
+      p(strong('Format cells')), 
+      p('Each of the cells representing the required data should be formatted as numbers. When strings are inserted, ParaDrug 1.0 will interpret the data as missing. 
+      Furthermore, to avoid discripancies between a comma (e.g., 5,00) and a dot (e.g., 5.00) decimal, it is recommended to enter data as integer numbers (e.g., 5). It is also important that the data set is trimmed, excluding unnessary empty rows.'),
+      br(), 
+      h4('Missing data',style="color:#EB4C4C"), 
+      p('Missing data are to be expected in anthelmintic drug efficacy trials, as subjects may not present themselves at follow-up or because they were 
+excluded from the trial based on the study specific exclusion criteria. Since these subjects will need to be excluded from the final analysis, it is important that missing data are identified correctly. There are various ways to report missing data. We recommend using an 
+impossible value, such as -1. First, empty cells in the data set can also be due to human error, if someone forgets to enter data. Second, inserting a string such as NA 
+          may not be compatible with the required cell format.'),
+      br(), 
+      h4('Contact us',style="color:#EB4C4C"), 
+      p('Please do not hesitate to contact us at', strong('info@starworms.org'), 'when you encounter any other obstacle when uploading your data.'),
+      br()),
+      tabPanel(h4(strong("Baseline statistics"),tags$style(type = "text/css", "a{color:#EB4C4C;}")),
+               br(),
+               actionButton("basedata", "Calculate baseline statistics",class = "butt"),
+               tags$head(tags$style(".butt{background-color:#EB4C4C;} .butt{color: white;}")),
+               br(),
+               br(),
+               htmlOutput('countbase'),
+                h4('Number of subjects',style="color:#EB4C4C"),htmlOutput('number'),br(),h4('Intensity of infections',style="color:#EB4C4C"), htmlOutput('int'),plotOutput('distegg'),             
+               br(),h4('Follow-up period',style="color:#EB4C4C"),htmlOutput('followup')),
+      tabPanel(h4(strong("Drug efficacy"),tags$style(type = "text/css", "a{color:#EB4C4C;}")),
+               br(),
+               actionButton("eggreducrate", "Calculate drug efficacy",class = "butt"),
+               tags$head(tags$style(".butt{background-color:#EB4C4C;} .butt{color: white;}")),
+               br(),
+               br(),
+               h4('Egg reduction rate',style="color:#EB4C4C"),htmlOutput('err'),plotOutput('disterr'),h4('Conclusions',style="color:#EB4C4C"),htmlOutput('concl')),
+      tabPanel(h4(strong("Report"),tags$style(type = "text/css", "a{color:#EB4C4C;}")),
+               h4('Customize report',style="color:#EB4C4C"),
+               p('To further customize please complete the gaps below.'),
+               br(),
+               textInput("Name", label = p(strong("The name of your institution")), 
+                         value = ""), 
+               textInput("Country", label = p(strong("Country in which the trial was conducted")), 
+                         value = ""), 
+      textInput("Region", label = p(strong("District/province in which the trial was conducted")), 
+                value = ""),
+      br(),
+      h4('Download report',style="color:#EB4C4C"),
+      downloadButton("report", class = "butt"),
+      tags$head(tags$style(".butt{background-color:#EB4C4C;} .butt{color: white;}"))
+      
+      ),
+tabPanel(h4(strong("Parameters"),tags$style(type = "text/css", "a{color:#EB4C4C;}")),
+         tags$head(tags$style(".butt{background-color:#EB4C4C;} .butt{color: white;}")),
+         h4('Number of subjects',style="color:#EB4C4C"),
+         p(strong('Number of subjects enrolled')),
+         p('The number of subjects enrolled corresponds with the number of rows (excluding the header) in the data set. 
+           It is therefore important that the data set is appropriately trimmed, excluding any unnessary empty rows.'),
+         br(),
+         p(strong('Number of cases per worm species')),
+         p('The number of cases for a particular worm species corresponds with the number of enrolled subjects who are excreting eggs of this worm species 
+at baseline. In addition, the proportion of cases (%) are reported for each of the worm species. To this end, the number of cases is divided over the 
+           number of subjects enrolled and is multiplied by 100.'),
+         br(),
+         p(strong('Number of mixed infections')),
+         p('The number of mixed infections corresponds with the number of enrolled subjects who were excreting eggs of at least two worm species at baseline. In addition, the proportion of mixed infections (%) is reported. To this end, the number of mixed infections is divided over the 
+           number of subjects enrolled and multiplied by 100.'),
+         br(),
+         p(strong('Number of complete cases')),
+         p('The number of complete cases corresponds with the number of subjects who were excreting eggs of any worm species at baseline, and for whom a follow-up sample is examined.
+          In addition, the number of complete cases for each worm species are reported seperately. These correspond to the number of subjects who were excreting eggs of this worm species at baseline, and for whom a follow-up sample is examined.'),
+         br(),
+         h4('Intensity of infections',style="color:#EB4C4C"),
+         p(strong('Mean egg count at baseline per worm species')),
+         p('The mean egg count per worm species corresponds with the arithmetic mean egg count (in eggs per gram of stool / eggs per 10 ml of urine) at baseline across all the complete
+          cases for that particular worm species.'),
+         br(),
+         p(strong('Spread of egg count at baseline per worm species')),
+         p('The spread of the egg counts is presented in both text and graphic format for each worm species seperately. First, both the 25th and the 75th percentile of the baseline egg counts across complete cases are determined. The 25th quantile divides the individual egg counts so that 25% of the values lie below (or 75% of the values lie above). Similarly, the 75th quantile divides the individual egg counts so that 75% of the values 
+           lie below (or 25% of the values lie above). Second, a histogram is provided to illustrate the distribution of the egg counts across
+           the complete cases per worm species. The figure below shows the distribution of the baseline hookworm egg counts for all complete cases for this worm species in a previously conducted drug efficacy trial.'),
+         fluidRow(
+           column(4,img(src="Rplot01.jpg", height = 273, width = 300))),
+         
+         
+         br(),
+         br(),
+         p(strong('Number of low, moderate and high intensity infections per worm species')),
+         p('The number of low, moderate and high intensity infections is determined for each worm species seperately. WHO thresholds defining the three classes of infection intensity for the different worm species are summarized in the table below (', a('WHO et al., 1998', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf'),'). In addition, the proportions of low, moderate and high intensity infections (%) are reported.
+          To this end, the number of low, moderate and high infections is divided over the number of complete cases for that particular worm species and multiplied by 100.'),
+         fluidRow(
+           column(4,a(href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf',img(src="Slide2.jpg", height = 203, width = 400)))),
+         
+         br(),
+         br(),
+         h4('Follow-up period',style="color:#EB4C4C"),
+            p('The median (50th quantile), the shortest and the longest follow-up period is determined for all complete cases, regardless the worm species. In addition, the number and proportion (in %) of complete cases
+              for which a follow-up sample was collected between 14 and 21 days is calculated. The proportion equals the number of complete cases for which a follow-up sample was collected between this time interval divided by the number of complete cases and multiplied by 100.'),
+         br(),
+         br(),
+         h4('Egg reduction rate',style="color:#EB4C4C"),
+         p(strong('Formula')),
+         p('To date, a wide range of formulae has been used to calculate ERR, each different in terms of the statistical unit (individual vs. group) 
+           and the way the mean egg count is calculated (arithmetic vs. geometric). The group-based formula is now recommended by WHO to summarize egg reduction data 
+(', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),').'),
+         fluidRow(
+           column(4,a(img(src="ERRform.jpg", height = 53, width = 300)))),
+         br(),
+         
+        p('Compared to the other formulae, 
+           it represents a robust indicator (vs. individual-based formula;', a('Vercruysse et al., 2011',href='http://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0000948'),') that provides accurate estimates of 
+           drug efficacy 
+          (vs. group-based formula using geometric mean;',a('Dobson et al., 2009',
+href='https://ac.els-cdn.com/S030440170800705X/1-s2.0-S030440170800705X-main.pdf?_tid=fd2a4f3c-a86a-11e7-ad50-00000aab0f01&acdnat=1507056492_10ae60eab74fa8a1d9ddef8b986abb02'),').'),
+        br(),
+         p(strong('95% confidence intervals')),
+        p('The 95% confidence intervals (95%CI) are calculated using the mathematical framework described by ', a('Levecke et al., 2015',href='http://www.sciencedirect.com/science/article/pii/S0065308X15000081?via%3Dihub'),'. In short, this methodology derives the variance of the ERR applying the 
+        Taylor method (delta method;', a('Casella and Berger, 2001',href='https://fsalamri.files.wordpress.com/2015/02/casella_berger_statistical_inference1.pdf'),'), and assumes that 100%-ERR follows a Gamma distribution. The variance of the ERR applying the Taylor method equals'), 
+        fluidRow(
+          column(4,a(img(src="Variance.jpg", height = 196.3, width = 800)))),
+        br(),  
+        p('The lower and upper limit of the 95% CI equal 1 - 97.5th quantile and 1 - 2.5th quantile of the Gamma distribution with a shape parameter', 
+HTML("&gamma;"),'and a scale parameter', HTML("&theta;"),', respectively. Based on the ERR, its variance and a sample size N, the two parameters of the 
+          Gamma distribution of 1 - ERR can be written as'),
+        fluidRow(
+          column(4,a(img(src="gamma.jpg", height = 109, width = 150)))),
+        br(),
+        p(strong('Interpretation of the observed ERR')),
+        p('Based on the observed ERR, the efficacy of the anthelmintic drug can be classified into different 
+          levels by comparing the observed ERR with the WHO reference value for each worm species (', 
+          a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),').
+          Generally, the efficacy of the anthelmintic drug is (i) satisfactory when the ERR is superior or equal to the reference value, 
+          doubtful if the observed ERR is inferior to the reference value by less than 10 percent points, and (iii) reduced if the observed ERR is 
+          inferior to the reference value by at least 10 percent points. The table below summarizes the thresholds and the corresponding levels of drug efficacy for 
+          the different worm species and the different anthelmintic drugs used in preventive chemotherapy programs.'),
+        fluidRow(
+          column(4,a(href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf',img(src="Slide3.jpg", height = 180, width = 400))))
+        
+        
+        
+        
+        
+        )
+
+    )
+    
+    ))))

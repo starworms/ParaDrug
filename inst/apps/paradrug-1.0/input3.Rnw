@@ -1,0 +1,2928 @@
+
+\documentclass[11pt, oneside]{article}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage[toc,page]{appendix}
+\pagestyle{fancy}
+
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+
+
+\fancyhf{}
+%\lhead{Report}
+\rfoot{Page \thepage}
+%\rhead{\includegraphics [width=2cm]{logo.pdf}}
+\begin{document}
+<<echo=FALSE>>=
+Dis <- ifelse(input$NTD == 1, 'schistosomiasis', 'soil-transmitted helminthiasis')
+Drug <- ifelse(input$NTD == 1 & input$Sdrug == 1, 'praziquantel (40 mg/kg)', 
+               ifelse(input$NTD == 2 & input$STHdrug == 1,'albendazole (400 mg)', 
+                      ifelse(input$NTD == 2 & input$STHdrug == 2, 'mebendazole (500 mg)', 'an alternative drug/drug regimen')))
+Country <- ifelse(input$Country =='', 'a not further specified country', input$Country)
+Name <- ifelse(input$Name =='', 'Unknown', input$Name)
+Region <- ifelse(input$Region =='', 'district/province not further specified', input$Region)
+@
+
+
+\begin{titlepage}
+    \begin{center}
+    \LARGE 
+        \textbf{The efficacy of \Sexpr{Drug} against \Sexpr{Dis} in \Sexpr{Country} (\Sexpr{Region}):} \par    
+         \vspace{1cm}
+        {\LARGE A ParaDrug 1.0 drug efficacy report \par}
+        \vspace{1cm}
+        {\large by \Sexpr{Name}\par}
+        \vspace{6cm}
+        {\large The development of ParaDrug 1.0 was financed by the Bill and Melinda Gates Foundation \par} 
+        {\large \href{http://www.starworms.org}{www.starworms.org}\par}
+        \includegraphics[width=0.55\textwidth]{logo.pdf}\par
+    \end{center}
+\end{titlepage}
+\tableofcontents
+\section{Background}
+The most prevalent neglected tropical diseases (NTDs) include schistosomiasis ($Schistosoma$ $haematobium$, $S.$ $mansoni$ and $S.$ $japonicum$) and soil-transmitted helmintiasis ($Ascaris$ $lumbricoides$, $Trichuris$ $trichiura$, and the hookworms $Ancylostoma$ $duodenale$ and $Necator$ $americanus$). The main strategy for controlling the morbidity caused by these diseases are preventive chemotherapy (PC) programs, in which anthelmintic drugs (praziquantel for schistosomiasis, and albendazole or mebendazole for soil-transmitted helminthiasis) are periodically administered to children (\href{http://apps.who.int/iris/bitstream/10665/44671/1/9789241548267_eng.pdf}{WHO et al., 2011}). Fueled by the \href{http://unitingtocombatntds.org/sites/default/files/document/london_declaration_on_ntds.pdf}{London Declaration on NTDs}, the coverage of children in PC programs has substantially increased (\href{http://apps.who.int/iris/bitstream/10665/251908/1/WER9149_50.pdf?ua=1}{WHO et al., 2016}), and an upscale is underway with the ultimate goal to include at least 75 percent of the children in all endemic countries by 2020 (\href{http://www.who.int/neglected_diseases/NTD_RoadMap_2012_Fullversion.pdf}{WHO et al., 2012}). 
+
+However, a major concern is that this high drug pressure will cause anthelmintic drug resistance, and hence will reduce the impact of the PC programs. Therefore, thoroughly designed monitoring systems are needed, allowing to detect changes in anthelmintic drug efficacy that may arise through the evolution of drug resistance in these worms. 
+
+Currently, the reduction in egg counts following drug administration, the egg reduction rate (ERR), is the recommended method for monitoring the efficacy of anthelmintic drugs against both schistosomes and soil-transmitted helminths. However, the efficacy data available have been obtained through a variety of widely differing study protocols, which impedes drawing readily conclusions on the emergence of anthelmintic resistance (\href{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3913213/pdf/main.pdf}{Vercruysse et al., 2011}). As a response to this lack of standardization, World Health Organization (WHO) has developed guidelines on how to assess drug efficacy of anthelmintic drugs used in PC programs against both schistosomiasis and soil-transmitted helminthiasis (\href{http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf}{WHO et al., 2013}). This WHO document provides guidance on when and how to assess the efficacy of anthelmintic drugs, including detailed recommendations on the indicators of efficacy, the sample size, the follow-up period, the laboratory methods, the statistical analysis and the final interpretation of the data collected.
+
+
+This report summarizes the results of a trial designed to assess the efficacy of \Sexpr{Drug} against \Sexpr{Dis} in \Sexpr{Country} (\Sexpr{Region}). 
+The raw data were up-loaded by \Sexpr{Name} at ParaDesign 1.0, which subsequently genenerated this customized drug efficacy report. ParaDesign 1.0. was developped by Ghent University. The development of ParaDesign was financied by the Bill and Melinda Gates Foundation (\href{http://www.starworms.org}{www.starworms.org}).
+      
+\section{Results}
+\subsection{Number of subjects}
+<<echo=FALSE>>=
+ inFile <- input$file1
+      if (is.null(inFile))
+      {number <- paste0(('No data was uploaded.'))
+        }else {if (input$NTD=='1')
+            {data <- read.xlsx(inFile$datapath,1)
+              data$n <- 1
+              n <- length(data[,1])
+              # S haematobium
+              data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+              data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+              
+              # S mansoni
+              data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+              data$smF <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+              
+              # S japonicum
+              data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+              data$sjF <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+              
+              data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
+              data$inf2 <- ifelse(data$shF > -2 | data$smF > -2 | data$sjF > -2, 1, 0)
+              
+              
+              if(mean(data$inf)==0 | mean(data$inf2) == 0) {number <- paste('No egg count data was provided.')}
+              else {
+                if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shF)>-2 & mean(data$smF)>-2)
+                   {
+                  n <- length(data[,1])
+                  data$shB <-  data[,input$Shbas]  
+                  data$smB <-  data[,input$Smbas] 
+                  data$shF <-  data[,input$Shfol]  
+                  data$smF <-  data[,input$Smfol] 
+                  data$shp <- ifelse(data$shB>0,1,0) 
+                  data$smp <- ifelse(data$smB>0,1,0)
+                  data$shf <- ifelse(data$shF>=0,1,0) 
+                  data$smf <- ifelse(data$smF>=0,1,0) 
+                  data$shc <- data$shp + data$shf
+                  data$smc <- data$smp + data$smf
+                  data$com <- data$shc + data$smc
+                  mix <- dim(subset(data, smB>0 & shB>0))[1]
+                  com <- dim(subset(data, shc==2 | smc ==2))[1]
+                  nsm <- dim(subset(data, smB>0))[1]
+                  nsm2 <- dim(subset(data, smB>0 & smF>=0))[1]
+                  nsh <- dim(subset(data,shB>0))[1]
+                  nsh2 <- dim(subset(data, shB>0 & shF>=0))[1]
+                  number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. 
+$Schistosoma$ $haematobium$ infections were observed in', nsh, 'subjects (', round(100*nsh/n,1), 'percent ), 
+$S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ). Mixed $Schistosoma$ infections 
+                          were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). 
+                        Complete data were available for', com, 'subjects, 
+                        including', nsh2, 'cases of $S.$ $haematobium$, and', nsm2, 'cases of $S.$ $mansoni$.')
+                   }
+                else{
+                  if(mean(data$sh)>-2 & mean(data$shF)>-2)
+                  {
+                    n <- length(data[,1])
+                    data$shB <-  data[,input$Shbas]  
+                    data$shF <-  data[,input$Shfol]  
+                    data$shp <- ifelse(data$shB>0,1,0) 
+                    data$shf <- ifelse(data$shF>=0,1,0) 
+                    data$shc <- data$shp + data$shf
+                    nsh <- dim(subset(data,shB>0))[1]
+                    nsh2 <- dim(subset(data, shB>0 & shF>=0))[1]
+                    number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $haematobium$ infections were observed in', nsh, 
+                          'subjects (', round(100*nsh/n,1), 'percent ). Complete data were available for', nsh2, 'subjects.')
+                    }
+                    else{
+                    if(mean(data$sm)>-2 & mean(data$smF)>-2){
+                      n <- length(data[,1])
+                      data$smB <-  data[,input$Smbas] 
+                      data$smF <-  data[,input$Smfol] 
+                      data$smp <- ifelse(data$smB>0,1,0)
+                      data$smf <- ifelse(data$smF>=0,1,0) 
+                      data$smc <- data$smp + data$smf
+                      nsm <- dim(subset(data, smB>0))[1]
+                      nsm2 <- dim(subset(data, smB>0 & smF>=0))[1]
+                      number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $mansoni$ infections were observed in', nsm, 
+                            'subjects (', round(100*nsm/n,1), 'percent ). Complete data were available for', nsm2, 'subjects.')
+                      
+                      }
+                    else{
+                      if(mean(data$sj)>-2 & mean(data$sjF>-2)){
+                        n <- length(data[,1])
+                        data$sjB <-  data[,input$Sjbas] 
+                        data$sjF <-  data[,input$Sjfol] 
+                        data$sjp <- ifelse(data$sjB>0,1,0)
+                        data$sjf <- ifelse(data$sjF>=0,1,0) 
+                        data$sjc <- data$sjp + data$sjf
+                        nsj <- dim(subset(data, sjB>0))[1]
+                        nsj2 <- dim(subset(data, sjB>0 & sjF>=0))[1]
+                        number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $japonicum$ infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), 'percent ). Complete data was available for', nsj2, 'subjects')
+                        
+                        
+                        }
+                      else{nubmer <- paste('No egg count data was provided.')}  
+                        }   
+                      }
+                    } 
+                   }
+              }
+           else {
+# Soil-transmitted helminthiasis
+             if (input$NTD=='2')
+             {
+             data <- read.xlsx(inFile$datapath,1)
+             n <- length(data[,1])
+             # roundworms
+             data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+             data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+            
+             # whipworms
+             data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+             data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+             
+             # hookworms
+             data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+             data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+             
+             data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+             data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
+             
+             if(mean(data$inf)==0 | mean(data$inf2)==0) {number <- paste('No egg count data was provided.')}
+             else {
+               if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+               {
+                 data$RB <-  data[,input$Rbas]  
+                 data$TB <-  data[,input$Tbas] 
+                 data$HB <-  data[,input$Hbas] 
+                 
+                 data$RF <-  data[,input$Rfol]  
+                 data$TF <-  data[,input$Tfol]
+                 data$HF <-  data[,input$Hfol]
+                 
+                 data$Rp <- ifelse(data$RB>0,1,0) 
+                 data$Tp <- ifelse(data$TB>0,1,0)
+                 data$Hp <- ifelse(data$HB>0,1,0)
+                 
+                 data$Rpf <- ifelse(data$RF>=0,1,0) 
+                 data$Tpf <- ifelse(data$TF>=0,1,0) 
+                 data$Hpf <- ifelse(data$HF>=0,1,0) 
+                 
+                 data$Rc <- data$Rp + data$Rpf
+                 data$Tc <- data$Tp + data$Tpf
+                 data$Hc <- data$Hp + data$Hpf
+                 data$mix <- data$Rp + data$Tp + data$Hp
+                 mix <- dim(subset(data,mix>1))[1]
+                 com <- dim(subset(data, Rc==2 | Tc ==2 | Hc ==2))[1]
+                 nR <- dim(subset(data, RB>0))[1]
+                 nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
+                 nT <- dim(subset(data, TB>0))[1]
+                 nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
+                 nH <- dim(subset(data, HB>0))[1]
+                 nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                 
+                 number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Ascaris$ $lumbricoides$ infections were observed in', nR, 'subjects (', round(100*nR/n,1), 'percent ), $T.$ $trichiura$ infections in', nT, 'subjects (', round(100*nT/n,1),'percent ) and hookworms in', nH, '(',round (100*nH/n,1),'percent ) subjects. Mixed STH infections 
+                       were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). Complete data were available for', com, 'subjects, including', nR2, 'cases of $A.$ $lumbricoides$,', nT2, 'cases of $T.$ $trichiura$, and',nH2, 'cases of hookworms.')
+               }
+               else{ 
+                 if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+                 {
+                   data$RB <-  data[,input$Rbas]  
+                   data$TB <-  data[,input$Tbas] 
+                   
+                   data$RF <-  data[,input$Rfol]  
+                   data$TF <-  data[,input$Tfol]
+                   
+                   data$Rp <- ifelse(data$RB>0,1,0) 
+                   data$Tp <- ifelse(data$TB>0,1,0)
+                   
+                   data$Rf <- ifelse(data$RF>=0,1,0) 
+                   data$Tf <- ifelse(data$TF>=0,1,0) 
+                   
+                   data$Rc <- data$Rp + data$Rf
+                   data$Tc <- data$Tp + data$Tf
+
+                   data$mix <- data$Rp + data$Tp
+                   mix <- dim(subset(data, mix>1))[1]
+                   com <- dim(subset(data, Rc==2 | Tc ==2))[1]
+                   nR <- dim(subset(data, RB>0))[1]
+                   nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
+                   nT <- dim(subset(data, TB>0))[1]
+                   nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
+                   
+                   number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Ascaris$ $lumbricoides$ infections were observed in', nR, 'subjects (', round(100*nR/n,1), 'percent ), $T.$ $trichiura$ infections in', nT, 'subjects (', round(100*nT/n,1),'percent ). Mixed STH infections 
+                       were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of $A.$ $lumbricoides$, and ', nT2, 'cases of $T.$ $trichiura$.')
+                  }
+                 else{
+                   if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+                     {
+                     data$RB <-  data[,input$Rbas]  
+                     data$HB <-  data[,input$Hbas] 
+                     
+                     data$RF <-  data[,input$Rfol]  
+                     data$HF <-  data[,input$Hfol]
+                     
+                     data$Rp <- ifelse(data$RB>0,1,0) 
+                     data$Hp <- ifelse(data$HB>0,1,0)
+                     
+                     data$Rf <- ifelse(data$RF>=0,1,0) 
+                     data$Hf <- ifelse(data$HF>=0,1,0) 
+                     
+                     data$Rc <- data$Rp + data$Rf
+                     data$Hc <- data$Hp + data$Hf
+                     
+                     data$mix <- data$Rp + data$Hp
+                     mix <- dim(subset(data, mix>1))[1]
+                     com <- dim(subset(data, Rc==2 | Hc ==2))[1]
+                     nR <- dim(subset(data, RB>0))[1]
+                     nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
+                     nH <- dim(subset(data, HB>0))[1]
+                     nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                     
+                     number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Ascaris$ $lumbricoides$ infections were observed in', nR, 'subjects (', round(100*nR/n,1), 'percent ), hookworm infections in', nH, 'subjects (', round(100*nH/n,1),'percent ). Mixed STH infections 
+                       were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of $A.$ $lumbricoides$, and ', nH2, 'cases of hookworms.')
+                   }
+                   else{
+                     if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2){
+                       data$TB <-  data[,input$Tbas]  
+                       data$HB <-  data[,input$Hbas] 
+                       
+                       data$TF <-  data[,input$Tfol]  
+                       data$HF <-  data[,input$Hfol]
+                       
+                       data$Tp <- ifelse(data$TB>0,1,0) 
+                       data$Hp <- ifelse(data$HB>0,1,0)
+                       
+                       data$Tf <- ifelse(data$TF>=0,1,0) 
+                       data$Hf <- ifelse(data$HF>=0,1,0) 
+                       
+                       data$Tc <- data$Tp + data$Tf
+                       data$Hc <- data$Hp + data$Hf
+                       
+                       data$mix <- data$Tp + data$Hp
+                       mix <- dim(subset(data,mix>1))[1]
+                       com <- dim(subset(data, Tc ==2 | Hc ==2))[1]
+                       nT <- dim(subset(data, TB>0))[1]
+                       nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
+                       nH <- dim(subset(data, HB>0))[1]
+                       nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                       
+                       number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Trichuris$ $trichiura$ infections were observed in', nT, 'subjects (', round(100*nT/n,1), 'percent ), hookworm infections in', nH, 'subjects (', round(100*nH/n,1),'percent ). Mixed STH infections 
+                       were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nT2, 'cases of $T.$ $trichiura$, and ', nH2, 'cases of hookworms.')
+                     }
+                     else{
+                       if(mean(data$Rb)>-2 & mean(data$Rf)>-2){
+                         data$RB <-  data[,input$Rbas]  
+                         data$RF <-  data[,input$Rfol]  
+                         nR <- dim(subset(data, RB>0))[1]
+                         nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
+                          number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Ascaris$ $lumbricoides$ infections were observed in', nR, 'subjects (', round(100*nR/n,1), 'percent ). In total,', nR2, 'infected subjects provided a sample at both baseline and follow-up.')
+                         }
+                          else{
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2){
+                              data$TB <-  data[,input$Tbas]  
+                              data$TF <-  data[,input$Tfol]  
+                              nT <- dim(subset(data, TB>0))[1]
+                              nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
+                              number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Trichuris$ $trichiura$ infections were observed in', nT, 'subjects (', round(100*nT/n,1), 'percent ). In total,', nT2, 'infected subjects provided a sample at both baseline and follow-up.')
+                            }
+                            
+                            else{
+                              if(mean(data$Hb)>-2 & mean(data$Hf)>-2){
+                                data$HB <-  data[,input$Hbas]  
+                                data$HF <-  data[,input$Hfol]  
+                                data$Hp <- ifelse(data$HB>0,1,0) 
+                                data$Hf <- ifelse(data$HF>=0,1,0) 
+                                data$Hc <- data$Hp + data$Hf
+                                nH <- dim(subset(data, HB>0))[1]
+                                nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                                number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. Hookworms infections were observed in', nH, 'subjects (', round(100*nH/n,1), 'percent ). In total,', nH2, 'infected subjects provided a sample at both baseline and follow-up.')
+                              }
+                              else{number <- paste('No egg count data was provided.')}
+                              }
+                          }
+                         }  
+                       }   
+                    }
+                  } 
+                }
+             }
+                }
+          }
+@
+\Sexpr{number}
+
+\subsection{Intensity of infections}
+<<echo=FALSE>>=
+     inFile <- input$file1
+    if (is.null(inFile))
+    {intense <- paste0('No data was uploaded.')
+    } else {if (input$NTD=='1')
+    {data <- read.xlsx(inFile$datapath,1)
+    n <- length(data[,1])
+    # S haematobium
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smF <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjF <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+
+    data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
+    data$inf2 <- ifelse(data$shF > -2 | data$smF > -2 | data$sjF > -2, 1, 0)
+    
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {intense <- paste('No egg count data was provided.')}
+    else {
+      if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2))
+      {
+      data$shB <-  data[,input$Shbas]  
+      data$smB <-  data[,input$Smbas] 
+      data$shF <-  data[,input$Shfol]  
+      data$smF <-  data[,input$Smfol] 
+      sh <- subset(data, shB >0 &  shF >=0)
+      sm <- subset(data, smB >0 &  smF >=0)
+      NshH <- sum(ifelse(sh$shB>=50,1,0))
+      NshL <- sum(ifelse(sh$shB>0 & sh$shB<50,1,0))
+      
+      NsmH <- sum(ifelse(sm$smB>=400,1,0))
+      NsmM <- sum(ifelse(sm$smB>=100 & sm$smB<400,1,0))
+      NsmL <- sum(ifelse(sm$smB>0 & sm$smB<100,1,0))
+      q25sh <- round(quantile(sh$shB, probs=c(0.25)),1)
+      q75sh <- round(quantile(sh$shB, probs=c(0.75)),1)
+      
+      q25sm <- round(quantile(sm$smB, probs=c(0.25)),1)
+      q75sm <- round(quantile(sm$smB, probs=c(0.75)),1)
+     
+      Msm <- round(mean(sm$smB),1)
+      Msh <- round(mean(sh$shB),1)
+      
+      nsm <- length(sm$smB)
+      nsh <- length(sh$shB)
+intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) $S.$ $haematobium$ egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. The mean 
+$S.$ $mansoni$ egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. Low and highy-intensity $S.$ $haematobium$  
+infections were observed in', NshL,'(',round(100*NshL/nsh,1),'percent ) and', NshH, '(',round(100*NshH/nsh,1),'percent ) subjects,  respectively. 
+      For $S.$ $mansoni$, the number of low, moderate and high-intensity infections were', NsmL,'(',round(100*NsmL/nsm,1),'percent ),', NsmM,
+      '(',round(100*NsmM/nsm,1),'percent ) and', NsmH, '(',round(100*NsmH/nsm,1),'percent ), respectively.')
+      }
+      else{ 
+        if(mean(data$sh)>-2 & mean(data$shF >-2)){
+          data$shB <-  data[,input$Shbas] 
+          data$shF <-  data[,input$Shfol] 
+          sh <- subset(data, shB >0 &  shF >=0)
+          NshH <- sum(ifelse(sh$shB>=50,1,0))
+          NshL <- sum(ifelse(sh$shB>0 & sh$shB<50,1,0))
+          q25sh <- round(quantile(sh$shB, probs=c(0.25)),1)
+          q75sh <- round(quantile(sh$shB, probs=c(0.75)),1)
+          Msh <- round(mean(sh$shB),1)
+          nsh <- length(sh$shB)
+
+          intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) $S.$ $haematobium$ egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. 
+Low and high-intensity $S.$ $haematobium$ infections were observed in', NshL,'(',round(100*NshL/nsh,1),'percent ) and', NshH, '(',round(100*NshH/nsh,1),'percent ) 
+                subjects, respectively.')
+        }
+        else{
+          if(mean(data$sm)>-2 & mean(data$smF)> -2){
+            data$smB <-  data[,input$Smbas] 
+            data$smF <-  data[,input$Smfol] 
+            sm <- subset(data, smB >0 &  smF >=0)
+            NsmH <- sum(ifelse(sm$smB>=400,1,0))
+            NsmM <- sum(ifelse(sm$smB>=100 & sm$smB<400,1,0))
+            NsmL <- sum(ifelse(sm$smB>0 & sm$smB<100,1,0))
+            q25sm <- round(quantile(sm$smB, probs=c(0.25)),1)
+            q75sm <- round(quantile(sm$smB, probs=c(0.75)),1)
+            Msm <- round(mean(sm$smB),1)
+            nsm <- length(sm$smB)
+            intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) $S.$ $mansoni$ egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. 
+Low, moderate and high-intensity  $S.$ $mansoni$ infections were observed in',NsmL,'(',round(100*NsmL/nsm,1),'percent ),', NsmM,'(',round(100*NsmM/nsm,1),'percent ) 
+                  and', NsmH, '(',round(100*NsmH/nsm,1),'percent ) subjects, respectively.')
+          }
+          else{
+            if(mean(data$sj)>-2 & mean(data$sjF) >- 2){
+              data$sjB <-  data[,input$Sjbas] 
+              data$sjF <-  data[,input$Sjfol] 
+              sj <- subset(data, sjB >0 &  sjF >=0)
+              NsjH <- sum(ifelse(sj$sjB>=400,1,0))
+              NsjM <- sum(ifelse(sj$sjB>=100 & sj$sjB<400,1,0))
+              NsjL <- sum(ifelse(sj$sjB>0 & sj$sjB<100,1,0))
+              q25sj <- round(quantile(sj$sjB, probs=c(0.25)),1)
+              q75sj <- round(quantile(sj$sjB, probs=c(0.75)),1)
+              Msj <- round(mean(sj$sjB),1)
+              nsj <- length(sj$sjB)
+              intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) $S.$ $japonicum$ egg count equaled',Msj,'(',q25sj,';',q75sj,') eggs per gram of stool. Low, moderate and 
+high-intensity $S.$ $japonicum$ infections were observed in',NsjL,'(',round(100*NsjL/nsj,1),'percent ),', NsjM,'(',round(100*NsjM/nsj,1),'percent ) and', NsjH, 
+                    '(',round(100*NsjH/nsj,1),'percent ) subjects, respectively.')
+            }
+            else{intense <- paste('No egg count data was provided.')}  
+          }   
+        }
+      } 
+      }
+    }
+      else {
+        # Number of cases of soil-transmitted helminthiasis
+        if (input$NTD=='2')
+        {
+        data <- read.xlsx(inFile$datapath,1)
+        n <- length(data[,1])
+        # roundworms
+        data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+        data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+
+        # whipworms
+        data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+        data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+        
+        # hookworms
+        data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+        data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+        
+        data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+        data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
+        
+        
+        if(mean(data$inf)==0 | mean(data$inf2)==0) {intense <- paste('No egg count data was provided.')}
+        else {
+          
+          if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+          {
+            data$RB <-  data[,input$Rbas]  
+            data$TB <-  data[,input$Tbas]
+            data$HB <-  data[,input$Hbas] 
+            data$RF <-  data[,input$Rfol]  
+            data$TF <-  data[,input$Tfol] 
+            data$HF <-  data[,input$Hfol] 
+            R <- subset(data, RB> 0 & RF >= 0)
+            Tr <- subset(data, TB> 0 & TF >= 0)
+            H <- subset(data, HB> 0 & HF >= 0)
+            
+            NRH <- sum(ifelse(R$RB>=50000,1,0))
+            NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
+            NRL <- sum(ifelse(R$RB>0 & R$RB<5000,1,0))
+            
+            NTH <- sum(ifelse(Tr$TB>=10000,1,0))
+            NTM <- sum(ifelse(Tr$TB>=1000 & Tr$TB<10000,1,0))
+            NTL <- sum(ifelse(Tr$TB>0 & Tr$TB<1000,1,0)) 
+            
+            NHH <- sum(ifelse(H$HB>=4000,1,0))
+            NHM <- sum(ifelse(H$HB>=2000 & H$HB<4000,1,0))
+            NHL <- sum(ifelse(H$HB>0 & H$HB<2000,1,0)) 
+            
+            q25R <- round(quantile(R$RB, probs=c(0.25)),1)
+            q75R <- round(quantile(R$RB, probs=c(0.75)),1) 
+            q25T <- round(quantile(Tr$TB, probs=c(0.25)),1)
+            q75T <- round(quantile(Tr$TB, probs=c(0.75)),1) 
+            q25H <- round(quantile(H$HB, probs=c(0.25)),1)
+            q75H <- round(quantile(H$HB, probs=c(0.75)),1)
+            
+            MR <- round(mean(R$RB),1)
+            MT <- round(mean(Tr$TB),1)
+            MH <- round(mean(H$HB),1)
+            
+            nR <- length(R$RB)
+            nT <- length(Tr$RB)
+            nH <- length(H$HB)
+            
+            intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. The mean 
+$T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. The mean hookworm egg count equaled',MH,'(',q25H,';',q75H,') 
+                  eggs per gram of stool. Low, moderate and high-intensity $A.$ $lumbricoides$ infections were observed in', NRL,'(',round(100*NRL/nR,1),'percent ),'
+                  , NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects,  respectively.
+            For $T.$ $trichiura$, these numbers were', NTL,'(',round(100*NTL/nT,1),'percent ),', NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ),
+                  respectively. For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'percent ),', NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/n,1),
+                  'percent ), respectively.')
+          }
+          
+          
+          else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+            {
+              data$RB <-  data[,input$Rbas]  
+              data$TB <-  data[,input$Tbas]
+              data$RF <-  data[,input$Rfol]  
+              data$TF <-  data[,input$Tfol] 
+              R <- subset(data, RB>0 & RF >= 0)
+              Tr <- subset(data, TB> 0 & TF >= 0)
+              
+              NRH <- sum(ifelse(R$RB>=50000,1,0))
+              NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
+              NRL <- sum(ifelse(R$RB>0 & R$RB<5000,1,0))
+              
+              NTH <- sum(ifelse(Tr$TB>=10000,1,0))
+              NTM <- sum(ifelse(Tr$TB>=1000 & Tr$TB<10000,1,0))
+              NTL <- sum(ifelse(Tr$TB>0 & Tr$TB<1000,1,0)) 
+          
+              q25R <- round(quantile(R$RB, probs=c(0.25)),1)
+              q75R <- round(quantile(R$RB, probs=c(0.75)),1) 
+              q25T <- round(quantile(Tr$TB, probs=c(0.25)),1)
+              q75T <- round(quantile(Tr$TB, probs=c(0.75)),1) 
+      
+              MR <- round(mean(R$RB),1)
+              MT <- round(mean(Tr$TB),1)
+
+              
+              nR <- length(R$RB)
+              nT <- length(Tr$TB)
+
+              
+              intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. The mean $T.$ $trichiura$
+egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate and high-intensity $A.$ $lumbricoides$ infections were observed 
+                    in', NRL,'(',round(100*NRL/nR,1),'percent ),' , NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects,  respectively.
+            For $T.$ $trichiura$, these numbers were', NTL,'(',round(100*NTL/nT,1),'percent ),', NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ),
+                    respectively.')
+            }
+            
+            else{
+              if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+              {
+                data$RB <-  data[,input$Rbas]  
+                data$HB <-  data[,input$Hbas] 
+                data$RF <-  data[,input$Rfol]  
+                data$HF <-  data[,input$Hfol] 
+                R <- subset(data, RB>0 & RF >= 0)
+                H <- subset(data, HB>0 & HF >= 0)
+                
+                NRH <- sum(ifelse(R$RB>=50000,1,0))
+                NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
+                NRL <- sum(ifelse(R$RB>0 & R$RB<5000,1,0))
+            
+                NHH <- sum(ifelse(H$HB>=4000,1,0))
+                NHM <- sum(ifelse(H$HB>=2000 & H$HB<4000,1,0))
+                NHL <- sum(ifelse(H$HB>0 & H$HB<2000,1,0)) 
+                
+                q25R <- round(quantile(R$RB, probs=c(0.25)),1)
+                q75R <- round(quantile(R$RB, probs=c(0.75)),1) 
+                q25H <- round(quantile(H$HB, probs=c(0.25)),1)
+                q75H <- round(quantile(H$HB, probs=c(0.75)),1)
+                
+                MR <- round(mean(R$RB),1)
+                MH <- round(mean(H$HB),1)
+                
+                nR <- length(R$RB)
+                nH <- length(H$HB)
+                
+                intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. 
+                      The mean hookworm egg counts equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. 
+                      Low, moderate and high - intensity $A.$ $lumbricoides$ infections were observed in', NRL,'(',round(100*NRL/nR,1),'percent ),', 
+NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects, respectively. 
+                      For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'percent ),', NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/n,1),'percent ),
+                      respectively.')
+              }
+              
+              
+              else{
+                if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+                {
+                   data$TB <-  data[,input$Tbas]
+                  data$HB <-  data[,input$Hbas] 
+                   data$TF <-  data[,input$Tfol] 
+                  data$HF <-  data[,input$Hfol] 
+                  Tr <- subset(data, TB> 0 & TF >= 0)
+                  H <- subset(data, HB>0 & HF >= 0)
+                  
+                  NTH <- sum(ifelse(Tr$TB>=10000,1,0))
+                  NTM <- sum(ifelse(Tr$TB>=1000 & Tr$TB<10000,1,0))
+                  NTL <- sum(ifelse(Tr$TB>0 & Tr$TB<1000,1,0)) 
+                  
+                  NHH <- sum(ifelse(H$HB>=4000,1,0))
+                  NHM <- sum(ifelse(H$HB>=2000 & H$HB<4000,1,0))
+                  NHL <- sum(ifelse(H$HB>0 & H$HB<2000,1,0)) 
+                  
+                  q25T <- round(quantile(Tr$TB, probs=c(0.25)),1)
+                  q75T <- round(quantile(Tr$TB, probs=c(0.75)),1) 
+                  q25H <- round(quantile(H$HB, probs=c(0.25)),1)
+                  q75H <- round(quantile(H$HB, probs=c(0.75)),1)
+                  
+                  MT <- round(mean(Tr$TB),1)
+                  MH <- round(mean(H$HB),1)
+                  
+                  nT <- length(Tr$TB)
+                  nH <- length(H$HB)
+                  
+                  intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. 
+                        The mean hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low, moderate and high-intensity $T.$ $trichiura$
+                        infections were observed in', NTL,'(',round(100*NTL/nT,1),'percent ),', NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ) subjects, 
+                        respectively. For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'percent ),', NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/nH,1),'percent ), respectively.')
+                  }
+                else{
+                  if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                  {
+                    data$RB <-  data[,input$Rbas]  
+                    data$RF <-  data[,input$Rfol]  
+                    R <- subset(data, RB>0 & RF >= 0)
+                    NRH <- sum(ifelse(R$RB>=50000,1,0))
+                    NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
+                    NRL <- sum(ifelse(R$RB>0 & R$RB<5000,1,0))
+                    q25R <- round(quantile(R$RB, probs=c(0.25)),1)
+                    q75R <- round(quantile(R$RB, probs=c(0.75)),1) 
+                    MR <- round(mean(R$RB),1)
+                    nR <- length(R$RB)
+                    intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. Low, moderate and high-intensity infections were observed in', NRL,'(',round(100*NRL/nR,1),'percent ),'
+                          , NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects, respectively.')
+                  }
+                  
+                  else{
+                    if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                    {
+                      data$TB <-  data[,input$Tbas]
+                      data$TF <-  data[,input$Tfol] 
+                      Tr <- subset(data, TB> 0 & TF >= 0)
+                      NTH <- sum(ifelse(Tr$TB>=5000,1,0))
+                      NTM <- sum(ifelse(Tr$TB>=1000 & Tr$TB<5000,1,0))
+                      NTL <- sum(ifelse(Tr$TB>=1 & Tr$TB<1000,1,0)) 
+                      q25T <- round(quantile(Tr$TB, probs=c(0.25)),1)
+                      q75T <- round(quantile(Tr$TB, probs=c(0.75)),1) 
+                      MT <- round(mean(Tr$TB),1)
+                      nT <- length(Tr$TB)
+                      intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
+$T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate and high-intensity infections were observed in', NTL,'(',round(100*NTL/nT,1),'percent ),'
+                            , NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ) subjects,  respectively.')
+                    }
+                    
+                    else{
+                      if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                      {
+                        data$HB <-  data[,input$Hbas] 
+                        data$HF <-  data[,input$Hfol] 
+                        H <- subset(data, HB> 0 & HF >= 0)
+                        NHH <- sum(ifelse(H$HB>=4000,1,0))
+                        NHM <- sum(ifelse(H$HB>=2000 & H$HB<4000,1,0))
+                        NHL <- sum(ifelse(H$HB>=1 & H$HB<2000,1,0)) 
+                        
+                        q25H <- round(quantile(H$HB, probs=c(0.25)),1)
+                        q75H <- round(quantile(H$HB, probs=c(0.75)),1)
+                        
+                        MH <- round(mean(H$HB),1)
+                        nH <- length(H$HB)
+                        
+                        intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
+hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low, moderate and high-intensty infections were observed in', NHL,'(',round(100*NHL/nH,1),'percent ),'
+                              , NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/nH,1),'percent ) subjects,  respectively.')
+                      }
+                      
+                      else{intense <- paste('No egg count data was provided.')}
+                    }
+                  }
+                }  
+              }   
+            }
+          } 
+          }
+        }
+    }
+  } 
+@
+\Sexpr{intense}
+
+\includegraphics{
+<<fig=TRUE,echo=FALSE>>=
+ hist(rnorm(50000,5,2)) 
+@
+}
+
+\subsection{Follow-up period}
+<<echo=FALSE>>=
+## Follow-up period
+       inFile <- input$file1
+    if (is.null(inFile))
+    {follow <- paste0('No data was uploaded.')
+    } else {if (input$NTD=='1')
+    {data <- read.xlsx(inFile$datapath,1)
+    n <- length(data[,1])
+    # S haematobium
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smF <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjF <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+    
+   data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
+  
+    if(mean(data$FU)==-2) {follow <- paste('No follow-up data was provided')}
+    else {
+      if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2) & mean(data$FU>-2))
+      {
+        data$fol <-  data[,input$followup] 
+        data$shB <-  data[,input$Shbas]  
+        data$smB <-  data[,input$Smbas] 
+        data$shF2 <-  data[,input$Shfol]  
+        data$smF2 <-  data[,input$Smfol] 
+        data$shp <- ifelse(data$shB>0,1,0) 
+        data$smp <- ifelse(data$smB>0,1,0)
+        data$shf <- ifelse(data$shF2>=0,1,0) 
+        data$smf <- ifelse(data$smF2>=0,1,0) 
+        data$shc <- data$shp + data$shf
+        data$smc <- data$smp + data$smf
+        data2 <- subset(data, data$shc == 2 | data$smc == 2)
+        min <- round(quantile(data2$fol, probs=c(0)),1)
+        max <- round(quantile(data2$fol, probs=c(1)),1)
+        med <- round(quantile(data2$fol, probs=c(0.50)),1)
+        nc <- length(data2$fol)
+        ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+        follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+      }
+      else{ 
+        if(mean(data$sh)>-2 & mean(data$shF >-2) & mean(data$FU>-2)){
+          data$fol <-  data[,input$followup] 
+          data$shB <-  data[,input$Shbas]  
+          data$shF2 <-  data[,input$Shfol]  
+          data$shp <- ifelse(data$shB>0,1,0) 
+          data$shf <- ifelse(data$shF2>=0,1,0) 
+          data$shc <- data$shp + data$shf
+          data2 <- subset(data, data$shc == 2)
+          min <- round(min(data2$fol),1)
+          max <- round(max(data2$fol),1)
+          med <- round(quantile(data2$fol, probs=c(0.50)),1)
+          nc <- length(data2$fol)
+          ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+          follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+        }
+        else{
+          if(mean(data$sm)>-2 & mean(data$smF)> -2 & mean(data$FU>-2)){
+            data$fol <-  data[,input$followup]  
+            data$smB <-  data[,input$Smbas] 
+            data$smF2 <-  data[,input$Smfol] 
+            data$smp <- ifelse(data$smB>0,1,0)
+            data$smf <- ifelse(data$smF2>=0,1,0) 
+            data$smc <- data$smp + data$smf
+            data2 <- subset(data, data$smc == 2)
+            min <- round(min(data2$fol),1)
+            max <- round(max(data2$fol),1)
+            med <- round(quantile(data2$fol, probs=c(0.50)),1)
+            nc <- length(data2$fol)
+            ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')    }
+          
+          else{
+            if(mean(data$sj)>-2 & mean(data$sjF) >- 2 & mean(data$FU>-2)){
+              data$fol <-  data[,input$followup] 
+              data$sjB <-  data[,input$Sjbas]  
+              data$sjF2 <-  data[,input$Sjfol] 
+              data$sjp <- ifelse(data$sjB>0,1,0)
+              data$sjf <- ifelse(data$sjF2>=0,1,0) 
+              data$sjc <- data$sjp + data$sjf
+              data2 <- subset(data, data$sjc == 2)
+              min <- round(min(data2$fol),1)
+              max <- round(max(data2$fol),1)
+              med <- round(quantile(data2$fol, probs=c(0.50)),1)
+              nc <- length(data2$fol)
+              ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+              follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+            }
+            else{follow <- paste('No egg count data was provided.')}  
+          }   
+          }
+          } 
+        }
+    }
+      else {
+        # Number of cases of soil-transmitted helminthiasis
+        if (input$NTD=='2')
+        {
+          data <- read.xlsx(inFile$datapath,1)
+          n <- length(data[,1])
+          # roundworms
+          data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+          data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+          
+          # whipworms
+          data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+          data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+          
+          # hookworms
+          data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+          data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+          data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
+          
+          if(mean(data$FU)==-2) {follow<- paste('No egg count data was provided.')}
+          else {
+            
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+            {
+              data$fol <-  data[,input$followup] 
+              data$RB <-  data[,input$Rbas]  
+              data$TB <-  data[,input$Tbas] 
+              data$HB <-  data[,input$Hbas] 
+              
+              data$RF <-  data[,input$Rfol]  
+              data$TF <-  data[,input$Tfol]
+              data$HF <-  data[,input$Hfol]
+              
+              data$Rp <- ifelse(data$RB>0,1,0) 
+              data$Tp <- ifelse(data$TB>0,1,0)
+              data$Hp <- ifelse(data$HB>0,1,0)
+              
+              data$Rf <- ifelse(data$RF>=0,1,0) 
+              data$Tf <- ifelse(data$TF>=0,1,0) 
+              data$Hf <- ifelse(data$HF>=0,1,0) 
+              
+              data$Rc <- data$Rp + data$Rf
+              data$Tc <- data$Tp + data$Tf
+              data$Hc <- data$Hp + data$Hf
+              
+              data2 <- subset(data, Rc==2 | Tc ==2 | Hc ==2)
+              min <- round(quantile(data2$fol, probs=c(0)),1)
+              max <- round(quantile(data2$fol, probs=c(1)),1)
+              med <- round(quantile(data2$fol, probs=c(0.50)),1)
+              nc <- length(data2$fol)
+              ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+              follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+            }
+            
+            
+            else{ 
+              if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2))
+              {
+                data$fol <-  data[,input$followup] 
+                data$RB <-  data[,input$Rbas]  
+                data$TB <-  data[,input$Tbas] 
+                data$RF <-  data[,input$Rfol]  
+                data$TF <-  data[,input$Tfol]
+                data$Rp <- ifelse(data$RB>0,1,0) 
+                data$Tp <- ifelse(data$TB>0,1,0)
+                data$Rf <- ifelse(data$RF>=0,1,0) 
+                data$Tf <- ifelse(data$TF>=0,1,0) 
+                data$Rc <- data$Rp + data$Rf
+                data$Tc <- data$Tp + data$Tf
+                
+                data2 <- subset(data, Rc==2 | Tc ==2)
+                min <- round(quantile(data2$fol, probs=c(0)),1)
+                max <- round(quantile(data2$fol, probs=c(1)),1)
+                med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                nc <- length(data2$fol)
+                ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                
+              }
+              
+              else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+                {
+                  
+                  data$RB <-  data[,input$Rbas]  
+                  data$HB <-  data[,input$Hbas] 
+                  
+                  data$RF <-  data[,input$Rfol]  
+                  data$HF <-  data[,input$Hfol]
+                  
+                  data$Rp <- ifelse(data$RB>0,1,0) 
+                  data$Hp <- ifelse(data$HB>0,1,0)
+                  
+                  data$Rf <- ifelse(data$RF>=0,1,0) 
+                  data$Hf <- ifelse(data$HF>=0,1,0) 
+                  
+                  data$Rc <- data$Rp + data$Rf
+                  data$Hc <- data$Hp + data$Hf
+                  data$fol <-  data[,input$followup] 
+                  data2 <- subset(data, Rc==2 | Hc ==2)
+                  min <- round(quantile(data2$fol, probs=c(0)),1)
+                  max <- round(quantile(data2$fol, probs=c(1)),1)
+                  med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                  nc <- length(data2$fol)
+                  ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                  
+                  follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                  
+                }
+                
+                else{
+                  if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+                  {
+                    data$fol <-  data[,input$followup] 
+                    data$TB <-  data[,input$Tbas] 
+                    data$HB <-  data[,input$Hbas] 
+                    
+                    data$TF <-  data[,input$Tfol]
+                    data$HF <-  data[,input$Hfol]
+                    
+                    data$Tp <- ifelse(data$TB>0,1,0)
+                    data$Hp <- ifelse(data$HB>0,1,0)
+                    
+                    data$Tf <- ifelse(data$TF>=0,1,0) 
+                    data$Hf <- ifelse(data$HF>=0,1,0) 
+                    
+                    data$Tc <- data$Tp + data$Tf
+                    data$Hc <- data$Hp + data$Hf
+                    
+                    data2 <- subset(data, Tc ==2 | Hc ==2)
+                    min <- round(quantile(data2$fol, probs=c(0)),1)
+                    max <- round(quantile(data2$fol, probs=c(1)),1)
+                    med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                    nc <- length(data2$fol)
+                    ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                  }
+                  else{
+                    if(mean(data$Rb)>-2 & mean(data$Rf)>-2 & mean(data$FU>-2))
+                    {
+                      data$fol <-  data[,input$followup] 
+                      data$RB <-  data[,input$Rbas]  
+                      data$RF <-  data[,input$Rfol]  
+                      data$Rp <- ifelse(data$RB>0,1,0) 
+                      data$Rf <- ifelse(data$RF>=0,1,0) 
+                      data$Rc <- data$Rp + data$Rf
+                      data2 <- subset(data, Rc==2)
+                      min <- round(quantile(data2$fol, probs=c(0)),1)
+                      max <- round(quantile(data2$fol, probs=c(1)),1)
+                      med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                      nc <- length(data2$fol)
+                      ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                      follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                    }
+                    
+                    else{
+                      if(mean(data$Tb)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2))
+                      {
+                        data$fol <-  data[,input$followup] 
+                        data$TB <-  data[,input$Tbas] 
+                        data$TF <-  data[,input$Tfol]
+                        data$Tp <- ifelse(data$TB>0,1,0)
+                        data$Tf <- ifelse(data$TF>=0,1,0) 
+                        data$Tc <- data$Tp + data$Tf
+                        data2 <- subset(data,Tc ==2)
+                        min <- round(quantile(data2$fol, probs=c(0)),1)
+                        max <- round(quantile(data2$fol, probs=c(1)),1)
+                        med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                        nc <- length(data2$fol)
+                        ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                        follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')   }
+                      
+                      else{
+                        if(mean(data$Hb)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+                        {
+                          data$fol <-  data[,input$followup] 
+                          data$HB <-  data[,input$Hbas] 
+                          data$HF <-  data[,input$Hfol]
+                          data$Hp <- ifelse(data$HB>0,1,0)
+                          data$Hf <- ifelse(data$HF>=0,1,0) 
+                          data$Hc <- data$Hp + data$Hf
+                          
+                          data2 <- subset(data, Hc ==2)
+                          min <- round(quantile(data2$fol, probs=c(0)),1)
+                          max <- round(quantile(data2$fol, probs=c(1)),1)
+                          med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                          nc <- length(data2$fol)
+                          ncont <- sum(ifelse(data2$fol>=7 & data2$fol<=21,1,0))
+                          follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.') 
+                        }
+                        
+                        else{follow <- paste('No egg count data was provided.')}
+                      }
+                    }
+                    }  
+                  }   
+                }
+              } 
+      }
+        }
+    }
+} 
+@
+\Sexpr{follow}
+
+\subsection{Egg reduction rate}
+<<echo=FALSE>>=
+    inFile <- input$file1
+    if (is.null(inFile))
+    {err <- paste('No data was uploaded.')
+    } else {if (input$NTD=='1')
+    {data <- read.xlsx(inFile$datapath,1)
+    data$n <- 1
+    n <- length(data[,1])
+    # S haematobium
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+ 
+       # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smf <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjf <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+   
+     data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
+    data$inf2 <- ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0)
+    
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {err <- paste('No egg count data was provided.')}
+    else {
+      if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shf)>-2 & mean(data$smf)>-2)
+      {
+        data$shB <-  data[,input$Shbas]  
+        data$smB <-  data[,input$Smbas] 
+        data$shF <-  data[,input$Shfol]  
+        data$smF <-  data[,input$Smfol] 
+        sh <- subset(data, shB >0 &  shF >=0)
+        sm <- subset(data, smB >0 &  smF >=0)
+        ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+        term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+        term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+        VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+        aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+        ULSH <- 1-qgamma(0.025,shape = aSH, scale = bSH)
+        LLSH <- 1-qgamma(0.975,shape = aSH, scale = bSH)
+      
+        ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+        term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+        term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+        VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+        aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+        ULSM <- 1-qgamma(0.025,shape = aSM, scale = bSM)
+        LLSM <- 1-qgamma(0.975,shape = aSM, scale = bSM)
+        
+        if(input$Sdrug == 1)  {
+        err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S. haematobium$ equaled',round(100*ERRSH,1),
+'percent (',round(100*LLSH,1), ';',round(100*ULSH,1), '). For $S.$ $mansoni$, the ERR equaled',round(100*ERRSM,1),'percent 
+(',round(100*LLSM,1),';', round(100*ULSM,1),'). The figures below classify the ERR estimates according to WHO thresholds.
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+        }else {
+          err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $haematobium$ equaled',round(100*ERRSH,1),'percent
+(',round(100*LLSH,1), ';',round(100*ULSH,1), '). For $S.$ $mansoni$, the ERR equaled',round(100*ERRSM,1),'percent (',round(100*LLSM,1),';', round(100*ULSM,1),'). 
+The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
+                estimates.')
+          
+        }
+      } else {
+        if(mean(data$sh)>-2 & mean(data$shf)>-2){
+          data$shB <-  data[,input$Shbas]  
+          data$shF <-  data[,input$Shfol]  
+          sh <- subset(data, shB >0 &  shF >=0)
+          ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+          term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+          term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+          VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+          aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+          ULSH <- 1-qgamma(0.025,shape = aSH, scale = bSH)
+          LLSH <- 1-qgamma(0.975,shape = aSH, scale = bSH)
+          
+          if(input$Sdrug == 1){
+          err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $haematobium$ equaled',round(100*ERRSH,1),'percent
+(',round(100*LLSH,1), ';',round(100*ULSH,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+                and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+            } else {
+            err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against $S.$ $haematobium$ equaled',round(100*ERRSH,1),
+                  'percent (',round(100*LLSH,1), ';',round(100*ULSH,1), ').
+                  The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+          }
+          
+            } else {
+          if(mean(data$sm)>-2 & mean(data$smf)>-2){
+            data$smB <-  data[,input$Smbas] 
+            data$smF <-  data[,input$Smfol] 
+            sm <- subset(data, smB >0 &  smF >=0)
+      
+            ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+            term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+            term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+            VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+            aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+            ULSM <- 1-qgamma(0.025,shape = aSM, scale = bSM)
+            LLSM <- 1-qgamma(0.975,shape = aSM, scale = bSM)
+            
+            if(input$Sdrug == 1){ 
+            err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $mansoni$ equaled',round(100*ERRSM,1),'percent (',round(100*LLSM,1), ';',
+round(100*ULSM,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+              } else {
+              err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against $S.$ $mansoni$ equaled',round(100*ERRSM,1),
+                    'percent (',round(100*LLSM,1),';', round(100*ULSM,1),'). The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+              
+            }
+            
+            } else {
+            if(mean(data$sj)>-2 & mean(data$sjf>-2)){
+              data$sjB <-  data[,input$Sjbas] 
+              data$sjF <-  data[,input$Sjfol] 
+              sj <- subset(data, sjB >0 &  sjF >=0)
+              ERRSJ <- (1- mean(sj$sjF)/mean(sj$sjB))
+              term1SJ <- (mean(sj$sjF)/mean(sj$sjB))**2; term2SJ <- ifelse(mean(sj$sjF)==0,0,var(sj$sjF)/mean(sj$sjF)**2); term3SJ <- var(sj$sjB)/mean(sj$sjB)**2              
+              term4SJ <- ifelse(mean(sj$sjF)==0,0,-2*cor(sj$sjB,sj$sjF)*sqrt(var(sj$sjF))*sqrt(var(sj$sjB))/(mean(sj$sjB)*mean(sj$sjF)))
+              VARSJ <-  term1SJ*(term2SJ+term3SJ+term4SJ); varSJ <- VARSJ / length(sj$sjB)
+              aSJ <- ((1-ERRSJ)**2)/varSJ; bSJ <- varSJ/(1-ERRSJ)
+              ULSJ <- 1-qgamma(0.025,shape = aSJ, scale = bSJ)
+              LLSJ <- 1-qgamma(0.975,shape = aSJ, scale = bSJ)
+              if(input$Sdrug == 1){
+                err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $japonicum$ equaled',
+round(100*ERRSJ,1),'percent (',round(100*LLSJ,1), ';',round(100*ULSJ,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')} else {
+              err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against $S.$ $japonicum$ 
+equaled',round(100*ERRSJ,1),'percent (',round(100*LLSJ,1), ';',round(100*ULSJ,1),').
+               The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+               }
+              
+              } else{err <- paste('No egg count data was provided.')}  
+          }   
+        }
+      } 
+      }
+    }
+      else {
+        # Soil-transmitted helminthiasis
+        if (input$NTD=='2')
+        {
+          data <- read.xlsx(inFile$datapath,1)
+          n <- length(data[,1])
+          # roundworms
+          data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+          data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+          
+          # whipworms
+          data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+          data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+          
+          # hookworms
+          data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+          data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+          
+          data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+          data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
+          
+        if(mean(data$inf)==0 | mean(data$inf2)==0 ) {err <- paste('No egg count data was provided.')}
+        else {
+          if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+          {
+            data$RB <-  data[,input$Rbas]  
+            data$TB <-  data[,input$Tbas]
+            data$HB <-  data[,input$Hbas] 
+            data$RF <-  data[,input$Rfol]  
+            data$TF <-  data[,input$Tfol] 
+            data$HF <-  data[,input$Hfol] 
+            R <- subset(data, RB> 0 & RF >= 0)
+            Tr <- subset(data, TB> 0 & TF >= 0)
+            H <- subset(data, HB> 0 & HF >= 0)
+            
+            ERRR <- (1- mean(R$RF)/mean(R$RB))
+            term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+            term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+            VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+            aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+            ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+            LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+     
+            ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+            term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+            term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+            VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+            aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+            ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+            LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+            
+            ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+            term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+            term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+            VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+            aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+            ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+            LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+               
+            if(input$STHdrug == 1 | input$STHdrug == 2) { 
+            err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', round(100*ULT,1),').
+For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', round(100*ULH,1),').
+The figures below classify the ERR estimates according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+            } else{err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', 
+                         round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),
+                         ';', round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
+                estimates.')
+              
+              }
+              } else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+            {
+              data$RB <-  data[,input$Rbas]  
+              data$TB <-  data[,input$Tbas]
+              data$RF <-  data[,input$Rfol]  
+              data$TF <-  data[,input$Tfol] 
+              R <- subset(data, RB> 0 & RF >= 0)
+              Tr <- subset(data, TB> 0 & TF >= 0)
+             
+              ERRR <- (1- mean(R$RF)/mean(R$RB))
+              term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+              term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+              VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+              aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+              ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+              LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+              
+              ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+              term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+              term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+              VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+              aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+              ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+              LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+              if(input$STHdrug == 1 | input$STHdrug == 2) { 
+               err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', round(100*ULT,1),'). The figures below classify the ERR estimates according to the WHO thresholds.  
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+              } else {err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', 
+                            round(100*ULT,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
+                estimates.')
+                }
+               } else {
+              if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+              {
+                data$RB <-  data[,input$Rbas]  
+                data$HB <-  data[,input$Hbas] 
+                data$RF <-  data[,input$Rfol]  
+                data$HF <-  data[,input$Hfol] 
+                R <- subset(data, RB> 0 & RF >= 0)
+                H <- subset(data, HB> 0 & HF >= 0)
+                
+                ERRR <- (1- mean(R$RF)/mean(R$RB))
+                term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+                term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+                VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+                aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+                ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+                LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+                
+                ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                LLH <- 1-qgamma(0.975,shape = aH, scale = bH)   
+                if(input$STHdrug == 1 | input$STHdrug == 2){ 
+                err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',
+round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                      For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', round(100*ULH,1),'). The figures below classify the ERR estimates according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                } else { err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                      For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', 
+                               round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
+                estimates.')
+                  
+                  }
+               } else {
+                if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+                {
+                  data$TB <-  data[,input$Tbas]
+                  data$HB <-  data[,input$Hbas] 
+                  data$TF <-  data[,input$Tfol] 
+                  data$HF <-  data[,input$Hfol] 
+                  Tr <- subset(data, TB> 0 & TF >= 0)
+                  H <- subset(data, HB> 0 & HF >= 0)
+                  
+                  ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+                  term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+                  term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+                  VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+                  aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+                  ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+                  LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+                  
+                  ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                  term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                  term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                  VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                  aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                  ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                  LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+                  if(input$STHdrug == 1 | input$STHdrug == 2){
+                  err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent 
+(',round(100*LLT,1),';', round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', round(100*ULH,1),'). 
+The figures below classify the ERR estimates according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                  } else {err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the 
+                                drug $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';',
+                                round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent 
+                                (',round(100*LLH,1),';', round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
+                estimates.')
+                    
+                    }
+                  
+                  } else {
+                  if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                  {
+                    data$RB <-  data[,input$Rbas]  
+                    data$RF <-  data[,input$Rfol]  
+                    R <- subset(data, RB> 0 & RF >= 0)
+                    
+                    ERRR <- (1- mean(R$RF)/mean(R$RB))
+                    term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+                    term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+                    VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+                    aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+                    ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+                    LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+                    
+                    if(input$STHdrug == 1 | input$STHdrug == 2){
+                    err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                      The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                    } else {err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug 
+                                  against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), 
+                                  ';',round(100*ULR,1), '). The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+                      
+                      } 
+                      } else {
+                    if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                    {
+                      data$TB <-  data[,input$Tbas]
+                      data$TF <-  data[,input$Tfol] 
+                      Tr <- subset(data, TB> 0 & TF >= 0)
+                      
+                      ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+                      term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+                      term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+                      VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+                      aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+                      ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+                      LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+                      if(input$STHdrug == 1 | input$STHdrug == 2){
+                      err <- paste('The egg reduction rate (ERRR; 95 percent confidence intervals) of the drug against $T.$ $trichiura$ equaled',round(100*ERRT,1),
+'percent (',round(100*LLT,1),';', round(100*ULT,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                      } else { 
+                        err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against 
+                              $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', 
+                              round(100*ULT,1),'). The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+                        
+                        }
+                        } else {
+                        if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                        {
+                          data$HB <-  data[,input$Hbas] 
+                          data$HF <-  data[,input$Hfol] 
+                          H <- subset(data, HB> 0 & HF >= 0)
+                          
+                          ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                          term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                          term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                          VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                          aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                          ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                          LLH <- 1-qgamma(0.975,shape = aH, scale = bH)  
+                          if(input$STHdrug == 1 | input$STHdrug == 2){ 
+                          err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),'percent
+(',round(100*LLH,1),';', round(100*ULH,1),'). 
+The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                          } else {
+                            err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),
+                                  'percent (',round(100*LLH,1),';', round(100*ULH,1),').  The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+                            
+                            }                            
+                
+                          
+                          } else {err <- paste('No egg count data was provided.')}
+                    }
+                  }
+                }  
+              }   
+            }
+          } 
+          }
+        }
+    }
+  } 
+@
+\Sexpr{err}
+
+<<echo=FALSE>>=
+    inFile <- input$file1
+    if (is.null(inFile))
+    {invisible(paste0(''))
+      } else {if (input$NTD=='1')
+    {data <- read.xlsx(inFile$datapath,1) 
+    n <- length(data[,1])
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smf <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjf <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+  
+      data$inf <- mean(ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0))
+      data$inf2 <- mean(ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0))
+      if(mean(data$inf)==0 | mean(data$inf)==0) {}
+    else 
+    {
+      if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smf)>-2 & mean(data$shf)> - 2){
+        data$shB <-  data[,input$Shbas]  
+        data$smB <-  data[,input$Smbas] 
+        data$shF <-  data[,input$Shfol]  
+        data$smF <-  data[,input$Smfol] 
+        sh <- subset(data, shB > 0 &shF >=0)
+        sm <- subset(data, smB > 0 & smF >=0)
+        ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+        term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+        term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+        VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+        aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+        
+        ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+        term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+        term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+        VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+        aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+        
+        
+      if(input$Sdrug==1) { 
+        
+      par(mfrow=c(1,2))
+        plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~haematobium)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+        t <- seq(0,80,1)
+        t2 <- seq(80,90,1)
+        t3 <- seq(90,100,1)
+        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+        abline(v=100*ERRSH, lwd=4)
+        
+        plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~mansoni)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+        t <- seq(0,80,1)
+        t2 <- seq(80,90,1)
+        t3 <- seq(90,100,1)
+        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+        abline(v=100*ERRSM, lwd=4)
+        
+        } else { 
+        par(mfrow=c(1,2))
+        SH <- rgamma(10000,shape = aSH, scale = bSH)
+        hist(100*(1-SH),main=expression(italic(Schistosoma~haematobium)), ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+        abline(v=100*(1-qgamma(0.025,shape = aSH, scale = bSH)),lty= 2, lwd=4)
+        abline(v=100*(1-qgamma(0.975,shape = aSH, scale = bSH)),lty=2, lwd=4)
+        abline(v=100*ERRSH, lwd=4)
+        
+        SM <- rgamma(10000,shape = aSM, scale = bSM)
+        hist(100*(1-SM), main=expression(italic(Schistosoma~mansoni)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+        abline(v=100*(1-qgamma(0.025,shape = aSM, scale = bSM)), lty=2,lwd=4)
+        abline(v=100*(1-qgamma(0.975,shape = aSM, scale = bSM)), lty=2,lwd=4)
+        abline(v=100*ERRSM, lwd=4)
+        }
+      
+      } else {
+        if(mean(data$sh)>-2 & mean(data$shf)> - 2){
+          data$shB <-  data[,input$Shbas]  
+          data$shF <-  data[,input$Shfol]  
+          
+          sh <- subset(data, shB >0 &  shF >=0)
+          ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+          term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+          term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+          VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+          aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+          ULSH <- 1-qgamma(0.025,shape = aSH, scale = bSH)
+          LLSH <- 1-qgamma(0.975,shape = aSH, scale = bSH)
+          
+          if(input$Sdrug == 1) {           
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~haematobium)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,80,1)
+            t2 <- seq(80,90,1)
+            t3 <- seq(90,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRSH, lwd=4)
+          } else { 
+            par(mfrow=c(1,1))
+            SH <- rgamma(10000,shape = aSH, scale = bSH)
+            hist(100*(1-SH),main=expression(italic(Schistosoma~haematobium)), ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+            abline(v=100*(1-qgamma(0.025,shape = aSH, scale = bSH)),lty= 2, lwd=4)
+            abline(v=100*(1-qgamma(0.975,shape = aSH, scale = bSH)),lty=2, lwd=4)
+            abline(v=100*ERRSH, lwd=4)
+            }
+          
+          } else {
+          if(mean(data$sm)>-2 & mean(data$smf)> - 2){
+            data$smB <-  data[,input$Smbas] 
+            data$smF <-  data[,input$Smfol] 
+            sm <- subset(data, smB >0 &  smF >=0)
+      
+            ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+            term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+            term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+            VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+            aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+            ULSM <- 1-qgamma(0.025,shape = aSM, scale = bSM)
+            LLSM <- 1-qgamma(0.975,shape = aSM, scale = bSM)
+            
+            if(input$Sdrug == 1) { 
+            par(mfrow=c(1,1))
+              plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~mansoni)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+              t <- seq(0,80,1)
+              t2 <- seq(80,90,1)
+              t3 <- seq(90,100,1)
+              polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+              polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+              polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+              abline(v=100*ERRSM, lwd=4)
+            } else {
+              par(mfrow=c(1,1))
+              SM <- rgamma(10000,shape = aSM, scale = bSM)
+              hist(100*(1-SM), main=expression(italic(Schistosoma~mansoni)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+              axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+              abline(v=100*(1-qgamma(0.025,shape = aSM, scale = bSM)), lty=2,lwd=4)
+              abline(v=100*(1-qgamma(0.975,shape = aSM, scale = bSM)), lty=2,lwd=4)
+              abline(v=100*ERRSM, lwd=4)
+            }
+            
+            } else {
+            if(mean(data$sj)>-2 & mean(data$sjf)> - 2){
+              data$sjB <-  data[,input$Sjbas] 
+              data$sjF <-  data[,input$Sjfol] 
+              sj <- subset(data, sjB >0 &  sjF >=0)
+              ERRSJ <- (1- mean(sj$sjF)/mean(sj$sjB))
+              term1SJ <- (mean(sj$sjF)/mean(sj$sjB))**2; term2SJ <- ifelse(mean(sj$sjF)==0,0,var(sj$sjF)/mean(sj$sjF)**2); term3SJ <- var(sj$sjB)/mean(sj$sjB)**2              
+              term4SJ <- ifelse(mean(sj$sjF)==0,0,-2*cor(sj$sjB,sj$sjF)*sqrt(var(sj$sjF))*sqrt(var(sj$sjB))/(mean(sj$sjB)*mean(sj$sjF)))
+              VARSJ <-  term1SJ*(term2SJ+term3SJ+term4SJ); varSJ <- VARSJ / length(sj$sjB)
+              aSJ <- ((1-ERRSJ)**2)/varSJ; bSJ <- varSJ/(1-ERRSJ)
+              ULSJ <- 1-qgamma(0.025,shape = aSJ, scale = bSJ)
+              LLSJ <- 1-qgamma(0.975,shape = aSJ, scale = bSJ)
+              
+              if(input$Sdrug == 1) {
+              par(mfrow=c(1,1))
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~japonicum)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,80,1)
+                t2 <- seq(80,90,1)
+                t3 <- seq(90,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRSJ, lwd=4)   } else  {  
+                  SJ <- rgamma(10000,shape = aSJ, scale = bSJ)
+                  hist(100*(1-SJ), main=expression(italic(Schistosoma~japonicum)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                  axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                  abline(v=100*(1-qgamma(0.025,shape = aSJ, scale = bSJ)), lty=2,lwd=4)
+                  abline(v=100*(1-qgamma(0.975,shape = aSJ, scale = bSJ)), lty=2,lwd=4)
+                  abline(v=100*ERRSJ, lwd=4)      }
+          }
+       }
+      }
+      }
+    }
+    } else  {if (input$NTD=='2'){
+        data <- read.xlsx(inFile$datapath,1)
+        n <- length(data[,1])
+        # roundworms
+        data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+        data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+        
+        # whipworms
+        data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+        data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+        
+        # hookworms
+        data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+        data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+        
+        data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)}
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+        {
+          data$RB <-  data[,input$Rbas]  
+          data$TB <-  data[,input$Tbas]
+          data$HB <-  data[,input$Hbas] 
+          data$RF <-  data[,input$Rfol]  
+          data$TF <-  data[,input$Tfol] 
+          data$HF <-  data[,input$Hfol] 
+          R <- subset(data, RB> 0 & RF >= 0)
+          Tr <- subset(data, TB> 0 & TF >= 0)
+          H <- subset(data, HB> 0 & HF >= 0)
+          
+          ERRR <- (1- mean(R$RF)/mean(R$RB))
+          term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+          term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+          VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+          aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+          ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+          LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+          
+          ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+          term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+          term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+          VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+          aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+          ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+          LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+          
+          ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+          term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+          term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+          VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+          aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+          ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+          LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+         
+          if(input$STHdrug == 1)
+          { 
+          par(mfrow=c(1,3))
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,85,1)
+            t2 <- seq(85,95,1)
+            t3 <- seq(95,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRR, lwd=4)
+            
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,40,1)
+            t2 <- seq(40,50,1)
+            t3 <- seq(50,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRT, lwd=4)
+            
+            plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,80,1)
+            t2 <- seq(80,90,1)
+            t3 <- seq(90,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRH, lwd=4)
+   
+          } else {
+          
+          if(input$STHdrug == 2)
+          { 
+            par(mfrow=c(1,3))
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,85,1)
+            t2 <- seq(85,95,1)
+            t3 <- seq(95,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRR, lwd=4)
+            
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,40,1)
+            t2 <- seq(40,50,1)
+            t3 <- seq(50,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRT, lwd=4)
+            
+            plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,60,1)
+            t2 <- seq(60,70,1)
+            t3 <- seq(70,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRH, lwd=4)
+            
+          } else {
+            par(mfrow=c(1,3))
+            R <- rgamma(10000,shape = aR, scale = bR)
+            hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+            abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+            abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+            abline(v=100*ERRR, lwd=4) 
+            
+            T <- rgamma(10000,shape = aT, scale = bT)
+            hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+            abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+            abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+            abline(v=100*ERRT, lwd=4) 
+            
+            H <- rgamma(10000,shape = aH, scale = bH)
+            hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+            abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+            abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+            abline(v=100*ERRH, lwd=4)
+        }
+          }
+            
+        } else { 
+          if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+          {
+            data$RB <-  data[,input$Rbas]  
+            data$TB <-  data[,input$Tbas]
+            data$RF <-  data[,input$Rfol]  
+            data$TF <-  data[,input$Tfol] 
+            R <- subset(data, RB> 0 & RF >= 0)
+            Tr <- subset(data, TB> 0 & TF >= 0)
+            
+            ERRR <- (1- mean(R$RF)/mean(R$RB))
+            term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+            term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+            VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+            aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+            ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+            LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+            
+            ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+            term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+            term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+            VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+            aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+            ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+            LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+            
+            if(input$STHdrug == 1 | input$STHdrug == 2)
+            {
+            par(mfrow=c(1,2))
+              plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+              t <- seq(0,85,1)
+              t2 <- seq(85,95,1)
+              t3 <- seq(95,100,1)
+              polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+              polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+              polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+              abline(v=100*ERRR, lwd=4)
+              
+              plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+              t <- seq(0,40,1)
+              t2 <- seq(40,50,1)
+              t3 <- seq(50,100,1)
+              polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+              polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+              polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+              abline(v=100*ERRT, lwd=4)
+              } else {
+              par(mfrow=c(1,2))
+                R <- rgamma(10000,shape = aR, scale = bR)
+                hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                abline(v=100*ERRR, lwd=4)
+                
+                T <- rgamma(10000,shape = aT, scale = bT)
+                hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                abline(v=100*ERRT, lwd=4)
+            }
+            
+            } else{  
+            if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+            {
+              data$RB <-  data[,input$Rbas]  
+              data$HB <-  data[,input$Hbas] 
+              data$RF <-  data[,input$Rfol]  
+              data$HF <-  data[,input$Hfol] 
+              R <- subset(data, RB> 0 & RF >= 0)
+              H <- subset(data, HB> 0 & HF >= 0)
+              
+              ERRR <- (1- mean(R$RF)/mean(R$RB))
+              term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+              term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+              VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+              aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+              ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+              LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+              
+              ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+              term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+              term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+              VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+              aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+              ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+              LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+              
+             if (input$STHdrug==1){  
+              par(mfrow=c(1,2))
+               plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+               t <- seq(0,85,1)
+               t2 <- seq(85,95,1)
+               t3 <- seq(95,100,1)
+               polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+               polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+               polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+               abline(v=100*ERRR, lwd=4)
+               
+               plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+               t <- seq(0,80,1)
+               t2 <- seq(80,90,1)
+               t3 <- seq(90,100,1)
+               polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+               polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+               polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+               abline(v=100*ERRH, lwd=4) 
+              } else {
+              if(input$STHdrug == 2)
+              {
+                par(mfrow=c(1,2))
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,85,1)
+                t2 <- seq(85,95,1)
+                t3 <- seq(95,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRR, lwd=4)
+                
+                
+                plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,60,1)
+                t2 <- seq(60,70,1)
+                t3 <- seq(70,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRH, lwd=4)
+                } else {
+                par(mfrow=c(1,2))
+                  R <- rgamma(10000,shape = aR, scale = bR)
+                  hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                  axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                  abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                  abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                  abline(v=100*ERRR, lwd=4)
+                  
+                  H <- rgamma(10000,shape = aH, scale = bH)
+                  hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                  axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                  abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                  abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                  abline(v=100*ERRH, lwd=4)
+                  }
+                
+              }   
+            }  else{  
+              if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+              {
+                data$TB <-  data[,input$Tbas]
+                data$HB <-  data[,input$Hbas] 
+                data$TF <-  data[,input$Tfol] 
+                data$HF <-  data[,input$Hfol] 
+                Tr <- subset(data, TB> 0 & TF >= 0)
+                H <- subset(data, HB> 0 & HF >= 0)
+                
+                ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+                term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+                term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+                VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+                aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+                ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+                LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+                
+                ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+                
+                if(input$STHdrug == 1)
+                {
+                par(mfrow=c(1,2))
+                  plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                  t <- seq(0,40,1)
+                  t2 <- seq(40,50,1)
+                  t3 <- seq(50,100,1)
+                  polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                  polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                  polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                  abline(v=100*ERRT, lwd=4)
+                  
+                  plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                  t <- seq(0,80,1)
+                  t2 <- seq(80,90,1)
+                  t3 <- seq(90,100,1)
+                  polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                  polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                  polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                  abline(v=100*ERRH, lwd=4)
+                  
+                } else {
+                if (input$STHdrug==2){ 
+                  par(mfrow=c(1,2))
+                  plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                  t <- seq(0,40,1)
+                  t2 <- seq(40,50,1)
+                  t3 <- seq(50,100,1)
+                  polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                  polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                  polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                  abline(v=100*ERRT, lwd=4)
+                  
+                  plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                  t <- seq(0,60,1)
+                  t2 <- seq(60,70,1)
+                  t3 <- seq(70,100,1)
+                  polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                  polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                  polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                  abline(v=100*ERRH, lwd=4)
+                  } else {           
+                par(mfrow=c(1,2))
+                    T <- rgamma(10000,shape = aT, scale = bT)
+                    hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                    axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                    abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                    abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                    abline(v=100*ERRT, lwd=4)
+                    
+                    H <- rgamma(10000,shape = aH, scale = bH)
+                    hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                    axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                    abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                    abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                    abline(v=100*ERRH, lwd=4)
+                    }
+                }  
+              } else {  
+                if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                {
+                  data$RB <-  data[,input$Rbas]  
+                  data$RF <-  data[,input$Rfol]  
+                  R <- subset(data, RB> 0 & RF >= 0)
+                  
+                  ERRR <- (1- mean(R$RF)/mean(R$RB))
+                  term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+                  term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+                  VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+                  aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+                  ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+                  LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+                  
+                  if(input$STHdrug == 1 | input$STHdrug ==2){
+                  par(mfrow=c(1,1))
+                    plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                    t <- seq(0,85,1)
+                    t2 <- seq(85,95,1)
+                    t3 <- seq(95,100,1)
+                    polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                    polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                    polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                    abline(v=100*ERRR, lwd=4)
+                  }
+                  else {
+                    par(mfrow=c(1,1))
+                    R <- rgamma(10000,shape = aR, scale = bR)
+                    hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                    axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                    abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                    abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                    abline(v=100*ERRR, lwd=4)
+                    }
+                  
+                  } else{  
+                    if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                    {
+                      data$TB <-  data[,input$Tbas]
+                      data$TF <-  data[,input$Tfol] 
+                      Tr <- subset(data, TB> 0 & TF >= 0)
+                      
+                      ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+                      term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+                      term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+                      VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+                      aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+                      ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+                      LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+                      
+                      if(input$STHdrug == 1 | input$STHdrug ==2){
+                      par(mfrow=c(1,1))
+                        plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,40,1)
+                        t2 <- seq(40,50,1)
+                        t3 <- seq(50,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRT, lwd=4)    
+                        } else {
+                      par(mfrow=c(1,1)) 
+                          T <- rgamma(10000,shape = aT, scale = bT)
+                          hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                          axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                          abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                          abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                          abline(v=100*ERRT, lwd=4)     
+                      }
+                      
+                      } else {  
+                    if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                    {
+                      data$HB <-  data[,input$Hbas] 
+                      data$HF <-  data[,input$Hfol] 
+                      H <- subset(data, HB> 0 & HF >= 0)
+                      
+                      ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                      term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                      term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                      VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                      aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                      ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                      LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+                      
+                      par(mfrow=c(1,1))
+                      if (input$STHdrug==1){ 
+                        plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,80,1)
+                        t2 <- seq(80,90,1)
+                        t3 <- seq(90,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRH, lwd=4)
+                        } else {
+                      if(input$STHdrug == 2){
+                        plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,60,1)
+                        t2 <- seq(60,70,1)
+                        t3 <- seq(70,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRH, lwd=4)
+                        } else { 
+                          H <- rgamma(10000,shape = aH, scale = bH)
+                          hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                          axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                          abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                          abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                          abline(v=100*ERRH, lwd=4)
+                          }
+                      } 
+                    }
+                  }
+                }
+                
+                
+              }
+              
+              
+            }
+            
+          }
+        }   
+        
+      }   
+      
+    } 
+@
+
+
+\section{Conclusions}
+<<echo = FALSE>>=
+     inFile <- input$file1
+    if (is.null(inFile))
+    {concl <- paste0('No data was uploaded.')
+    } else {if (input$NTD=='1')
+    {data <- read.xlsx(inFile$datapath,1)
+    data$n <- 1
+    n <- length(data[,1])
+    # S haematobium
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smf <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjf <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+    data$inf <- mean(ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0))
+    data$inf2 <- mean(ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0))
+    
+    if(mean(data$inf)==0 | mean(data$inf2)==0 ) {concl <- paste('No egg count data was provided.')}
+    else {
+      if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shf)>-2 & mean(data$smf)>-2)
+      {
+        data$shB <-  data[,input$Shbas]  
+        data$smB <-  data[,input$Smbas] 
+        data$shF <-  data[,input$Shfol]  
+        data$smF <-  data[,input$Smfol] 
+        sh <- subset(data, shB >0 &  shF >=0)
+        sm <- subset(data, smB >0 &  smF >=0)
+        ERRSH <- 100*(1- mean(sh$shF)/mean(sh$shB))
+        ERRSM <- 100*(1- mean(sm$smF)/mean(sm$smB))
+        if(input$Sdrug == 1){
+        shstar <- ifelse(ERRSH>=90, 1, ifelse(ERRSM<80, 3,2))
+        smstar <- ifelse(ERRSM>=90, 1, ifelse(ERRSM<80, 3,2))
+        if (shstar == 1 & smstar == 2){
+        concl <- paste('The efficacy of the drug administered is satisfactory for both $S. haematobium$ and $S.$ $mansoni$ infections.')
+        } else {
+          if (shstar == 2 & smstar ==1){concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections,
+but is below the expected efficacy of 90 precent for $S.$ $haematobium$ infections.')
+            
+          } else {
+            if (shstar == 1 & smstar == 2)
+            {concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections, but is below the expected
+efficacy of 90 precent for $S.$ $haematobium$ infections. Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+              
+            } else {
+              concl <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for both $S.$ $mansoni$ and
+$S.$ $haematobium$ infections. Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+              
+              }
+            }
+            }
+        
+        } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
+      } else {
+        if(mean(data$sh)>-2 & mean(data$shf)>-2){
+          data$shB <-  data[,input$Shbas]  
+          data$shF <-  data[,input$Shfol]  
+          sh <- subset(data, shB >0 &  shF >=0)
+          ERRSH <- 100*(1- mean(sh$shF)/mean(sh$shB))
+          if(input$Sdrug == 1) {
+          shstar <- ifelse(ERRSH>=90, 1, ifelse(ERRSH<80, 3,2))
+          if (shstar == 1){
+            concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $haematobium$ infections.')
+          } else {
+            concl <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for $S.$ $haematobium$ infections. Please inform the 
+local authorities (e.g., Ministry of Health) about this finding. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+            
+              
+          }
+          } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
+          } else {
+          if(mean(data$sm)>-2 & mean(data$smf)>-2){
+            data$smB <-  data[,input$Smbas] 
+            data$smF <-  data[,input$Smfol] 
+            sm <- subset(data, smB >0 &  smF >=0)
+            
+            ERRSM <- 100*(1- mean(sm$smF)/mean(sm$smB))
+            if(input$Sdrug == 1) { 
+            smstar <- ifelse(ERRSM>=90, 1, ifelse(ERRSM<80, 3,2))
+            if (smstar == 1){
+              concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections.')
+            } else {
+              concl <- paste('The efficacy of the drug administered is below the expected drug efficacy of 90 percent $S.$ $mansoni$ infections. 
+Please inform the local authorities (e.g., Ministry of Health) about this finding. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+              
+              
+            } 
+            } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
+          } else {
+            if(mean(data$sj)>-2 & mean(data$sjf>-2)){
+              data$sjB <-  data[,input$Sjbas] 
+              data$sjF <-  data[,input$Sjfol] 
+              sj <- subset(data, sjB >0 &  sjF >=0)
+              ERRSJ <- 100*(1- mean(sj$sjF)/mean(sj$sjB))
+              if(input$Sdrug == 1) { 
+              sjstar <- ifelse(ERRSJ>=90, 1, ifelse(ERRSJ<80, 3,2))
+              if (sjstar == 1){
+                concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $japonicum$ infections.')
+              } else {
+                concl <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for $S.$ $japonicum$ infections. 
+Please inform the local authorities (e.g., Ministry of Health) about this finding. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                
+                
+              } 
+              } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
+            } else {concl <- paste('No egg count data was provided.')}  
+          }   
+          }
+        } 
+    }
+      }
+      else {
+        # Soil-transmitted helminthiasis
+        if (input$NTD=='2')
+        {
+          data <- read.xlsx(inFile$datapath,1)
+          n <- length(data[,1])
+          # roundworms
+          data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+          data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+          
+          # whipworms
+          data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+          data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+          
+          # hookworms
+          data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+          data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+          
+          data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+          data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
+          
+          if(mean(data$inf)==0 | mean(data$inf2)==0) {concl <- paste('No egg count data was provided.')}
+          else {
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+            {
+              data$RB <-  data[,input$Rbas]  
+              data$TB <-  data[,input$Tbas]
+              data$HB <-  data[,input$Hbas] 
+              data$RF <-  data[,input$Rfol]  
+              data$TF <-  data[,input$Tfol] 
+              data$HF <-  data[,input$Hfol] 
+              R <- subset(data, RB> 0 & RF >= 0)
+              Tr <- subset(data, TB> 0 & TF >= 0)
+              H <- subset(data, HB> 0 & HF >= 0)
+              
+              ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+              ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+              ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
+               
+              if(input$STHdrug == 1) { 
+                rstar<-ifelse(ERRR >=95,1,2)
+                tstar<-ifelse(ERRT >=50,1,2)
+                hstar<-ifelse(ERRH >=90,1,2)
+                if(rstar == 1 & tstar == 2 & hstar == 2){
+                  concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$, but is below the expected efficacy for 
+both $T.$ $trichiura$ (50 precent) and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                }  else  { 
+                  if(rstar == 2 & tstar == 1 & hstar == 2){
+                    concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$, but
+is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                    
+                  } else {  
+                    if(rstar == 2 & tstar == 2 & hstar == 1){
+                      concl <- paste('The efficacy of the drug administered is satisfactory for hookworms, but is below the expeceted efficacy for 
+both $A.$ $lumbricoides$ (95 precent) and $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                    } else { 
+                      if(rstar == 2 & tstar == 2 & hstar == 2){
+                        concl <- paste('The efficacy of the drug administered is below the expected efficacy for $A.$ $lumbricoides$ (95 precent), $T.$ $trichiura$ (50 precent) and hookworm
+infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        
+                      } else  { 
+                          if(rstar == 1 & tstar == 1 & hstar == 2){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and $T.$ $trichiura$ infections, but is
+below the expected efficcacy for hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            
+                          } else  { 
+                          if(rstar == 1 & tstar == 2 & hstar == 1){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and hookworm infections, but is
+below the expected efficacy for $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            
+                          } else { 
+                            if(rstar == 2 & tstar == 1 & hstar == 1){
+                              concl <- paste('The efficacy of the drug administered is satisfactory for both $T.$ $trichiura$ and hookworm infections, but
+is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                              
+                            } else { 
+                              concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$, $T.$ $trichiura$ and hookworm infections.')
+                            
+                            }
+                        
+                          }
+                              
+                          
+                        }
+                        }
+                      }
+                    } 
+                }             
+                
+                
+                } else {
+                  if(input$STHdrug == 2){
+                    rstar<-ifelse(ERRR >=95,1,2)
+                    tstar<-ifelse(ERRT >=50,1,2)
+                    hstar<-ifelse(ERRH >=70,1,2)
+                    if(rstar == 1 & tstar == 2 & hstar == 2){
+                      concl <- paste('The efficacy of the drug administered is satisfactory against $A.$ $lumbricoides$, but is below 
+the expected efficacy for both $T.$ $trichiura$ (50 precent) and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                      
+                    }  else  { 
+                      if(rstar == 2 & tstar == 1 & hstar == 2){
+                        concl <- paste('The efficacy of the drug administered is satisfactory against $T.$ $trichiura$, but is below
+the expected efficacy for both $A.$ $lumbricoides$ (95 precent) and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        
+                      } else {  
+                        if(rstar == 2 & tstar == 2 & hstar == 1){
+                          concl <- paste('The efficacy of the drug administered is satisfactory against hookorms, but is below the expeceted efficacy 
+for both $A.$ $lumbricoides$ (95 precent) and $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                          
+                        } else { 
+                          if(rstar == 2 & tstar == 2 & hstar == 2){
+                            concl <- paste('The efficacy of the drug administered is below the expected efficacy for $A.$ $lumbricoides$ (95 precent), 
+$T.$ $trichiura$ (50 precent) and hookworm 
+infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            
+                            
+                          } else  { 
+                            if(rstar == 1 & tstar == 1 & hstar == 2){
+                              concl <- paste('The efficacy of the drug administered is satisfactory against both $A.$ $lumbricoides$ and $T.$ $trichiura$ infections, but 
+is below the expected efficcacy for hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                              
+                            } else  { 
+                              if(rstar == 1 & tstar == 2 & hstar == 1){
+                                concl <- paste('The efficacy of the drug administered is satisfactory against both $A.$ $lumbricoides$ and hookworm infections, but 
+is below the expected efficacy for $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                
+                              } else { 
+                                if(rstar == 2 & tstar == 1 & hstar == 1){
+                                  concl <- paste('The efficacy of the drug administered is satisfactory against both $T.$ $trichiura$ and hookworm infections, 
+but is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                  
+                                } else { 
+                                  concl <- paste('The efficacy of the drug administered is satisfactory against $A.$ $lumbricoides$, $T.$ $trichiura$ and hookworm infections.')
+                                  
+                                }
+                                
+                              }
+                              
+                              
+                          }
+                          }
+                        }
+                      } 
+                }  
+                     
+                   ## new drug 
+                  } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')}
+                  
+                }
+              # end
+              }
+            else{ 
+              if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+              {
+                data$RB <-  data[,input$Rbas]  
+                data$TB <-  data[,input$Tbas]
+                data$RF <-  data[,input$Rfol]  
+                data$TF <-  data[,input$Tfol] 
+                R <- subset(data, RB> 0 & RF >= 0)
+                Tr <- subset(data, TB> 0 & TF >= 0)
+                
+                ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+                ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+                   
+                if(input$STHdrug == 1 | input$STHdrug ==2)
+                { 
+                rstar <-ifelse(ERRR >= 95,1,2)
+                tstar <- ifelse(ERRT >=50,1,2)
+                
+                if(rstar == 1 & tstar == 1){
+                concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and $T.$ $trichiura$ infections.')
+                } else {
+                if(rstar == 1 & tstar == 2) {
+                  concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$ infections, 
+but is below the expected efficacy for $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                  
+                } else  {
+                  if(rstar == 2 & tstar == 1) {
+                    concl <- paste('The efficacy of the drug administered is satisfactory against $T.$ $trichiura$ infections, but 
+is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                    
+                  } else  {
+                    if(rstar == 2 & tstar == 2) {
+                      concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) 
+and $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                      
+                    }
+                  }
+                }
+                }
+                } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')
+                }
+                } else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+                {
+                  data$RB <-  data[,input$Rbas]  
+                  data$HB <-  data[,input$Hbas] 
+                  data$RF <-  data[,input$Rfol]  
+                  data$HF <-  data[,input$Hfol] 
+                  R <- subset(data, RB> 0 & RF >= 0)
+                  H <- subset(data, HB> 0 & HF >= 0)
+                  
+                  ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+                  ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
+                  
+                  if(input$STHdrug == 1) { 
+                    rstar<-ifelse(ERRR >=95,1,2)
+                    hstar<-ifelse(ERRH >=90,1,2)
+                    if(rstar == 1 & hstar == 2){
+                      concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$ infections, but
+is below the expected efficacy hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                    }  else  { 
+                      if(rstar == 2 & hstar == 1){
+                        concl <- paste('The efficacy of the drug administered is satisfactory for hookworm infections, but is below the expected efficacy for $A.$ $lumbricoides$ infection (95 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                      } else {  
+                        if(rstar == 2 & hstar == 2){
+                          concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) 
+and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        } else { 
+                          if(rstar == 1 & hstar == 1){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and hookworm infections.')
+                                }
+                                
+                              }
+                          }
+                          }
+                        
+                } else {
+                  if(input$STHdrug == 2){
+                    rstar<-ifelse(ERRR >=95,1,2)
+                    hstar<-ifelse(ERRH >=70,1,2)
+                    if(rstar == 1 & hstar == 2){
+                      concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$ infections, 
+but is below the expected efficacy hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                    }  else  { 
+                      if(rstar == 2 & hstar == 1){
+                        concl <- paste('The efficacy of the drug administered is satisfactory against hookworm infections, but is below the expected efficacy for $A.$ $lumbricoides$ infection (95 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                      } else {  
+                        if(rstar == 2 & hstar == 2){
+                          concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) 
+and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        } else { 
+                          if(rstar == 1 & hstar == 1){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and hookworm infections.')
+                          }
+                          
+                        }
+                    }
+                  }
+                    
+                    ## new drug 
+                  } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')}
+                  
+                    } 
+                  
+                  } else{
+                  if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+                  {
+                    data$TB <-  data[,input$Tbas]
+                    data$HB <-  data[,input$Hbas] 
+                    data$TF <-  data[,input$Tfol] 
+                    data$HF <-  data[,input$Hfol] 
+                    Tr <- subset(data, TB> 0 & TF >= 0)
+                    H <- subset(data, HB> 0 & HF >= 0)
+                    
+                    ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+                    ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
+                    
+                    if(input$STHdrug == 1) { 
+                      tstar<-ifelse(ERRT >=50,1,2)
+                      hstar<-ifelse(ERRH >=90,1,2)
+                      if(tstar == 1 & hstar == 2){
+                        concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections, 
+but is below the expected efficacy hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                      }  else  { 
+                        if(tstar == 2 & hstar == 1){
+                          concl <- paste('The efficacy of the drug administered is satisfactory for hookworm infections, but is below the expected efficacy for $T.$ $trichiura$ infection (50 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                        } else {  
+                          if(tstar == 2 & hstar == 2){
+                            concl <- paste('The efficacy of the drug administered is below the expected efficacy for both whipwworm (50 precent) 
+and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                          } else { 
+                            if(tstar == 1 & hstar == 1){
+                              concl <- paste('The efficacy of the drug administered is satisfactory for both $T.$ $trichiura$ and hookworm infections.')
+                            }
+                            
+                          }
+                      }
+                    }
+                      
+                      } else {
+                        if(input$STHdrug == 2){
+                          tstar<-ifelse(ERRT >=50,1,2)
+                          hstar<-ifelse(ERRH >=70,1,2)
+                          if(tstar == 1 & hstar == 2){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections, 
+but is below the expected efficacy hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                          }  else  { 
+                            if(tstar == 2 & hstar == 1){
+                              concl <- paste('The efficacy of the drug administered is satisfactory for hookworm infections, but is below the expected efficacy for $T.$ $trichiura$ infection (50 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                            } else {  
+                              if(tstar == 2 & hstar == 2){
+                                concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $T.$ $trichiura$ (50 precent) 
+and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                              } else { 
+                                if(tstar == 1 & hstar == 1){
+                                  concl <- paste('The efficacy of the drug administered is satisfactory for both $T.$ $trichiura$ and hookworm infections.')
+                                }
+                                
+                              }
+                          }
+                        }
+                          
+                          ## new drug 
+                        } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')}
+                        
+                      } 
+                  
+                    
+                    } else{
+                    if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                    {
+                      data$RB <-  data[,input$Rbas]  
+                      data$RF <-  data[,input$Rfol]  
+                      R <- subset(data, RB> 0 & RF >= 0)
+                      
+                      ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+          
+                      if(input$STHdrug == 1 | input$STHdrug == 2)
+                      {
+                      rstar <- ifelse(ERRR>=95,1,2)
+                      if(rstar == 1) {
+                      concl <- paste('The efficacy of the drug administered is satisfactory.')  
+                      } else {
+                        concl <- paste('The efficacy of the drug administered is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). 
+Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                      }
+                      } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                        Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against $A.$ $lumbricoides$ infections.')}
+                      
+                      } else {
+                      if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                      {
+                        data$TB <-  data[,input$Tbas]
+                        data$TF <-  data[,input$Tfol] 
+                        Tr <- subset(data, TB> 0 & TF >= 0)
+                        
+                        ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+                        
+                        if(input$STHdrug == 1 | input$STHdrug == 2)
+                        { 
+                        tstar <- ifelse(ERRR>=50,1,2)
+                        if(tstar == 1) {
+                          concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections.')  
+                        } else {
+                          concl <- paste('The efficacy of the drug administered is below the expected efficacy for $T.$ $trichiura$ infections (50 precent). 
+Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        }
+                        } else {concl <- paste('Currently, the expected efficacy is only determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against $T.$ $trichiura$ infections.')}
+                        
+                        } else{
+                        if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                        {
+                          data$HB <-  data[,input$Hbas] 
+                          data$HF <-  data[,input$Hfol] 
+                          H <- subset(data, HB> 0 & HF >= 0)
+                          
+                          ERRH <- 100*(1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                  
+                          if(input$STHdrug == 1) { 
+                            hstar<-ifelse(ERRH >=90,1,2)
+                            if(hstar == 2){
+                              concl <- paste('The efficacy of the drug administered is below the expected efficacy hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            }  else  { 
+                              if(hstar == 1){
+                                concl <- paste('The efficacy of the drug administered is satisfactory against hookworm infections.')
+                                        } 
+                                    }
+                            } else {
+                              if(STHdrug == 2){
+                                hstar<-ifelse(ERRH >=70,1,2)
+                                if(hstar == 2){
+                                  concl <- paste('The efficacy of the drug administered is below the expected efficacy hookworm infections (70 precent). 
+Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                }  else  { 
+                                  if(hstar == 1){
+                                    concl <- paste('The efficacy of the drug administered is satisfactory against hookworm infections.')
+                                  }    
+                                }
+                              
+                                
+                                ## new drug 
+                              } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequenlty, no conclusions can be drawn on the efficacy for this drug or drug regimen against hookworm infections.')}
+                              
+                            } 
+                          
+                          }
+                        
+                        else{concl <- paste('No egg count data was provided.')}
+                        }
+                      }
+                  }  
+                    }   
+                }
+              } 
+          }
+  }
+        }
+} 
+@
+\Sexpr{concl}
+\newpage
+\begin{appendices}
+\section{Insight into the calculation of the different parameters}
+ \subsection{Number of subjects enrolled}        
+The number of subjects enrolled corresponds with the number of rows (excluding the header) in the data set. 
+It is therefore important that the data set is appropriately trimmed, excluding any unnessary empty rows.
+
+\subsection{Number of cases per worm species}  
+The number of cases for a particular worm species corresponds with the number of enrolled subjects who are excreting eggs of this worm species 
+at baseline. In addition, the proportion of cases (in percentage) are reported for each of the worm species. To this end, the number of cases is divided over the 
+           number of subjects enrolled and is multiplied by 100.
+\subsection{Number of mixed infections} 
+The number of mixed infections corresponds with the number of enrolled subjects who were excreting eggs of at least two worm species at baseline. In addition, the proportion of mixed infections (in percentage) is reported. To this end, the number of mixed infections is divided over the number of subjects enrolled and multiplied by 100.
+
+\subsection{Number of complete cases} 
+The number of complete cases corresponds with the number of subjects who were excreting eggs of any worm species at baseline, and for whom a follow-up sample is examined. In addition, the number of complete cases for each worm species are reported seperately. These correspond to the number of subjects who were excreting eggs of this worm species at baseline, and for whom a follow-up sample is examined.
+
+\subsection{Intensity of infections}
+\subsubsection{Mean egg count at baseline per worm species}
+The mean egg count per worm species corresponds with the arithmetic mean egg count (in eggs per gram of stool or eggs per 10 ml of urine) at baseline across all the complete cases for that particular worm species.
+
+\subsubsection{Spread of egg count at baseline per worm species}
+The spread of the egg counts is presented in both text and graphic format for each worm species seperately. First, both the 25th and the 75th percentile of the baseline egg counts across complete cases are determined. The 25th quantile divides the individual egg counts so that 25 percent of the values lie below (or 75 percent of the values lie above). Similarly, the 75th quantile divides the individual egg counts so that 75 percent of the values 
+           lie below (or 25 percent of the values lie above). Second, a histogram is provided to illustrate the distribution of the egg counts across
+           the complete cases per worm species. The figure below shows the distribution of the baseline hookworm egg counts for all complete cases for this worm species in a previously conducted drug efficacy trial.
+
+
+\includegraphics[width=0.55\textwidth]{Rplot02.jpg}
+
+\subsubsection{Number of low, moderate and high intensity infections per worm species}
+he number of low, moderate and high intensity infections is determined for each worm species seperately. WHO thresholds defining the three classes of infection intensity for the different worm species are summarized in the table below (\href{http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf}{WHO et al., 1998}). In addition, the proportions of low, moderate and high intensity infections (in percent) are reported. To this end, the number of low, moderate and high infections is divided over the number of complete cases for that particular worm species and multiplied by 100.
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{llll}
+\rowcolor[HTML]{333333} 
+{\color[HTML]{FFFFFF} }  & {\color[HTML]{FFFFFF} Low intensity} & {\color[HTML]{FFFFFF} Moderate intensity} & {\color[HTML]{FFFFFF} High intensity} \\
+\rowcolor[HTML]{333333} 
+{\color[HTML]{FFFFFF} }  & {\color[HTML]{FFFFFF} infection}     & {\color[HTML]{FFFFFF} Infection}          & {\color[HTML]{FFFFFF} infection}      \\
+\rowcolor[HTML]{EFEFEF} 
+\textit{S. haematobium}  & 1 - 49 eggs per                      & \_                                        & $\ge$ 50 eggs per              \\
+\rowcolor[HTML]{EFEFEF} 
+                         & 10 ml urine                          &                                           & 10 ml urine                           \\
+\textit{S. mansoni/}     & 1 - 99 eggs per                      & 100 - 399 eggs per                        & $\ge$ 400 eggs per             \\
+\textit{S. japonicum}    & gram stool                           & gram stool                                & gram stool                            \\
+\rowcolor[HTML]{EFEFEF} 
+\textit{A. lumbricoides} & 1 - 4,999 eggs                       & 5,000 - 49,999 eggs                       & $\ge$ 50,000 eggs              \\
+\rowcolor[HTML]{EFEFEF} 
+                         & per gram stool                       & per gram of stool                         & per gram of stool                     \\
+\textit{T. trichiura}    & 1 - 999 eggs per                     & 1,000 - 9,999 eggs per                    & $\ge$ 10,000 eggs per          \\
+                         & gram stool                           & gram stool                                & gram stool                            \\
+\rowcolor[HTML]{EFEFEF} 
+Hookworm                 & 1 - 1,999 eggs                       & 2,000 - 3,999 eggs                        & $\ge$ 4,000 eggs               \\
+\rowcolor[HTML]{EFEFEF} 
+                         & gram stool                           & gram stool                                & gram stool                           
+\end{tabular}
+\end{table}
+
+\subsection{Follow-up period}        
+The median (50th quantile), the shortest and the longest follow-up period is determined for all complete cases, regardless the worm species. In addition, the number and proportion (in percent) of complete cases for which a follow-up sample was collected between 14 and 21 days is calculated. The proportion equals the number of complete cases for which a follow-up sample was collected between this time interval divided by the number of complete cases and multiplied by 100.
+
+\subsection{Egg reduction rate} 
+\subsubsection{Formula} 
+To date, a wide range of formulae has been used to calculate ERR, each different in terms of the statistical unit (individual vs. group) 
+and the way the mean egg count is calculated (arithmetic vs. geometric). The group-based formula is now recommended by WHO to summarize egg reduction data 
+(\href{http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf}{WHO et al., 2013}). 
+
+\begin{eqnarray}
+ERR &=& 1-\frac{arithmetic \: mean \: of \: ECs \: at \: follow-up} {arithmetic \: mean \: of \: ECs \: at \:  baseline} 
+\end{eqnarray} 
+
+
+Compared to the other formulae, it represents a robust indicator (vs. individual-based formula (\href{http://journals.plos.org/plosntds/article?id=10.1371/journal.pntd.0000948}{Vercruysse et al., 2013}) that provides accurate estimates of drug efficacy (vs. group-based formula using geometric mean; \href{https://ac.els-cdn.com/S030440170800705X/1-s2.0-S030440170800705X-main.pdf?_tid=fd2a4f3c-a86a-11e7-ad50-00000aab0f01&acdnat=1507056492_10ae60eab74fa8a1d9ddef8b986abb02}{Dobson et al., 2009}),
+
+\subsubsection{Confidence intervals}
+The confidence intervals (CIs) are calculated using the mathematical framework described by  \href{https://www.ncbi.nlm.nih.gov/pubmed/25765196}{Levecke et al., 2015}. In short, this methodology derives the variance of the ERR applying the 
+        Taylor method (delta method; \href{https://fsalamri.files.wordpress.com/2015/02/casella_berger_statistical_inference1.pdf}{Casella and Berger, 2001, 2001}), and assumes that 100 percent - ERR follows a Gamma distribution. The variance of the ERR applying the Taylor method equals 
+
+\begin{eqnarray}
+variance(ERR) &=&\Bigg(\frac{mean(follow-up \: ECs)} {mean(baseline \: ECs)} \Bigg)^{2} \cdot \Bigg(\frac{variance (baseline \: ECs)} {mean (baseline \: ECs)^{2}} \nonumber 
+\\&& + \frac{variance (follow-up \:ECs)}{mean(baseline \:ECs)^{2}}  \nonumber 
+\\&& -2 \cdot corr(baseline  \: ECs,  \: follow-up  \: ECs)  \nonumber
+\\&& \cdot \frac{\sqrt{variance (baseline  \: ECs)  \cdot variance (follow-up \: ECs}} { mean(baseline \: ECs) \cdot mean(follow-up \: ECs)}\Bigg) \nonumber
+\end{eqnarray}
+
+The lower and upper limit of the CI equal 1 - 97.5th quantile and 1 - 2.5th quantile of the Gamma distribution with a shape parameter 
+$\gamma$ and a scale parameter $\theta$, respectively. Based on the ERR, its variance and a sample size N, the two parameters of the 
+          Gamma distribution of 1 - ERR can be written as
+        
+\begin{eqnarray}
+\gamma_{1-ERR}  &=& \frac {(1-ERR)^{2} \cdot N} {variance (ERR)} \nonumber \\
+\theta_{1-ERR}  &=& \frac {variance(ERR)} {ERR \cdot N } \nonumber
+\end{eqnarray}
+
+\subsubsection{Interpretation of the observed ERR}  
+Based on the observed ERR, the efficacy of the anthelmintic drug can be classified into different levels by comparing the observed ERR with the WHO reference value for each worm species (\href{http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf}{WHO et al., 2013}). Generally, the efficacy of the anthelmintic drug is (i) satisfactory when the ERR is superior or equal to the reference value, doubtful if the observed ERR is inferior to the reference value by less than 10 percent points, and (iii) reduced if the observed ERR is inferior to the reference value by at least 10 percent points. The table below summarizes the thresholds and the corresponding levels of drug efficacy for the different worm species and the different anthelmintic drugs used in preventive chemotherapy programs.
+
+\begin{table}[htb]
+\centering
+\begin{tabular}{lllll}
+\rowcolor[HTML]{333333} 
+{\color[HTML]{FFFFFF} Anthelmintic} & {\color[HTML]{FFFFFF} Worm species} & {\color[HTML]{FFFFFF} Satisfactory}  & {\color[HTML]{FFFFFF} Doubtful}                                               & {\color[HTML]{FFFFFF} Reduced}       \\
+\rowcolor[HTML]{333333} 
+{\color[HTML]{FFFFFF} drug}         & {\color[HTML]{FFFFFF} }             & {\color[HTML]{FFFFFF} drug efficacy} & {\color[HTML]{FFFFFF} drug efficacy}                                          & {\color[HTML]{FFFFFF} drug efficacy} \\
+\rowcolor[HTML]{EFEFEF} 
+Praziquantel                        & \textit{S. haematobium}             & ERR $\ge$ 90\%                   & \multicolumn{1}{c}{\cellcolor[HTML]{EFEFEF}90\% \textgreater ERR \textgreater 80\%} & ERR $\le$ 80\%                   \\
+\rowcolor[HTML]{EFEFEF} 
+(1x 40 mg/kg)                       & \textit{S. mansoni}                 &                                      &                                                                               &                                      \\
+\rowcolor[HTML]{EFEFEF} 
+\textit{}                           & \textit{S. japonicum}               &                                      &                                                                               &                                      \\
+\rowcolor[HTML]{FFFFFF} 
+Albendazole                         & \textit{A. lumbricoides}            & ERR $\ge$ 95\%                & 95\% \textgreater ERR \textgreater 85\%                                             & ERR $\le$ 85\%                   \\
+\rowcolor[HTML]{FFFFFF} 
+(1x 400 mg)                         & \textit{T. trichiura}               & ERR $\ge$ 50\%                & 50\% \textgreater ERR \textgreater 40\%                                             & ERR $\le$ 40\%                   \\
+\rowcolor[HTML]{FFFFFF} 
+\textit{}                           & Hookworm                            & ERR $\ge$ 90\%                & 90\% \textgreater ERR \textgreater 80\%                                             & ERR $\le$ 80\%                   \\
+\rowcolor[HTML]{EFEFEF} 
+Mebendazole                         & \textit{A. lumbricoides}            & ERR $\ge$ 95\%                & 95\% \textgreater ERR \textgreater 85\%                                             & ERR $\le$ 85\%                   \\
+\rowcolor[HTML]{EFEFEF} 
+(1x 500 mg)                         & \textit{T. trichiura}               & ERR $\ge$ 50\%                & 50\% \textgreater ERR \textgreater 40\%                                             & ERR $\le$ 40\%                   \\
+\rowcolor[HTML]{EFEFEF} 
+                                    & Hookworm                            & ERR $\ge$ 70\%                & 70\% \textgreater ERR \textgreater 60\%                                             & ERR $\le$ 60\%                  
+\end{tabular}
+\end{table}  
+
+\end{appendices}
+\end{document}
+
