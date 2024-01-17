@@ -1,6 +1,6 @@
 Package: ParaDrug
 Type: Package
-Title: Anthelmintic Drug Efficacy on Soil‐Transmitted Helminth Infections in Humans.
+Title: Anthelmintic Drug Efficacy on Soil‐Transmitted Helminth Infections in Humans
 Version: 0.1
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
