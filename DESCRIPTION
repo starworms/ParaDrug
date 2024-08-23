@@ -19,4 +19,5 @@ RoxygenNote: 7.1.2
 Imports:
     shiny,
     knitr,
+    readxl,
     bslib
