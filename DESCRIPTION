@@ -18,4 +18,5 @@ Encoding: UTF-8
 RoxygenNote: 7.1.2
 Imports:
     shiny,
-    knitr
+    knitr,
+    bslib

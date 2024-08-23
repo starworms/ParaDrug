@@ -3,4 +3,5 @@
 export(paradrugServer)
 export(paradrugUI)
 import(shiny)
+importFrom(bslib,bs_theme)
 importFrom(knitr,knit2pdf)

@@ -25,6 +25,7 @@ Main UI part of the Paradrug app
 \examples{
 if(interactive()){
 library(ParaDrug)
+library(shiny)
 
 ui <- fluidPage(
   paradrugUI(id = "activity")
