@@ -2,11 +2,13 @@
 
 export(paradrugServer)
 export(paradrugUI)
+export(paradrug_helminthiasis_conclusion)
 export(paradrug_helminthiasis_eggreduction)
 export(paradrug_helminthiasis_follow)
 export(paradrug_helminthiasis_intensity)
 export(paradrug_helminthiasis_n)
 export(paradrug_report)
+export(paradrug_schistosomiasis_conclusion)
 export(paradrug_schistosomiasis_eggreduction)
 export(paradrug_schistosomiasis_follow)
 export(paradrug_schistosomiasis_intensity)

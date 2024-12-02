@@ -1704,3 +1704,535 @@ plot_paradrug_helminthiasis_eggcount_reduction  <- function(object,
     }
 }
 
+
+
+#' @title Conclusion of Helminthiasis
+#' @description Conclusion of Helminthiasis
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tbas column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tfol column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param drug either "Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)" or "Other"
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- paradrug_helminthiasis_conclusion(x, drug = "Albendazole (1x 400 mg)")
+#' p <- paradrug_helminthiasis_conclusion(x, drug = "Mebendazole (1x 500 mg)")
+#' p <- paradrug_helminthiasis_conclusion(x, drug = "Other")
+paradrug_helminthiasis_conclusion <- function(object, 
+                                              Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+                                              Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
+                                              Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                              drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
+                                              ...){
+    drug <- match.arg(drug)
+    drug <- list("Albendazole (1x 400 mg)" = 1, "Mebendazole (1x 500 mg)" = 2, "Other" = 3)[[drug]]
+    data <- object$data
+    input <- list(Rbas = Rbas, Rfol = Rfol, 
+                  Tbas = Tbas, Tfol = Tfol, 
+                  Hbas = Hbas, Hfol = Hfol,
+                  STHdrug = drug)
+    
+    n <- nrow(data)
+    
+    # roundworms
+    data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+    data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+    
+    # whipworms
+    data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+    data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+    
+    # hookworms
+    data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+    data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+    
+    data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+    data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
+    
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {concl <- paste('No egg count data was provided.')}
+    else {
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+        {
+            data$RB <-  data[,input$Rbas]  
+            data$TB <-  data[,input$Tbas]
+            data$HB <-  data[,input$Hbas] 
+            data$RF <-  data[,input$Rfol]  
+            data$TF <-  data[,input$Tfol] 
+            data$HF <-  data[,input$Hfol] 
+            R <- subset(data, RB> 0 & RF >= 0)
+            Tr <- subset(data, TB> 0 & TF >= 0)
+            H <- subset(data, HB> 0 & HF >= 0)
+            
+            ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+            ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+            ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
+            
+            if(input$STHdrug == 1) { 
+                rstar<-ifelse(ERRR >=95,1,2)
+                tstar<-ifelse(ERRT >=50,1,2)
+                hstar<-ifelse(ERRH >=90,1,2)
+                if(rstar == 1 & tstar == 2 & hstar == 2){
+                    concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$, but is below the expected efficacy for 
+both $T.$ $trichiura$ (50 precent) and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                }  else  { 
+                    if(rstar == 2 & tstar == 1 & hstar == 2){
+                        concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$, but
+is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        
+                    } else {  
+                        if(rstar == 2 & tstar == 2 & hstar == 1){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for hookworms, but is below the expeceted efficacy for 
+both $A.$ $lumbricoides$ (95 precent) and $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        } else { 
+                            if(rstar == 2 & tstar == 2 & hstar == 2){
+                                concl <- paste('The efficacy of the drug administered is below the expected efficacy for $A.$ $lumbricoides$ (95 precent), $T.$ $trichiura$ (50 precent) and hookworm
+infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                
+                            } else  { 
+                                if(rstar == 1 & tstar == 1 & hstar == 2){
+                                    concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and $T.$ $trichiura$ infections, but is
+below the expected efficcacy for hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                    
+                                } else  { 
+                                    if(rstar == 1 & tstar == 2 & hstar == 1){
+                                        concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and hookworm infections, but is
+below the expected efficacy for $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                        
+                                    } else { 
+                                        if(rstar == 2 & tstar == 1 & hstar == 1){
+                                            concl <- paste('The efficacy of the drug administered is satisfactory for both $T.$ $trichiura$ and hookworm infections, but
+is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                            
+                                        } else { 
+                                            concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$, $T.$ $trichiura$ and hookworm infections.')
+                                            
+                                        }
+                                        
+                                    }
+                                    
+                                    
+                                }
+                            }
+                        }
+                    } 
+                }             
+                
+                
+            } else {
+                if(input$STHdrug == 2){
+                    rstar<-ifelse(ERRR >=95,1,2)
+                    tstar<-ifelse(ERRT >=50,1,2)
+                    hstar<-ifelse(ERRH >=70,1,2)
+                    if(rstar == 1 & tstar == 2 & hstar == 2){
+                        concl <- paste('The efficacy of the drug administered is satisfactory against $A.$ $lumbricoides$, but is below 
+the expected efficacy for both $T.$ $trichiura$ (50 precent) and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        
+                    }  else  { 
+                        if(rstar == 2 & tstar == 1 & hstar == 2){
+                            concl <- paste('The efficacy of the drug administered is satisfactory against $T.$ $trichiura$, but is below
+the expected efficacy for both $A.$ $lumbricoides$ (95 precent) and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            
+                        } else {  
+                            if(rstar == 2 & tstar == 2 & hstar == 1){
+                                concl <- paste('The efficacy of the drug administered is satisfactory against hookorms, but is below the expeceted efficacy 
+for both $A.$ $lumbricoides$ (95 precent) and $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                
+                            } else { 
+                                if(rstar == 2 & tstar == 2 & hstar == 2){
+                                    concl <- paste('The efficacy of the drug administered is below the expected efficacy for $A.$ $lumbricoides$ (95 precent), 
+$T.$ $trichiura$ (50 precent) and hookworm 
+infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                    
+                                    
+                                } else  { 
+                                    if(rstar == 1 & tstar == 1 & hstar == 2){
+                                        concl <- paste('The efficacy of the drug administered is satisfactory against both $A.$ $lumbricoides$ and $T.$ $trichiura$ infections, but 
+is below the expected efficcacy for hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                        
+                                    } else  { 
+                                        if(rstar == 1 & tstar == 2 & hstar == 1){
+                                            concl <- paste('The efficacy of the drug administered is satisfactory against both $A.$ $lumbricoides$ and hookworm infections, but 
+is below the expected efficacy for $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                            
+                                        } else { 
+                                            if(rstar == 2 & tstar == 1 & hstar == 1){
+                                                concl <- paste('The efficacy of the drug administered is satisfactory against both $T.$ $trichiura$ and hookworm infections, 
+but is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                                
+                                            } else { 
+                                                concl <- paste('The efficacy of the drug administered is satisfactory against $A.$ $lumbricoides$, $T.$ $trichiura$ and hookworm infections.')
+                                                
+                                            }
+                                            
+                                        }
+                                        
+                                        
+                                    }
+                                }
+                            }
+                        } 
+                    }  
+                    
+                    ## new drug 
+                } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')}
+                
+            }
+            # end
+        }
+        else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+            {
+                data$RB <-  data[,input$Rbas]  
+                data$TB <-  data[,input$Tbas]
+                data$RF <-  data[,input$Rfol]  
+                data$TF <-  data[,input$Tfol] 
+                R <- subset(data, RB> 0 & RF >= 0)
+                Tr <- subset(data, TB> 0 & TF >= 0)
+                
+                ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+                ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+                
+                if(input$STHdrug == 1 | input$STHdrug ==2)
+                { 
+                    rstar <-ifelse(ERRR >= 95,1,2)
+                    tstar <- ifelse(ERRT >=50,1,2)
+                    
+                    if(rstar == 1 & tstar == 1){
+                        concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and $T.$ $trichiura$ infections.')
+                    } else {
+                        if(rstar == 1 & tstar == 2) {
+                            concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$ infections, 
+but is below the expected efficacy for $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            
+                        } else  {
+                            if(rstar == 2 & tstar == 1) {
+                                concl <- paste('The efficacy of the drug administered is satisfactory against $T.$ $trichiura$ infections, but 
+is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                
+                            } else  {
+                                if(rstar == 2 & tstar == 2) {
+                                    concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) 
+and $T.$ $trichiura$ infections (50 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                    
+                                }
+                            }
+                        }
+                    }
+                } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')
+                }
+            } else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+                {
+                    data$RB <-  data[,input$Rbas]  
+                    data$HB <-  data[,input$Hbas] 
+                    data$RF <-  data[,input$Rfol]  
+                    data$HF <-  data[,input$Hfol] 
+                    R <- subset(data, RB> 0 & RF >= 0)
+                    H <- subset(data, HB> 0 & HF >= 0)
+                    
+                    ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+                    ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
+                    
+                    if(input$STHdrug == 1) { 
+                        rstar<-ifelse(ERRR >=95,1,2)
+                        hstar<-ifelse(ERRH >=90,1,2)
+                        if(rstar == 1 & hstar == 2){
+                            concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$ infections, but
+is below the expected efficacy hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                        }  else  { 
+                            if(rstar == 2 & hstar == 1){
+                                concl <- paste('The efficacy of the drug administered is satisfactory for hookworm infections, but is below the expected efficacy for $A.$ $lumbricoides$ infection (95 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                            } else {  
+                                if(rstar == 2 & hstar == 2){
+                                    concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) 
+and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                } else { 
+                                    if(rstar == 1 & hstar == 1){
+                                        concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and hookworm infections.')
+                                    }
+                                    
+                                }
+                            }
+                        }
+                        
+                    } else {
+                        if(input$STHdrug == 2){
+                            rstar<-ifelse(ERRR >=95,1,2)
+                            hstar<-ifelse(ERRH >=70,1,2)
+                            if(rstar == 1 & hstar == 2){
+                                concl <- paste('The efficacy of the drug administered is satisfactory for $A.$ $lumbricoides$ infections, 
+but is below the expected efficacy hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            }  else  { 
+                                if(rstar == 2 & hstar == 1){
+                                    concl <- paste('The efficacy of the drug administered is satisfactory against hookworm infections, but is below the expected efficacy for $A.$ $lumbricoides$ infection (95 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                                } else {  
+                                    if(rstar == 2 & hstar == 2){
+                                        concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $A.$ $lumbricoides$ (95 precent) 
+and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                    } else { 
+                                        if(rstar == 1 & hstar == 1){
+                                            concl <- paste('The efficacy of the drug administered is satisfactory for both $A.$ $lumbricoides$ and hookworm infections.')
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                            
+                            ## new drug 
+                        } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')}
+                        
+                    } 
+                    
+                } else{
+                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+                    {
+                        data$TB <-  data[,input$Tbas]
+                        data$HB <-  data[,input$Hbas] 
+                        data$TF <-  data[,input$Tfol] 
+                        data$HF <-  data[,input$Hfol] 
+                        Tr <- subset(data, TB> 0 & TF >= 0)
+                        H <- subset(data, HB> 0 & HF >= 0)
+                        
+                        ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+                        ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
+                        
+                        if(input$STHdrug == 1) { 
+                            tstar<-ifelse(ERRT >=50,1,2)
+                            hstar<-ifelse(ERRH >=90,1,2)
+                            if(tstar == 1 & hstar == 2){
+                                concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections, 
+but is below the expected efficacy hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                            }  else  { 
+                                if(tstar == 2 & hstar == 1){
+                                    concl <- paste('The efficacy of the drug administered is satisfactory for hookworm infections, but is below the expected efficacy for $T.$ $trichiura$ infection (50 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                                } else {  
+                                    if(tstar == 2 & hstar == 2){
+                                        concl <- paste('The efficacy of the drug administered is below the expected efficacy for both whipwworm (50 precent) 
+and hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                    } else { 
+                                        if(tstar == 1 & hstar == 1){
+                                            concl <- paste('The efficacy of the drug administered is satisfactory for both $T.$ $trichiura$ and hookworm infections.')
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                            
+                        } else {
+                            if(input$STHdrug == 2){
+                                tstar<-ifelse(ERRT >=50,1,2)
+                                hstar<-ifelse(ERRH >=70,1,2)
+                                if(tstar == 1 & hstar == 2){
+                                    concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections, 
+but is below the expected efficacy hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                }  else  { 
+                                    if(tstar == 2 & hstar == 1){
+                                        concl <- paste('The efficacy of the drug administered is satisfactory for hookworm infections, but is below the expected efficacy for $T.$ $trichiura$ infection (50 precent). Please contact World Health Organization (wormcontrol@who.int or Dr. A. Montresor (montresora@who.int)) and its collaborating centre for the monitoring of anthelmintic drug efficacy for soil-transmitted helminthiasis (Dr. B. Levecke: bruno.levecke@ugent.be) to discuss further actions.')
+                                    } else {  
+                                        if(tstar == 2 & hstar == 2){
+                                            concl <- paste('The efficacy of the drug administered is below the expected efficacy for both $T.$ $trichiura$ (50 precent) 
+and hookworm infections (70 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                        } else { 
+                                            if(tstar == 1 & hstar == 1){
+                                                concl <- paste('The efficacy of the drug administered is satisfactory for both $T.$ $trichiura$ and hookworm infections.')
+                                            }
+                                            
+                                        }
+                                    }
+                                }
+                                
+                                ## new drug 
+                            } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against soil-transmitted helminthiasis.')}
+                            
+                        } 
+                        
+                        
+                    } else{
+                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                        {
+                            data$RB <-  data[,input$Rbas]  
+                            data$RF <-  data[,input$Rfol]  
+                            R <- subset(data, RB> 0 & RF >= 0)
+                            
+                            ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
+                            
+                            if(input$STHdrug == 1 | input$STHdrug == 2)
+                            {
+                                rstar <- ifelse(ERRR>=95,1,2)
+                                if(rstar == 1) {
+                                    concl <- paste('The efficacy of the drug administered is satisfactory.')  
+                                } else {
+                                    concl <- paste('The efficacy of the drug administered is below the expected efficacy for $A.$ $lumbricoides$ infections (95 precent). 
+Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                }
+                            } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                        Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against $A.$ $lumbricoides$ infections.')}
+                            
+                        } else {
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                            {
+                                data$TB <-  data[,input$Tbas]
+                                data$TF <-  data[,input$Tfol] 
+                                Tr <- subset(data, TB> 0 & TF >= 0)
+                                
+                                ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
+                                
+                                if(input$STHdrug == 1 | input$STHdrug == 2)
+                                { 
+                                    tstar <- ifelse(ERRR>=50,1,2)
+                                    if(tstar == 1) {
+                                        concl <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections.')  
+                                    } else {
+                                        concl <- paste('The efficacy of the drug administered is below the expected efficacy for $T.$ $trichiura$ infections (50 precent). 
+Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                    }
+                                } else {concl <- paste('Currently, the expected efficacy is only determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequently, no conclusions can be drawn on the efficacy for this drug or drug regimen against $T.$ $trichiura$ infections.')}
+                                
+                            } else{
+                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                                {
+                                    data$HB <-  data[,input$Hbas] 
+                                    data$HF <-  data[,input$Hfol] 
+                                    H <- subset(data, HB> 0 & HF >= 0)
+                                    
+                                    ERRH <- 100*(1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                                    
+                                    if(input$STHdrug == 1) { 
+                                        hstar<-ifelse(ERRH >=90,1,2)
+                                        if(hstar == 2){
+                                            concl <- paste('The efficacy of the drug administered is below the expected efficacy hookworm infections (90 precent). Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                        }  else  { 
+                                            if(hstar == 1){
+                                                concl <- paste('The efficacy of the drug administered is satisfactory against hookworm infections.')
+                                            } 
+                                        }
+                                    } else {
+                                        if(STHdrug == 2){
+                                            hstar<-ifelse(ERRH >=70,1,2)
+                                            if(hstar == 2){
+                                                concl <- paste('The efficacy of the drug administered is below the expected efficacy hookworm infections (70 precent). 
+Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
+                                            }  else  { 
+                                                if(hstar == 1){
+                                                    concl <- paste('The efficacy of the drug administered is satisfactory against hookworm infections.')
+                                                }    
+                                            }
+                                            
+                                            
+                                            ## new drug 
+                                        } else {concl <- paste('Currently, the expected efficacy has only been determined for a single oral dose of albendazole (400 mg) and mebendazole (500 mg). 
+                                      Consequenlty, no conclusions can be drawn on the efficacy for this drug or drug regimen against hookworm infections.')}
+                                        
+                                    } 
+                                    
+                                }
+                                
+                                else{concl <- paste('No egg count data was provided.')}
+                            }
+                        }
+                    }  
+                }   
+            }
+        } 
+    }
+}
