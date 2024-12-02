@@ -745,7 +745,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
                 par(mfrow=c(1,2))
                 SH <- rgamma(10000,shape = aSH, scale = bSH)
                 hist(100*(1-SH),main=expression(italic(Schistosoma~haematobium)), ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
-                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                axis(side=2, at=seq(0,10000,1000),labels = seq(0,100,10))
                 abline(v=100*(1-qgamma(0.025,shape = aSH, scale = bSH)),lty= 2, lwd=4)
                 abline(v=100*(1-qgamma(0.975,shape = aSH, scale = bSH)),lty=2, lwd=4)
                 abline(v=100*ERRSH, lwd=4)
@@ -785,7 +785,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
                     par(mfrow=c(1,1))
                     SH <- rgamma(10000,shape = aSH, scale = bSH)
                     hist(100*(1-SH),main=expression(italic(Schistosoma~haematobium)), ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
-                    axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                    axis(side=2, at=seq(0,10000,1000),labels = seq(0,100,10))
                     abline(v=100*(1-qgamma(0.025,shape = aSH, scale = bSH)),lty= 2, lwd=4)
                     abline(v=100*(1-qgamma(0.975,shape = aSH, scale = bSH)),lty=2, lwd=4)
                     abline(v=100*ERRSH, lwd=4)
@@ -850,7 +850,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
                             abline(v=100*ERRSJ, lwd=4)   } else  {  
                                 SJ <- rgamma(10000,shape = aSJ, scale = bSJ)
                                 hist(100*(1-SJ), main=expression(italic(Schistosoma~japonicum)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
-                                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                                axis(side=2, at=seq(0,10000,1000),labels = seq(0,100,10))
                                 abline(v=100*(1-qgamma(0.025,shape = aSJ, scale = bSJ)), lty=2,lwd=4)
                                 abline(v=100*(1-qgamma(0.975,shape = aSJ, scale = bSJ)), lty=2,lwd=4)
                                 abline(v=100*ERRSJ, lwd=4)      }
