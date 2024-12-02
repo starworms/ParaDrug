@@ -919,8 +919,8 @@ paradrug_schistosomiasis_conclusion <- function(object,
             data$smB <-  data[,input$Smbas] 
             data$shF <-  data[,input$Shfol]  
             data$smF <-  data[,input$Smfol] 
-            sh <- subset(data, shB >0 &  shF >=0)
-            sm <- subset(data, smB >0 &  smF >=0)
+            sh <- subset(data, data$shB >0 &  data$shF >=0)
+            sm <- subset(data, data$smB >0 &  data$smF >=0)
             ERRSH <- 100*(1- mean(sh$shF)/mean(sh$shB))
             ERRSM <- 100*(1- mean(sm$smF)/mean(sm$smB))
             if(input$Sdrug == 1){
@@ -957,7 +957,7 @@ it is recommended to contact World Health Organization
             if(mean(data$sh)>-2 & mean(data$shf)>-2){
                 data$shB <-  data[,input$Shbas]  
                 data$shF <-  data[,input$Shfol]  
-                sh <- subset(data, shB >0 &  shF >=0)
+                sh <- subset(data, data$shB >0 &  data$shF >=0)
                 ERRSH <- 100*(1- mean(sh$shF)/mean(sh$shB))
                 if(input$Sdrug == 1) {
                     shstar <- ifelse(ERRSH>=90, 1, ifelse(ERRSH<80, 3,2))
@@ -978,7 +978,7 @@ it is recommended to contact World Health Organization
                 if(mean(data$sm)>-2 & mean(data$smf)>-2){
                     data$smB <-  data[,input$Smbas] 
                     data$smF <-  data[,input$Smfol] 
-                    sm <- subset(data, smB >0 &  smF >=0)
+                    sm <- subset(data, data$smB >0 &  data$smF >=0)
                     
                     ERRSM <- 100*(1- mean(sm$smF)/mean(sm$smB))
                     if(input$Sdrug == 1) { 
@@ -1000,7 +1000,7 @@ it is recommended to contact World Health Organization
                     if(mean(data$sj)>-2 & mean(data$sjf>-2)){
                         data$sjB <-  data[,input$Sjbas] 
                         data$sjF <-  data[,input$Sjfol] 
-                        sj <- subset(data, sjB >0 &  sjF >=0)
+                        sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                         ERRSJ <- 100*(1- mean(sj$sjF)/mean(sj$sjB))
                         if(input$Sdrug == 1) { 
                             sjstar <- ifelse(ERRSJ>=90, 1, ifelse(ERRSJ<80, 3,2))

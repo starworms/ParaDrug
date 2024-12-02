@@ -1767,9 +1767,9 @@ paradrug_helminthiasis_conclusion <- function(object,
             data$RF <-  data[,input$Rfol]  
             data$TF <-  data[,input$Tfol] 
             data$HF <-  data[,input$Hfol] 
-            R <- subset(data, RB> 0 & RF >= 0)
-            Tr <- subset(data, TB> 0 & TF >= 0)
-            H <- subset(data, HB> 0 & HF >= 0)
+            R <- subset(data, data$RB> 0 & data$RF >= 0)
+            Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+            H <- subset(data, data$HB> 0 & data$HF >= 0)
             
             ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
             ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
@@ -1937,8 +1937,8 @@ it is recommended to contact World Health Organization
                 data$TB <-  data[,input$Tbas]
                 data$RF <-  data[,input$Rfol]  
                 data$TF <-  data[,input$Tfol] 
-                R <- subset(data, RB> 0 & RF >= 0)
-                Tr <- subset(data, TB> 0 & TF >= 0)
+                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                 
                 ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                 ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
@@ -1988,8 +1988,8 @@ it is recommended to contact World Health Organization
                     data$HB <-  data[,input$Hbas] 
                     data$RF <-  data[,input$Rfol]  
                     data$HF <-  data[,input$Hfol] 
-                    R <- subset(data, RB> 0 & RF >= 0)
-                    H <- subset(data, HB> 0 & HF >= 0)
+                    R <- subset(data, data$RB> 0 & data$RF >= 0)
+                    H <- subset(data, data$HB> 0 & data$HF >= 0)
                     
                     ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                     ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
@@ -2064,8 +2064,8 @@ it is recommended to contact World Health Organization
                         data$HB <-  data[,input$Hbas] 
                         data$TF <-  data[,input$Tfol] 
                         data$HF <-  data[,input$Hfol] 
-                        Tr <- subset(data, TB> 0 & TF >= 0)
-                        H <- subset(data, HB> 0 & HF >= 0)
+                        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                         
                         ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
                         ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
@@ -2139,7 +2139,7 @@ it is recommended to contact World Health Organization
                         {
                             data$RB <-  data[,input$Rbas]  
                             data$RF <-  data[,input$Rfol]  
-                            R <- subset(data, RB> 0 & RF >= 0)
+                            R <- subset(data, data$RB> 0 & data$RF >= 0)
                             
                             ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                             
@@ -2163,7 +2163,7 @@ it is recommended to contact World Health Organization
                             {
                                 data$TB <-  data[,input$Tbas]
                                 data$TF <-  data[,input$Tfol] 
-                                Tr <- subset(data, TB> 0 & TF >= 0)
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                 
                                 ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
                                 
@@ -2187,7 +2187,7 @@ it is recommended to contact World Health Organization
                                 {
                                     data$HB <-  data[,input$Hbas] 
                                     data$HF <-  data[,input$Hfol] 
-                                    H <- subset(data, HB> 0 & HF >= 0)
+                                    H <- subset(data, data$HB> 0 & data$HF >= 0)
                                     
                                     ERRH <- 100*(1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
                                     
