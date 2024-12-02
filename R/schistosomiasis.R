@@ -469,3 +469,180 @@ paradrug_schistosomiasis_follow <- function(object,
         } 
     }
 }
+
+
+
+
+#' @title Analysis of Schistosomiasis (egg reduction)
+#' @description Analysis of Schistosomiasis (egg reduction)
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Shbas column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
+#' @param Shfol column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
+#' @param Smbas column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Smfol column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param drug either "Praziquantel (1x 40 mg/kg)" or "Other"
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- paradrug_schistosomiasis_eggreduction(x, drug = "Praziquantel (1x 40 mg/kg)")
+#' p <- paradrug_schistosomiasis_eggreduction(x, drug = "Other")
+paradrug_schistosomiasis_eggreduction <- function(object, 
+                                            Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
+                                            Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
+                                            Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG",
+                                            drug = c("Praziquantel (1x 40 mg/kg)", "Other"),
+                                            ...){
+    drug <- match.arg(drug)
+    drug <- list("Praziquantel (1x 40 mg/kg)" = 1, "Other" = 2)[[drug]]
+    data <- object$data
+    input <- list(Shbas = Shbas, Shfol = Shfol, 
+                  Smbas = Smbas, Smfol = Smfol, 
+                  Sjbas = Sjbas, Sjfol = Sjfol,
+                  Sdrug = drug)
+    
+    n <- nrow(data)
+    
+    # S haematobium
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smf <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjf <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+    
+    data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
+    data$inf2 <- ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0)
+    
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {err <- paste('No egg count data was provided.')}
+    else {
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shf)>-2 & mean(data$smf)>-2)
+        {
+            data$shB <-  data[,input$Shbas]  
+            data$smB <-  data[,input$Smbas] 
+            data$shF <-  data[,input$Shfol]  
+            data$smF <-  data[,input$Smfol] 
+            sh <- subset(data, data$shB >0 &  data$shF >=0)
+            sm <- subset(data, data$smB >0 &  data$smF >=0)
+            ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+            term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+            term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+            VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+            aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+            ULSH <- 1-qgamma(0.025,shape = aSH, scale = bSH)
+            LLSH <- 1-qgamma(0.975,shape = aSH, scale = bSH)
+            
+            ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+            term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+            term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+            VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+            aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+            ULSM <- 1-qgamma(0.025,shape = aSM, scale = bSM)
+            LLSM <- 1-qgamma(0.975,shape = aSM, scale = bSM)
+            
+            if(input$Sdrug == 1)  {
+                err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S. haematobium$ equaled',round(100*ERRSH,1),
+                             'percent (',round(100*LLSH,1), ';',round(100*ULSH,1), '). For $S.$ $mansoni$, the ERR equaled',round(100*ERRSM,1),'percent 
+(',round(100*LLSM,1),';', round(100*ULSM,1),'). The figures below classify the ERR estimates according to WHO thresholds.
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+            }else {
+                err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $haematobium$ equaled',round(100*ERRSH,1),'percent
+(',round(100*LLSH,1), ';',round(100*ULSH,1), '). For $S.$ $mansoni$, the ERR equaled',round(100*ERRSM,1),'percent (',round(100*LLSM,1),';', round(100*ULSM,1),'). 
+The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
+                estimates.')
+                
+            }
+        } else {
+            if(mean(data$sh)>-2 & mean(data$shf)>-2){
+                data$shB <-  data[,input$Shbas]  
+                data$shF <-  data[,input$Shfol]  
+                sh <- subset(data, data$shB >0 &  data$shF >=0)
+                ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+                term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+                term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+                VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+                aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+                ULSH <- 1-qgamma(0.025,shape = aSH, scale = bSH)
+                LLSH <- 1-qgamma(0.975,shape = aSH, scale = bSH)
+                
+                if(input$Sdrug == 1){
+                    err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $haematobium$ equaled',round(100*ERRSH,1),'percent
+(',round(100*LLSH,1), ';',round(100*ULSH,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+                and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                } else {
+                    err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against $S.$ $haematobium$ equaled',round(100*ERRSH,1),
+                                 'percent (',round(100*LLSH,1), ';',round(100*ULSH,1), ').
+                  The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+                }
+                
+            } else {
+                if(mean(data$sm)>-2 & mean(data$smf)>-2){
+                    data$smB <-  data[,input$Smbas] 
+                    data$smF <-  data[,input$Smfol] 
+                    sm <- subset(data, data$smB >0 &  data$smF >=0)
+                    
+                    ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+                    term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+                    term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+                    VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+                    aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+                    ULSM <- 1-qgamma(0.025,shape = aSM, scale = bSM)
+                    LLSM <- 1-qgamma(0.975,shape = aSM, scale = bSM)
+                    
+                    if(input$Sdrug == 1){ 
+                        err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $mansoni$ equaled',round(100*ERRSM,1),'percent (',round(100*LLSM,1), ';',
+                                     round(100*ULSM,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                    } else {
+                        err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against $S.$ $mansoni$ equaled',round(100*ERRSM,1),
+                                     'percent (',round(100*LLSM,1),';', round(100*ULSM,1),'). The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+                        
+                    }
+                    
+                } else {
+                    if(mean(data$sj)>-2 & mean(data$sjf>-2)){
+                        data$sjB <-  data[,input$Sjbas] 
+                        data$sjF <-  data[,input$Sjfol] 
+                        sj <- subset(data, data$sjB >0 &  data$sjF >=0)
+                        ERRSJ <- (1- mean(sj$sjF)/mean(sj$sjB))
+                        term1SJ <- (mean(sj$sjF)/mean(sj$sjB))**2; term2SJ <- ifelse(mean(sj$sjF)==0,0,var(sj$sjF)/mean(sj$sjF)**2); term3SJ <- var(sj$sjB)/mean(sj$sjB)**2              
+                        term4SJ <- ifelse(mean(sj$sjF)==0,0,-2*cor(sj$sjB,sj$sjF)*sqrt(var(sj$sjF))*sqrt(var(sj$sjB))/(mean(sj$sjB)*mean(sj$sjF)))
+                        VARSJ <-  term1SJ*(term2SJ+term3SJ+term4SJ); varSJ <- VARSJ / length(sj$sjB)
+                        aSJ <- ((1-ERRSJ)**2)/varSJ; bSJ <- varSJ/(1-ERRSJ)
+                        ULSJ <- 1-qgamma(0.025,shape = aSJ, scale = bSJ)
+                        LLSJ <- 1-qgamma(0.975,shape = aSJ, scale = bSJ)
+                        if(input$Sdrug == 1){
+                            err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $S.$ $japonicum$ equaled',
+                                         round(100*ERRSJ,1),'percent (',round(100*LLSJ,1), ';',round(100*ULSJ,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')} else {
+    err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against $S.$ $japonicum$ 
+equaled',round(100*ERRSJ,1),'percent (',round(100*LLSJ,1), ';',round(100*ULSJ,1),').
+               The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
+                estimate.')
+}
+                        
+                    } else{err <- paste('No egg count data was provided.')}  
+                }   
+            }
+        } 
+    }
+}

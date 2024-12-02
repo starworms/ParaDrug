@@ -2,6 +2,6 @@
 #' @importFrom knitr knit2pdf
 #' @importFrom readxl read_excel
 #' @importFrom bslib bs_theme
-#' @importFrom stats quantile
+#' @importFrom stats quantile cor qgamma var
 #' @importFrom graphics hist par
 NULL
