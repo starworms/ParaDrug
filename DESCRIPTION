@@ -15,9 +15,12 @@ Description: Standardises reporting and interpreting of the anthelmintic drug ef
 License: Apache License (>= 2.0)
 URL: https://github.com/starworms/ParaDrug
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Imports:
     shiny,
     knitr,
     readxl,
     bslib
+Suggests:
+    xlsx,
+    tinytex

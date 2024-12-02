@@ -2,6 +2,7 @@
 
 export(paradrugServer)
 export(paradrugUI)
+export(paradrug_report)
 export(read_paradrug_xls)
 import(shiny)
 importFrom(bslib,bs_theme)

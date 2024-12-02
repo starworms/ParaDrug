@@ -20,6 +20,9 @@
 #' server <- function(input, output, session) {
 #'   paradrugServer(id = "activity")
 #' }
+#' server <- function(input, output, session) {
+#'   paradrugServer(input = input, output = output, session = session)
+#' }
 #' shinyApp(ui, server)
 #' }
 paradrugUI <- function(id, ...){
@@ -294,7 +297,6 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
             )))
 }
 
-
 #' @name paradrugShiny
 #' @export
 paradrugServer <- function(id, ...){
@@ -302,3 +304,4 @@ paradrugServer <- function(id, ...){
         ns <- session$ns
     })
 }
+
