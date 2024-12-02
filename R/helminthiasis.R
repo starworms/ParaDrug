@@ -2204,7 +2204,7 @@ it is recommended to contact World Health Organization
                                             } 
                                         }
                                     } else {
-                                        if(STHdrug == 2){
+                                        if(input$STHdrug == 2){
                                             hstar<-ifelse(ERRH >=70,1,2)
                                             if(hstar == 2){
                                                 concl <- paste('The efficacy of the drug administered is below the expected efficacy hookworm infections (70 precent). 
