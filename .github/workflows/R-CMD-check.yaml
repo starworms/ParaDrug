@@ -44,6 +44,9 @@ jobs:
       - run: |
           tlmgr --version
           tlmgr update --self
+          tlmgr install babel-english
+          tlmgr install fancyhdr
+          tlmgr install xcolor
           tlmgr list --only-installed
 
       - uses: r-lib/actions/setup-r-dependencies@v2
