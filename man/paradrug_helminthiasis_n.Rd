@@ -2,7 +2,7 @@
 % Please edit documentation in R/helminthiasis.R
 \name{paradrug_helminthiasis_n}
 \alias{paradrug_helminthiasis_n}
-\title{Analysis of Helminthiasis}
+\title{Analysis of Helminthiasis (subjects)}
 \usage{
 paradrug_helminthiasis_n(
   object,
@@ -36,7 +36,7 @@ paradrug_helminthiasis_n(
 TODO
 }
 \description{
-Analysis of Helminthiasis
+Analysis of Helminthiasis (subjects)
 }
 \examples{
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")

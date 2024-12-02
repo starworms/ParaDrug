@@ -1,6 +1,6 @@
 
-#' @title Analysis of Schistosomiasis
-#' @description Analysis of Schistosomiasis
+#' @title Analysis of Schistosomiasis (subjects)
+#' @description Analysis of Schistosomiasis (subjects)
 #' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
 #' @param Shbas column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
 #' @param Shfol column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
@@ -122,8 +122,8 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
     }
 }
 
-#' @title Analysis of Schistosomiasis
-#' @description Analysis of Schistosomiasis
+#' @title Analysis of Schistosomiasis (intensity)
+#' @description Analysis of Schistosomiasis (intensity)
 #' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
 #' @param Shbas column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
 #' @param Shfol column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP

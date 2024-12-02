@@ -2,7 +2,7 @@
 % Please edit documentation in R/schistosomiasis.R
 \name{paradrug_schistosomiasis_n}
 \alias{paradrug_schistosomiasis_n}
-\title{Analysis of Schistosomiasis}
+\title{Analysis of Schistosomiasis (subjects)}
 \usage{
 paradrug_schistosomiasis_n(
   object,
@@ -36,7 +36,7 @@ paradrug_schistosomiasis_n(
 TODO
 }
 \description{
-Analysis of Schistosomiasis
+Analysis of Schistosomiasis (subjects)
 }
 \examples{
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")

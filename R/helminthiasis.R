@@ -1,5 +1,5 @@
-#' @title Analysis of Helminthiasis
-#' @description Analysis of Helminthiasis
+#' @title Analysis of Helminthiasis (subjects)
+#' @description Analysis of Helminthiasis (subjects)
 #' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
 #' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
@@ -203,8 +203,8 @@ paradrug_helminthiasis_n <- function(object,
 }
 
 
-#' @title Analysis of Helminthiasis
-#' @description Analysis of Helminthiasis
+#' @title Analysis of Helminthiasis (intensity)
+#' @description Analysis of Helminthiasis (intensity)
 #' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
 #' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
