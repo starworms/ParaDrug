@@ -8,6 +8,7 @@
 #' @return a list with elements 
 #' \itemize{
 #' \item{data: data.frame with at least columns "Site", "SubjectID", "SchoolID", "Age", "Sex2", "BL_KK2_AL_EPG", "FU_KK2_AL_EPG", "BL_KK2_TT_EPG", "FU_KK2_TT_EPG", "BL_KK2_HW_EPG", "FU_KK2_HW_EPG"}
+#' \item{n: the number of rows in the dataset} 
 #' }
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -20,5 +21,7 @@ read_paradrug_xls <- function(x, sheet = 1){
         data <- read_excel(x, sheet = sheet)
     }
     n <- nrow(data)
-    list(data = data, n = n)
+    out <- list(data = data, n = n)
+    class(out) <- "paradrug_rawdata"
+    out
 }
