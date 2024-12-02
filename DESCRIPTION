@@ -21,7 +21,8 @@ Imports:
     knitr,
     readxl,
     bslib,
-    stats
+    stats,
+    graphics
 Suggests:
     xlsx,
     tinytex

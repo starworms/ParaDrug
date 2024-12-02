@@ -480,3 +480,147 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
         } 
     }
 }
+
+
+#' @title Plot of eggcount of Analysis of Helminthiasis
+#' @description Plot of eggcount of Helminthiasis
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tbas column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tfol column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- plot_paradrug_helminthiasis_eggcount(x)
+plot_paradrug_helminthiasis_eggcount <- function(object, 
+                                             Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+                                             Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
+                                             Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                             ...){
+    data <- object$data
+    input <- list(Rbas = Rbas, Rfol = Rfol, 
+                  Tbas = Tbas, Tfol = Tfol, 
+                  Hbas = Hbas, Hfol = Hfol)
+    
+    n <- nrow(data)
+    
+    # roundworms
+    data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+    data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+    
+    # whipworms
+    data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+    data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+    
+    # hookworms
+    data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+    data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+    
+    data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+    data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {}
+    else
+    {if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+    {
+        data$RB <-  data[,input$Rbas]  
+        data$TB <-  data[,input$Tbas]
+        data$HB <-  data[,input$Hbas] 
+        data$RF <-  data[,input$Rfol]  
+        data$TF <-  data[,input$Tfol] 
+        data$HF <-  data[,input$Hfol] 
+        R <- subset(data, data$RB> 0 & data$RF >= 0)
+        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+        H <- subset(data, data$HB> 0 & data$HF >= 0)
+        
+        par(mfrow=c(1,3))
+        hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
+        hist(Tr$TB, col = "#EB4C4C", main=expression(italic(Trichuris~trichiura)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')
+        hist(H$HB, col = "#EB4C4C", main='Hookworm', freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')
+    }
+        else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+            {
+                data$RB <-  data[,input$Rbas]  
+                data$TB <-  data[,input$Tbas]
+                data$RF <-  data[,input$Rfol]  
+                data$TF <-  data[,input$Tfol] 
+                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                
+                par(mfrow=c(1,2))
+                hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')
+                hist(Tr$TB, col = "#EB4C4C", main=expression(italic(Trichuris~trichiura)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')
+            }
+            else{  
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+                {
+                    data$RB <-  data[,input$Rbas]  
+                    data$HB <-  data[,input$Hbas] 
+                    data$RF <-  data[,input$Rfol]  
+                    data$HF <-  data[,input$Hfol] 
+                    R <- subset(data, data$RB> 0 & data$RF >= 0)
+                    H <- subset(data, data$HB> 0 & data$HF >= 0)
+                    
+                    par(mfrow=c(1,2))
+                    hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
+                    hist(H$HB, col ="#EB4C4C", main='Hookworm', freq=T, ylab='Number of subjects', xlab='Fecal egg counts (eggs per gram of stool)')
+                }
+                else{  
+                    if(mean(data$Hb)>-2 & mean(data$Tb)>-2 & mean(data$Hf)>-2 & mean(data$Tf)>-2)
+                    {
+                        data$TB <-  data[,input$Tbas]
+                        data$HB <-  data[,input$Hbas] 
+                        data$TF <-  data[,input$Tfol] 
+                        data$HF <-  data[,input$Hfol] 
+                        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                        H <- subset(data, data$HB> 0 & data$HF >= 0)
+                        
+                        par(mfrow=c(1,2))
+                        hist(Tr$TB, col = "#EB4C4C", main=expression(italic(Trichuris~trichiura)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
+                        hist(H$HB, col = "#EB4C4C", main='Hookworm', freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')
+                    }
+                    else{  
+                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                        {
+                            data$RB <-  data[,input$Rbas]  
+                            data$RF <-  data[,input$Rfol]  
+                            R <- subset(data, data$RB> 0 & data$RF >= 0)
+                            
+                            par(mfrow=c(1,1))
+                            hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
+                        }
+                        else{  
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                            {
+                                data$TB <-  data[,input$Tbas]
+                                data$TF <-  data[,input$Tfol] 
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                par(mfrow=c(1,1))
+                                hist(Tr$TB, col = "#EB4C4C", main=expression(italic(Trichuris~trichiura)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
+                            }
+                            else{  
+                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                                {
+                                    data$HB <-  data[,input$Hbas] 
+                                    data$HF <-  data[,input$Hfol] 
+                                    H <- subset(data, data$HB> 0 & data$HF >= 0)
+                                    
+                                    par(mfrow=c(1,1))
+                                    hist(H$HB, col = "#EB4C4C", main='Hookworm', ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
+                                }
+                                else{}
+                            }
+                        }
+                    }  
+                }   
+            }
+        } 
+    }
+}

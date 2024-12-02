@@ -3,4 +3,5 @@
 #' @importFrom readxl read_excel
 #' @importFrom bslib bs_theme
 #' @importFrom stats quantile
+#' @importFrom graphics hist par
 NULL
