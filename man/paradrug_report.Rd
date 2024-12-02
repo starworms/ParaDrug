@@ -24,6 +24,20 @@ a list with elements
 \description{
 Create a Paradrug report
 }
+\details{
+Meaning of the terminology:
+\itemize{
+\item{NTD: Disease type, 1=Schistosomiasis, 2=Soil-transmitted helminthiasis}
+\item{Sdrug: Anthelmintic drug, 1=Praziquantel (1x 40 mg/kg), 2=Other - Only relevant for Disease 'Schistosomiasis'}
+\item{STHdrug: Anthelmintic drug, 1=Albendazole (1x 400 mg), 2=Mebendazole (1x 500 mg), 3=Other - Only relevant for Disease 'Soil-transmitted helminthiasis'}
+\item{Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP}
+\item{Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+\item{Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+\item{Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+\item{Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+\item{Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+}
+}
 \examples{
 path   <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 x      <- read_paradrug_xls(path)
