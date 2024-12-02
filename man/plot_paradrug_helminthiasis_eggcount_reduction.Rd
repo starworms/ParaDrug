@@ -2,7 +2,7 @@
 % Please edit documentation in R/helminthiasis.R
 \name{plot_paradrug_helminthiasis_eggcount_reduction}
 \alias{plot_paradrug_helminthiasis_eggcount_reduction}
-\title{Plot of eggcount reduction of Schistosomiasis}
+\title{Plot of eggcount reduction of Helminthiasis}
 \usage{
 plot_paradrug_helminthiasis_eggcount_reduction(
   object,
@@ -39,7 +39,7 @@ plot_paradrug_helminthiasis_eggcount_reduction(
 TODO
 }
 \description{
-Plot of eggcount reduction of Schistosomiasis
+Plot of eggcount reduction of Helminthiasis
 }
 \examples{
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
