@@ -14,8 +14,8 @@
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
-#' p <- paradrug_helminthiasis(x)
-paradrug_helminthiasis <- function(object, 
+#' p <- paradrug_helminthiasis_n(x)
+paradrug_helminthiasis_n <- function(object, 
                                    Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                    Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
                                    Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 

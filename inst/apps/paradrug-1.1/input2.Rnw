@@ -65,16 +65,16 @@ if (is.null(inFile)) {
 } else {
     if (input$NTD == "1") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        number <- paradrug_schistosomiasis(PARADRUG, 
-                                           Shbas = input$Shbas, Shfol = input$Shfol, 
-                                           Smbas = input$Smbas, Smfol = input$Smfol, 
-                                           Sjbas = input$Sjbas, Sjfol = input$Sjfol)
+        number <- paradrug_schistosomiasis_n(PARADRUG, 
+                                             Shbas = input$Shbas, Shfol = input$Shfol, 
+                                             Smbas = input$Smbas, Smfol = input$Smfol, 
+                                             Sjbas = input$Sjbas, Sjfol = input$Sjfol)
     } else if (input$NTD == "2") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        number <- paradrug_helminthiasis(PARADRUG, 
-                                         Rbas = input$Rbas, Rfol = input$Rfol, 
-                                         Tbas = input$Tbas, Tfol = input$Tfol,
-                                         Hbas = input$Hbas, Hfol = input$Hfol)
+        number <- paradrug_helminthiasis_n(PARADRUG, 
+                                           Rbas = input$Rbas, Rfol = input$Rfol, 
+                                           Tbas = input$Tbas, Tfol = input$Tfol,
+                                           Hbas = input$Hbas, Hfol = input$Hfol)
 
     }
 }

@@ -15,8 +15,8 @@
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
-#' p <- paradrug_schistosomiasis(x)
-paradrug_schistosomiasis <- function(object, 
+#' p <- paradrug_schistosomiasis_n(x)
+paradrug_schistosomiasis_n <- function(object, 
                             Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                             Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
                             Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG", 
@@ -121,3 +121,5 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
         } 
     }
 }
+
+
