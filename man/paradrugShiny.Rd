@@ -33,6 +33,9 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   paradrugServer(id = "activity")
 }
+server <- function(input, output, session) {
+  paradrugServer(input = input, output = output, session = session)
+}
 shinyApp(ui, server)
 }
 }
