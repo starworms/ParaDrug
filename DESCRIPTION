@@ -20,7 +20,8 @@ Imports:
     shiny,
     knitr,
     readxl,
-    bslib
+    bslib,
+    stats
 Suggests:
     xlsx,
     tinytex

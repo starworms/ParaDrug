@@ -43,6 +43,20 @@
 #'     Hbas = "Not recorded", Hfol = "Not recorded",
 #'     followup = "Not recorded")
 #' report <- paradrug_report(x, params = params)
+#' params <- list(
+#'     Country = "a not further specified country", 
+#'     Name = "Unknown", 
+#'     Region = "district/province not further specified",
+#'     file1 = list(datapath = system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")),
+#'     NTD = 2, Sdrug = 1, STHdrug = 1, 
+#'     Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
+#'     Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
+#'     Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG", 
+#'     Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+#'     Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
+#'     Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG",
+#'     followup = "Not recorded")
+#' report <- paradrug_report(x, params = params)
 paradrug_report <- function(x, params = list(), version = c("1.1", "1.0"), ...){
     stopifnot(inherits(x, "paradrug_rawdata"))
     version <- match.arg(version)
@@ -59,6 +73,7 @@ paradrug_report <- function(x, params = list(), version = c("1.1", "1.0"), ...){
     on.exit(setwd(oldwd))
     
     PARADRUG = x
+    rm(x)
     
     out <- knit2pdf(report_source, clean = TRUE)
     out <- list(
