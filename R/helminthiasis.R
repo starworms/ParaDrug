@@ -1173,8 +1173,8 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
     }
 }
 
-#' @title Plot of eggcount reduction of Schistosomiasis
-#' @description Plot of eggcount reduction of Schistosomiasis
+#' @title Plot of eggcount reduction of Helminthiasis
+#' @description Plot of eggcount reduction of Helminthiasis
 #' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
 #' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
@@ -1703,3 +1703,4 @@ plot_paradrug_helminthiasis_eggcount_reduction  <- function(object,
         }
     }
 }
+
