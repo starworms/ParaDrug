@@ -4,7 +4,7 @@
 \alias{paradrug_report}
 \title{Create a Paradrug report}
 \usage{
-paradrug_report(x, params = list(), ...)
+paradrug_report(x, params = list(), version = c("1.1", "1.0"), ...)
 }
 \arguments{
 \item{x}{an object as returned by \code{\link{read_paradrug_xls}}}

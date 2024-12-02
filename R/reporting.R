@@ -3,6 +3,7 @@
 #' @description Create a Paradrug report
 #' @param x an object as returned by \code{\link{read_paradrug_xls}}
 #' @param params a list of options with elements
+#' @params version string with the version, either '1.0', or '1.1'
 #' @param ... not used yet
 #' @export
 #' @details
@@ -42,15 +43,23 @@
 #'     Hbas = "Not recorded", Hfol = "Not recorded",
 #'     followup = "Not recorded")
 #' report <- paradrug_report(x, params = params)
-paradrug_report <- function(x, params = list(), ...){
+paradrug_report <- function(x, params = list(), version = c("1.1", "1.0"), ...){
     stopifnot(inherits(x, "paradrug_rawdata"))
-    report_source <- system.file(package = "ParaDrug", "apps", "paradrug-1.0", "input2.Rnw")
+    version <- match.arg(version)
+    if(version == "1.0"){
+        report_source <- system.file(package = "ParaDrug", "apps", "paradrug-1.0", "input2.Rnw")
+    }else if(version == "1.1"){
+        report_source <- system.file(package = "ParaDrug", "apps", "paradrug-1.1", "input2.Rnw")
+    }
     if(!missing(params)){
         input <- params
     }
     oldwd <- getwd()
     setwd(system.file(package = "ParaDrug", "apps", "paradrug-1.0"))
     on.exit(setwd(oldwd))
+    
+    PARADRUG = x
+    
     out <- knit2pdf(report_source, clean = TRUE)
     out <- list(
         report = basename(report_source),
