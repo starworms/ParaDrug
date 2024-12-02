@@ -883,11 +883,11 @@ paradrug_helminthiasis_follow <- function(object,
 #' p <- paradrug_helminthiasis_eggreduction(x, drug = "Mebendazole (1x 500 mg)")
 #' p <- paradrug_helminthiasis_eggreduction(x, drug = "Other")
 paradrug_helminthiasis_eggreduction <- function(object, 
-                                             Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
-                                             Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
-                                             Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
-                                             drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
-                                             ...){
+                                                Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+                                                Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
+                                                Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                                drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
+                                                ...){
     drug <- match.arg(drug)
     drug <- list("Albendazole (1x 400 mg)" = 1, "Mebendazole (1x 500 mg)" = 2, "Other" = 3)[[drug]]
     data <- object$data
@@ -1170,5 +1170,536 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                 }   
             }
         } 
+    }
+}
+
+#' @title Plot of eggcount reduction of Schistosomiasis
+#' @description Plot of eggcount reduction of Schistosomiasis
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tbas column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tfol column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param drug either "Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)" or "Other"
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Albendazole (1x 400 mg)")
+#' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Mebendazole (1x 500 mg)")
+#' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Other")
+plot_paradrug_helminthiasis_eggcount_reduction  <- function(object, 
+                                                            Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+                                                            Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
+                                                            Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                                            drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
+                                                            ...){
+    drug <- match.arg(drug)
+    drug <- list("Albendazole (1x 400 mg)" = 1, "Mebendazole (1x 500 mg)" = 2, "Other" = 3)[[drug]]
+    data <- object$data
+    input <- list(Rbas = Rbas, Rfol = Rfol, 
+                  Tbas = Tbas, Tfol = Tfol, 
+                  Hbas = Hbas, Hfol = Hfol,
+                  STHdrug = drug)
+    
+    n <- nrow(data)
+    
+    # roundworms
+    data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+    data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+    
+    # whipworms
+    data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+    data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+    
+    # hookworms
+    data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+    data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+    
+    data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
+    
+    if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+    {
+        data$RB <-  data[,input$Rbas]  
+        data$TB <-  data[,input$Tbas]
+        data$HB <-  data[,input$Hbas] 
+        data$RF <-  data[,input$Rfol]  
+        data$TF <-  data[,input$Tfol] 
+        data$HF <-  data[,input$Hfol] 
+        R <- subset(data, data$RB> 0 & data$RF >= 0)
+        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+        H <- subset(data, data$HB> 0 & data$HF >= 0)
+        
+        ERRR <- (1- mean(R$RF)/mean(R$RB))
+        term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+        term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+        VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+        aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+        ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+        LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+        
+        ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+        term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+        term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+        VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+        aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+        ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+        LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+        
+        ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+        term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+        term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+        VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+        aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+        ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+        LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+        
+        if(input$STHdrug == 1)
+        { 
+            par(mfrow=c(1,3))
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,85,1)
+            t2 <- seq(85,95,1)
+            t3 <- seq(95,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRR, lwd=4)
+            
+            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,40,1)
+            t2 <- seq(40,50,1)
+            t3 <- seq(50,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRT, lwd=4)
+            
+            plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+            t <- seq(0,80,1)
+            t2 <- seq(80,90,1)
+            t3 <- seq(90,100,1)
+            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+            abline(v=100*ERRH, lwd=4)
+            
+        } else {
+            
+            if(input$STHdrug == 2)
+            { 
+                par(mfrow=c(1,3))
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,85,1)
+                t2 <- seq(85,95,1)
+                t3 <- seq(95,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRR, lwd=4)
+                
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,40,1)
+                t2 <- seq(40,50,1)
+                t3 <- seq(50,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRT, lwd=4)
+                
+                plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,60,1)
+                t2 <- seq(60,70,1)
+                t3 <- seq(70,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRH, lwd=4)
+                
+            } else {
+                par(mfrow=c(1,3))
+                R <- rgamma(10000,shape = aR, scale = bR)
+                hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                abline(v=100*ERRR, lwd=4) 
+                
+                T <- rgamma(10000,shape = aT, scale = bT)
+                hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                abline(v=100*ERRT, lwd=4) 
+                
+                H <- rgamma(10000,shape = aH, scale = bH)
+                hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                abline(v=100*ERRH, lwd=4)
+            }
+        }
+        
+    } else { 
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
+        {
+            data$RB <-  data[,input$Rbas]  
+            data$TB <-  data[,input$Tbas]
+            data$RF <-  data[,input$Rfol]  
+            data$TF <-  data[,input$Tfol] 
+            R <- subset(data, data$RB> 0 & data$RF >= 0)
+            Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+            
+            ERRR <- (1- mean(R$RF)/mean(R$RB))
+            term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+            term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+            VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+            aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+            ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+            LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+            
+            ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+            term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+            term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+            VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+            aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+            ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+            LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+            
+            if(input$STHdrug == 1 | input$STHdrug == 2)
+            {
+                par(mfrow=c(1,2))
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,85,1)
+                t2 <- seq(85,95,1)
+                t3 <- seq(95,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRR, lwd=4)
+                
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,40,1)
+                t2 <- seq(40,50,1)
+                t3 <- seq(50,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRT, lwd=4)
+            } else {
+                par(mfrow=c(1,2))
+                R <- rgamma(10000,shape = aR, scale = bR)
+                hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                abline(v=100*ERRR, lwd=4)
+                
+                T <- rgamma(10000,shape = aT, scale = bT)
+                hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                abline(v=100*ERRT, lwd=4)
+            }
+            
+        } else{  
+            if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
+            {
+                data$RB <-  data[,input$Rbas]  
+                data$HB <-  data[,input$Hbas] 
+                data$RF <-  data[,input$Rfol]  
+                data$HF <-  data[,input$Hfol] 
+                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                H <- subset(data, data$HB> 0 & data$HF >= 0)
+                
+                ERRR <- (1- mean(R$RF)/mean(R$RB))
+                term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+                term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+                VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+                aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+                ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+                LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+                
+                ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+                
+                if (input$STHdrug==1){  
+                    par(mfrow=c(1,2))
+                    plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                    t <- seq(0,85,1)
+                    t2 <- seq(85,95,1)
+                    t3 <- seq(95,100,1)
+                    polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                    polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                    polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                    abline(v=100*ERRR, lwd=4)
+                    
+                    plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                    t <- seq(0,80,1)
+                    t2 <- seq(80,90,1)
+                    t3 <- seq(90,100,1)
+                    polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                    polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                    polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                    abline(v=100*ERRH, lwd=4) 
+                } else {
+                    if(input$STHdrug == 2)
+                    {
+                        par(mfrow=c(1,2))
+                        plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,85,1)
+                        t2 <- seq(85,95,1)
+                        t3 <- seq(95,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRR, lwd=4)
+                        
+                        
+                        plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,60,1)
+                        t2 <- seq(60,70,1)
+                        t3 <- seq(70,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRH, lwd=4)
+                    } else {
+                        par(mfrow=c(1,2))
+                        R <- rgamma(10000,shape = aR, scale = bR)
+                        hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                        abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                        abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                        abline(v=100*ERRR, lwd=4)
+                        
+                        H <- rgamma(10000,shape = aH, scale = bH)
+                        hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                        abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                        abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                        abline(v=100*ERRH, lwd=4)
+                    }
+                    
+                }   
+            }  else{  
+                if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
+                {
+                    data$TB <-  data[,input$Tbas]
+                    data$HB <-  data[,input$Hbas] 
+                    data$TF <-  data[,input$Tfol] 
+                    data$HF <-  data[,input$Hfol] 
+                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                    H <- subset(data, data$HB> 0 & data$HF >= 0)
+                    
+                    ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+                    term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+                    term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+                    VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+                    aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+                    ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+                    LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+                    
+                    ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                    term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                    term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                    VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                    aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                    ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                    LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+                    
+                    if(input$STHdrug == 1)
+                    {
+                        par(mfrow=c(1,2))
+                        plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,40,1)
+                        t2 <- seq(40,50,1)
+                        t3 <- seq(50,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRT, lwd=4)
+                        
+                        plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,80,1)
+                        t2 <- seq(80,90,1)
+                        t3 <- seq(90,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRH, lwd=4)
+                        
+                    } else {
+                        if (input$STHdrug==2){ 
+                            par(mfrow=c(1,2))
+                            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                            t <- seq(0,40,1)
+                            t2 <- seq(40,50,1)
+                            t3 <- seq(50,100,1)
+                            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                            abline(v=100*ERRT, lwd=4)
+                            
+                            plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                            t <- seq(0,60,1)
+                            t2 <- seq(60,70,1)
+                            t3 <- seq(70,100,1)
+                            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                            abline(v=100*ERRH, lwd=4)
+                        } else {           
+                            par(mfrow=c(1,2))
+                            T <- rgamma(10000,shape = aT, scale = bT)
+                            hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                            abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                            abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                            abline(v=100*ERRT, lwd=4)
+                            
+                            H <- rgamma(10000,shape = aH, scale = bH)
+                            hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                            abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                            abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                            abline(v=100*ERRH, lwd=4)
+                        }
+                    }  
+                } else {  
+                    if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
+                    {
+                        data$RB <-  data[,input$Rbas]  
+                        data$RF <-  data[,input$Rfol]  
+                        R <- subset(data, data$RB> 0 & data$RF >= 0)
+                        
+                        ERRR <- (1- mean(R$RF)/mean(R$RB))
+                        term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
+                        term4R <- ifelse(mean(R$RF)==0,0,-2*cor(R$RB,R$RF)*sqrt(var(R$RF))*sqrt(var(R$RB))/(mean(R$RB)*mean(R$RF)))
+                        VARR <-  term1R*(term2R+term3R+term4R); varR <- VARR / length(R$RB)
+                        aR <- ((1-ERRR)**2)/varR; bR <- varR/(1-ERRR)
+                        ULR <- 1-qgamma(0.025,shape = aR, scale = bR)
+                        LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
+                        
+                        if(input$STHdrug == 1 | input$STHdrug ==2){
+                            par(mfrow=c(1,1))
+                            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Ascaris~lumbricoides)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                            t <- seq(0,85,1)
+                            t2 <- seq(85,95,1)
+                            t3 <- seq(95,100,1)
+                            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                            abline(v=100*ERRR, lwd=4)
+                        }
+                        else {
+                            par(mfrow=c(1,1))
+                            R <- rgamma(10000,shape = aR, scale = bR)
+                            hist(100*(1-R), main=expression(italic(Ascaris~lumbricoides)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                            axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                            abline(v=100*(1-qgamma(0.025,shape = aR, scale = bR)), lty=2,lwd=4)
+                            abline(v=100*(1-qgamma(0.975,shape = aR, scale = bR)), lty=2,lwd=4)
+                            abline(v=100*ERRR, lwd=4)
+                        }
+                        
+                    } else{  
+                        if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
+                        {
+                            data$TB <-  data[,input$Tbas]
+                            data$TF <-  data[,input$Tfol] 
+                            Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                            
+                            ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
+                            term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
+                            term4T <- ifelse(mean(Tr$TF)==0,0,-2*cor(Tr$TB,Tr$TF)*sqrt(var(Tr$TF))*sqrt(var(Tr$TB))/(mean(Tr$TB)*mean(Tr$TF)))
+                            VART <-  term1T*(term2T+term3T+term4T); varT <- VART / length(Tr$TB)
+                            aT <- ((1-ERRT)**2)/varT; bT <- varT/(1-ERRT)
+                            ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
+                            LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
+                            
+                            if(input$STHdrug == 1 | input$STHdrug ==2){
+                                par(mfrow=c(1,1))
+                                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Trichuris~trichiura)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                                t <- seq(0,40,1)
+                                t2 <- seq(40,50,1)
+                                t3 <- seq(50,100,1)
+                                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                                abline(v=100*ERRT, lwd=4)    
+                            } else {
+                                par(mfrow=c(1,1)) 
+                                T <- rgamma(10000,shape = aT, scale = bT)
+                                hist(100*(1-T), main=expression(italic(Trichuris~trichiura)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                                abline(v=100*(1-qgamma(0.025,shape = aT, scale = bT)), lty=2,lwd=4)
+                                abline(v=100*(1-qgamma(0.975,shape = aT, scale = bT)), lty=2,lwd=4)
+                                abline(v=100*ERRT, lwd=4)     
+                            }
+                            
+                        } else {  
+                            if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
+                            {
+                                data$HB <-  data[,input$Hbas] 
+                                data$HF <-  data[,input$Hfol] 
+                                H <- subset(data, data$HB> 0 & data$HF >= 0)
+                                
+                                ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
+                                term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
+                                term4H <- ifelse(mean(H$HF)==0,0,-2*cor(H$HB,H$HF)*sqrt(var(H$HF))*sqrt(var(H$HB))/(mean(H$HB)*mean(H$HF)))
+                                VARH <-  term1H*(term2H+term3H+term4H); varH <- VARH / length(H$HB)
+                                aH <- ((1-ERRH)**2)/varH; bH <- varH/(1-ERRH)
+                                ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
+                                LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
+                                
+                                par(mfrow=c(1,1))
+                                if (input$STHdrug==1){ 
+                                    plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                                    t <- seq(0,80,1)
+                                    t2 <- seq(80,90,1)
+                                    t3 <- seq(90,100,1)
+                                    polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                                    polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                                    polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                                    abline(v=100*ERRH, lwd=4)
+                                } else {
+                                    if(input$STHdrug == 2){
+                                        plot(c(0,100),c(0,5), ylab='', main='Hookworm',yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                                        t <- seq(0,60,1)
+                                        t2 <- seq(60,70,1)
+                                        t3 <- seq(70,100,1)
+                                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                                        abline(v=100*ERRH, lwd=4)
+                                    } else { 
+                                        H <- rgamma(10000,shape = aH, scale = bH)
+                                        hist(100*(1-H), main='Hookworm',ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                                        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                                        abline(v=100*(1-qgamma(0.025,shape = aH, scale = bH)), lty=2,lwd=4)
+                                        abline(v=100*(1-qgamma(0.975,shape = aH, scale = bH)), lty=2,lwd=4)
+                                        abline(v=100*ERRH, lwd=4)
+                                    }
+                                } 
+                            }
+                        }
+                    }
+                    
+                    
+                }
+            }
+        }
     }
 }

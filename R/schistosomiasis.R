@@ -646,3 +646,217 @@ equaled',round(100*ERRSJ,1),'percent (',round(100*LLSJ,1), ';',round(100*ULSJ,1)
         } 
     }
 }
+
+
+
+#' @title Plot of eggcount reduction of Schistosomiasis
+#' @description Plot of eggcount reduction of Schistosomiasis
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Shbas column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
+#' @param Shfol column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
+#' @param Smbas column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Smfol column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param drug either "Praziquantel (1x 40 mg/kg)" or "Other"
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- plot_paradrug_schistosomiasis_eggcount_reduction(x, drug = "Praziquantel (1x 40 mg/kg)")
+#' p <- plot_paradrug_schistosomiasis_eggcount_reduction(x, drug = "Other")
+plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object, 
+                                                    Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
+                                                    Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
+                                                    Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG", 
+                                                    drug = c("Praziquantel (1x 40 mg/kg)", "Other"),
+                                                    ...){
+    drug <- match.arg(drug)
+    drug <- list("Praziquantel (1x 40 mg/kg)" = 1, "Other" = 2)[[drug]]
+    data <- object$data
+    input <- list(Shbas = Shbas, Shfol = Shfol, 
+                  Smbas = Smbas, Smfol = Smfol, 
+                  Sjbas = Sjbas, Sjfol = Sjfol,
+                  Sdrug = drug)
+    
+    n <- nrow(data)
+    
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smf <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjf <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+    
+    data$inf <- mean(ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0))
+    data$inf2 <- mean(ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0))
+    if(mean(data$inf)==0 | mean(data$inf)==0) {}
+    else 
+    {
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smf)>-2 & mean(data$shf)> - 2){
+            data$shB <-  data[,input$Shbas]  
+            data$smB <-  data[,input$Smbas] 
+            data$shF <-  data[,input$Shfol]  
+            data$smF <-  data[,input$Smfol] 
+            sh <- subset(data, data$shB > 0 & data$shF >=0)
+            sm <- subset(data, data$smB > 0 & data$smF >=0)
+            ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+            term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+            term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+            VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+            aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+            
+            ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+            term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+            term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+            VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+            aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+            
+            
+            if(input$Sdrug==1) { 
+                
+                par(mfrow=c(1,2))
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~haematobium)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,80,1)
+                t2 <- seq(80,90,1)
+                t3 <- seq(90,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRSH, lwd=4)
+                
+                plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~mansoni)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                t <- seq(0,80,1)
+                t2 <- seq(80,90,1)
+                t3 <- seq(90,100,1)
+                polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                abline(v=100*ERRSM, lwd=4)
+                
+            } else { 
+                par(mfrow=c(1,2))
+                SH <- rgamma(10000,shape = aSH, scale = bSH)
+                hist(100*(1-SH),main=expression(italic(Schistosoma~haematobium)), ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aSH, scale = bSH)),lty= 2, lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aSH, scale = bSH)),lty=2, lwd=4)
+                abline(v=100*ERRSH, lwd=4)
+                
+                SM <- rgamma(10000,shape = aSM, scale = bSM)
+                hist(100*(1-SM), main=expression(italic(Schistosoma~mansoni)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                abline(v=100*(1-qgamma(0.025,shape = aSM, scale = bSM)), lty=2,lwd=4)
+                abline(v=100*(1-qgamma(0.975,shape = aSM, scale = bSM)), lty=2,lwd=4)
+                abline(v=100*ERRSM, lwd=4)
+            }
+            
+        } else {
+            if(mean(data$sh)>-2 & mean(data$shf)> - 2){
+                data$shB <-  data[,input$Shbas]  
+                data$shF <-  data[,input$Shfol]  
+                
+                sh <- subset(data, data$shB >0 &  data$shF >=0)
+                ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
+                term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
+                term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
+                VARSH <-  term1SH*(term2SH+term3SH+term4SH); varSH <- VARSH / length(sh$shB)
+                aSH <- ((1-ERRSH)**2)/varSH; bSH <- varSH/(1-ERRSH)
+                ULSH <- 1-qgamma(0.025,shape = aSH, scale = bSH)
+                LLSH <- 1-qgamma(0.975,shape = aSH, scale = bSH)
+                
+                if(input$Sdrug == 1) {           
+                    plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~haematobium)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                    t <- seq(0,80,1)
+                    t2 <- seq(80,90,1)
+                    t3 <- seq(90,100,1)
+                    polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                    polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                    polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                    abline(v=100*ERRSH, lwd=4)
+                } else { 
+                    par(mfrow=c(1,1))
+                    SH <- rgamma(10000,shape = aSH, scale = bSH)
+                    hist(100*(1-SH),main=expression(italic(Schistosoma~haematobium)), ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                    axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                    abline(v=100*(1-qgamma(0.025,shape = aSH, scale = bSH)),lty= 2, lwd=4)
+                    abline(v=100*(1-qgamma(0.975,shape = aSH, scale = bSH)),lty=2, lwd=4)
+                    abline(v=100*ERRSH, lwd=4)
+                }
+                
+            } else {
+                if(mean(data$sm)>-2 & mean(data$smf)> - 2){
+                    data$smB <-  data[,input$Smbas] 
+                    data$smF <-  data[,input$Smfol] 
+                    sm <- subset(data, data$smB >0 &  data$smF >=0)
+                    
+                    ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
+                    term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
+                    term4SM <- ifelse(mean(sm$smF)==0,0,-2*cor(sm$smB,sm$smF)*sqrt(var(sm$smF))*sqrt(var(sm$smB))/(mean(sm$smB)*mean(sm$smF)))
+                    VARSM <-  term1SM*(term2SM+term3SM+term4SM); varSM <- VARSM / length(sm$smB)
+                    aSM <- ((1-ERRSM)**2)/varSM; bSM <- varSM/(1-ERRSM)
+                    ULSM <- 1-qgamma(0.025,shape = aSM, scale = bSM)
+                    LLSM <- 1-qgamma(0.975,shape = aSM, scale = bSM)
+                    
+                    if(input$Sdrug == 1) { 
+                        par(mfrow=c(1,1))
+                        plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~mansoni)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                        t <- seq(0,80,1)
+                        t2 <- seq(80,90,1)
+                        t3 <- seq(90,100,1)
+                        polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                        polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                        polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                        abline(v=100*ERRSM, lwd=4)
+                    } else {
+                        par(mfrow=c(1,1))
+                        SM <- rgamma(10000,shape = aSM, scale = bSM)
+                        hist(100*(1-SM), main=expression(italic(Schistosoma~mansoni)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                        abline(v=100*(1-qgamma(0.025,shape = aSM, scale = bSM)), lty=2,lwd=4)
+                        abline(v=100*(1-qgamma(0.975,shape = aSM, scale = bSM)), lty=2,lwd=4)
+                        abline(v=100*ERRSM, lwd=4)
+                    }
+                    
+                } else {
+                    if(mean(data$sj)>-2 & mean(data$sjf)> - 2){
+                        data$sjB <-  data[,input$Sjbas] 
+                        data$sjF <-  data[,input$Sjfol] 
+                        sj <- subset(data, data$sjB >0 &  data$sjF >=0)
+                        ERRSJ <- (1- mean(sj$sjF)/mean(sj$sjB))
+                        term1SJ <- (mean(sj$sjF)/mean(sj$sjB))**2; term2SJ <- ifelse(mean(sj$sjF)==0,0,var(sj$sjF)/mean(sj$sjF)**2); term3SJ <- var(sj$sjB)/mean(sj$sjB)**2              
+                        term4SJ <- ifelse(mean(sj$sjF)==0,0,-2*cor(sj$sjB,sj$sjF)*sqrt(var(sj$sjF))*sqrt(var(sj$sjB))/(mean(sj$sjB)*mean(sj$sjF)))
+                        VARSJ <-  term1SJ*(term2SJ+term3SJ+term4SJ); varSJ <- VARSJ / length(sj$sjB)
+                        aSJ <- ((1-ERRSJ)**2)/varSJ; bSJ <- varSJ/(1-ERRSJ)
+                        ULSJ <- 1-qgamma(0.025,shape = aSJ, scale = bSJ)
+                        LLSJ <- 1-qgamma(0.975,shape = aSJ, scale = bSJ)
+                        
+                        if(input$Sdrug == 1) {
+                            par(mfrow=c(1,1))
+                            plot(c(0,100),c(0,5), ylab='', main=expression(italic(Schistosoma~japonicum)),yaxt='n', type='n', xlab= 'Drug efficacy (%)', bty='n')
+                            t <- seq(0,80,1)
+                            t2 <- seq(80,90,1)
+                            t3 <- seq(90,100,1)
+                            polygon(c(t,rev(t)),c(rep(0,length(t)), rep(5,length(t))),col="#EB4C4C", border=NA)
+                            polygon(c(t2,rev(t2)),c(rep(0,length(t2)), rep(5,length(t2))),col="grey", border=NA)
+                            polygon(c(t3,rev(t3)),c(rep(0,length(t3)), rep(5,length(t3))),col="#56A435", border=NA)
+                            abline(v=100*ERRSJ, lwd=4)   } else  {  
+                                SJ <- rgamma(10000,shape = aSJ, scale = bSJ)
+                                hist(100*(1-SJ), main=expression(italic(Schistosoma~japonicum)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
+                                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                                abline(v=100*(1-qgamma(0.025,shape = aSJ, scale = bSJ)), lty=2,lwd=4)
+                                abline(v=100*(1-qgamma(0.975,shape = aSJ, scale = bSJ)), lty=2,lwd=4)
+                                abline(v=100*ERRSJ, lwd=4)      }
+                    }
+                }
+            }
+        }
+    }
+}
