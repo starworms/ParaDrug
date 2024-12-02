@@ -339,3 +339,133 @@ plot_paradrug_schistosomiasis_eggcount  <- function(object,
         }
     }
 }
+
+
+#' @title Analysis of Schistosomiasis (follow)
+#' @description Analysis of Schistosomiasis (follow)
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Shbas column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
+#' @param Shfol column in name in object$data for Shbas/Shfol: S. haematobium, in eggs per 10 ml of urine - BASELINE/FOLLOW-UP
+#' @param Smbas column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Smfol column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param followup column in name in object$data for Number of days between the baseline and the follow-up survey
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- paradrug_schistosomiasis_follow(x)
+paradrug_schistosomiasis_follow <- function(object, 
+                                            Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
+                                            Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
+                                            Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG",
+                                            followup = "Age",
+                                                ...){
+    data <- object$data
+    input <- list(Shbas = Shbas, Shfol = Shfol, 
+                  Smbas = Smbas, Smfol = Smfol, 
+                  Sjbas = Sjbas, Sjfol = Sjfol,
+                  followup = followup)
+    
+    n <- nrow(data)
+    
+    # S haematobium
+    data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
+    data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
+    
+    # S mansoni
+    data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
+    data$smF <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
+    
+    
+    # S japonicum
+    data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
+    data$sjF <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
+    
+    data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
+    
+    if(mean(data$FU)==-2) {follow <- paste('No follow-up data was provided')}
+    else {
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2) & mean(data$FU>-2))
+        {
+            data$fol <-  data[,input$followup] 
+            data$shB <-  data[,input$Shbas]  
+            data$smB <-  data[,input$Smbas] 
+            data$shF2 <-  data[,input$Shfol]  
+            data$smF2 <-  data[,input$Smfol] 
+            data$shp <- ifelse(data$shB>0,1,0) 
+            data$smp <- ifelse(data$smB>0,1,0)
+            data$shf <- ifelse(data$shF2>=0,1,0) 
+            data$smf <- ifelse(data$smF2>=0,1,0) 
+            data$shc <- data$shp + data$shf
+            data$smc <- data$smp + data$smf
+            data2 <- subset(data, data$shc == 2 | data$smc == 2)
+            min <- round(quantile(data2$fol, probs=c(0)),1)
+            max <- round(quantile(data2$fol, probs=c(1)),1)
+            med <- round(quantile(data2$fol, probs=c(0.50)),1)
+            nc <- length(data2$fol)
+            ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+        }
+        else{ 
+            if(mean(data$sh)>-2 & mean(data$shF >-2) & mean(data$FU>-2)){
+                data$fol <-  data[,input$followup] 
+                data$shB <-  data[,input$Shbas]  
+                data$shF2 <-  data[,input$Shfol]  
+                data$shp <- ifelse(data$shB>0,1,0) 
+                data$shf <- ifelse(data$shF2>=0,1,0) 
+                data$shc <- data$shp + data$shf
+                data2 <- subset(data, data$shc == 2)
+                min <- round(min(data2$fol),1)
+                max <- round(max(data2$fol),1)
+                med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                nc <- length(data2$fol)
+                ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+            }
+            else{
+                if(mean(data$sm)>-2 & mean(data$smF)> -2 & mean(data$FU>-2)){
+                    data$fol <-  data[,input$followup]  
+                    data$smB <-  data[,input$Smbas] 
+                    data$smF2 <-  data[,input$Smfol] 
+                    data$smp <- ifelse(data$smB>0,1,0)
+                    data$smf <- ifelse(data$smF2>=0,1,0) 
+                    data$smc <- data$smp + data$smf
+                    data2 <- subset(data, data$smc == 2)
+                    min <- round(min(data2$fol),1)
+                    max <- round(max(data2$fol),1)
+                    med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                    nc <- length(data2$fol)
+                    ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')    }
+                
+                else{
+                    if(mean(data$sj)>-2 & mean(data$sjF) >- 2 & mean(data$FU>-2)){
+                        data$fol <-  data[,input$followup] 
+                        data$sjB <-  data[,input$Sjbas]  
+                        data$sjF2 <-  data[,input$Sjfol] 
+                        data$sjp <- ifelse(data$sjB>0,1,0)
+                        data$sjf <- ifelse(data$sjF2>=0,1,0) 
+                        data$sjc <- data$sjp + data$sjf
+                        data2 <- subset(data, data$sjc == 2)
+                        min <- round(min(data2$fol),1)
+                        max <- round(max(data2$fol),1)
+                        med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                        nc <- length(data2$fol)
+                        ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                        follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+                    }
+                    else{follow <- paste('No egg count data was provided.')}  
+                }   
+            }
+        } 
+    }
+}

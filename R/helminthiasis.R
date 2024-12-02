@@ -624,3 +624,238 @@ plot_paradrug_helminthiasis_eggcount <- function(object,
         } 
     }
 }
+
+
+#' @title Analysis of Helminthiasis (follow)
+#' @description Analysis of Helminthiasis (follow)
+#' @param object an object of class paradrug_rawdata as returned by \code{\link{read_paradrug_xls}}
+#' @param Rbas column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Rfol column in name in object$data for Rbas/Rfol: Ascaris lumbricoides, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tbas column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Tfol column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param followup column in name in object$data for Number of days between the baseline and the follow-up survey
+#' @param ... not used yet
+#' @export
+#' @return TODO
+#' @export
+#' @examples 
+#' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
+#' x <- read_paradrug_xls(path)
+#' p <- paradrug_helminthiasis_follow(x)
+paradrug_helminthiasis_follow <- function(object, 
+                                          Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+                                          Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
+                                          Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                          followup = "Age",
+                                          ...){
+    data <- object$data
+    input <- list(Rbas = Rbas, Rfol = Rfol, 
+                  Tbas = Tbas, Tfol = Tfol, 
+                  Hbas = Hbas, Hfol = Hfol,
+                  followup = followup)
+    
+    n <- nrow(data)
+    
+    # roundworms
+    data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
+    data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
+    
+    # whipworms
+    data$Tb <- ifelse(input$Tbas=='Not recorded',rep(-2,n), ifelse(data[,input$Tbas]>0,1,0))
+    data$Tf <- ifelse(input$Tfol=='Not recorded',rep(-2,n), ifelse(data[,input$Tfol]>=0,1,0))
+    
+    # hookworms
+    data$Hb <- ifelse(input$Hbas=='Not recorded',rep(-2,n), ifelse(data[,input$Hbas]>0,1,0))
+    data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
+    data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
+    
+    if(mean(data$FU)==-2) {follow<- paste('No egg count data was provided.')}
+    else {
+        
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+        {
+            data$fol <-  data[,input$followup] 
+            data$RB <-  data[,input$Rbas]  
+            data$TB <-  data[,input$Tbas] 
+            data$HB <-  data[,input$Hbas] 
+            
+            data$RF <-  data[,input$Rfol]  
+            data$TF <-  data[,input$Tfol]
+            data$HF <-  data[,input$Hfol]
+            
+            data$Rp <- ifelse(data$RB>0,1,0) 
+            data$Tp <- ifelse(data$TB>0,1,0)
+            data$Hp <- ifelse(data$HB>0,1,0)
+            
+            data$Rf <- ifelse(data$RF>=0,1,0) 
+            data$Tf <- ifelse(data$TF>=0,1,0) 
+            data$Hf <- ifelse(data$HF>=0,1,0) 
+            
+            data$Rc <- data$Rp + data$Rf
+            data$Tc <- data$Tp + data$Tf
+            data$Hc <- data$Hp + data$Hf
+            
+            data2 <- subset(data, data$Rc==2 | data$Tc ==2 | data$Hc ==2)
+            min <- round(quantile(data2$fol, probs=c(0)),1)
+            max <- round(quantile(data2$fol, probs=c(1)),1)
+            med <- round(quantile(data2$fol, probs=c(0.50)),1)
+            nc <- length(data2$fol)
+            ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+        }
+        
+        
+        else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2))
+            {
+                data$fol <-  data[,input$followup] 
+                data$RB <-  data[,input$Rbas]  
+                data$TB <-  data[,input$Tbas] 
+                data$RF <-  data[,input$Rfol]  
+                data$TF <-  data[,input$Tfol]
+                data$Rp <- ifelse(data$RB>0,1,0) 
+                data$Tp <- ifelse(data$TB>0,1,0)
+                data$Rf <- ifelse(data$RF>=0,1,0) 
+                data$Tf <- ifelse(data$TF>=0,1,0) 
+                data$Rc <- data$Rp + data$Rf
+                data$Tc <- data$Tp + data$Tf
+                
+                data2 <- subset(data, data$Rc==2 | data$Tc ==2)
+                min <- round(quantile(data2$fol, probs=c(0)),1)
+                max <- round(quantile(data2$fol, probs=c(1)),1)
+                med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                nc <- length(data2$fol)
+                ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                
+            }
+            
+            else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+                {
+                    
+                    data$RB <-  data[,input$Rbas]  
+                    data$HB <-  data[,input$Hbas] 
+                    
+                    data$RF <-  data[,input$Rfol]  
+                    data$HF <-  data[,input$Hfol]
+                    
+                    data$Rp <- ifelse(data$RB>0,1,0) 
+                    data$Hp <- ifelse(data$HB>0,1,0)
+                    
+                    data$Rf <- ifelse(data$RF>=0,1,0) 
+                    data$Hf <- ifelse(data$HF>=0,1,0) 
+                    
+                    data$Rc <- data$Rp + data$Rf
+                    data$Hc <- data$Hp + data$Hf
+                    data$fol <-  data[,input$followup] 
+                    data2 <- subset(data, data$Rc==2 | data$Hc ==2)
+                    min <- round(quantile(data2$fol, probs=c(0)),1)
+                    max <- round(quantile(data2$fol, probs=c(1)),1)
+                    med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                    nc <- length(data2$fol)
+                    ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                    
+                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                    
+                }
+                
+                else{
+                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+                    {
+                        data$fol <-  data[,input$followup] 
+                        data$TB <-  data[,input$Tbas] 
+                        data$HB <-  data[,input$Hbas] 
+                        
+                        data$TF <-  data[,input$Tfol]
+                        data$HF <-  data[,input$Hfol]
+                        
+                        data$Tp <- ifelse(data$TB>0,1,0)
+                        data$Hp <- ifelse(data$HB>0,1,0)
+                        
+                        data$Tf <- ifelse(data$TF>=0,1,0) 
+                        data$Hf <- ifelse(data$HF>=0,1,0) 
+                        
+                        data$Tc <- data$Tp + data$Tf
+                        data$Hc <- data$Hp + data$Hf
+                        
+                        data2 <- subset(data, data$Tc ==2 | data$Hc ==2)
+                        min <- round(quantile(data2$fol, probs=c(0)),1)
+                        max <- round(quantile(data2$fol, probs=c(1)),1)
+                        med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                        nc <- length(data2$fol)
+                        ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                        follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                    }
+                    else{
+                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2 & mean(data$FU>-2))
+                        {
+                            data$fol <-  data[,input$followup] 
+                            data$RB <-  data[,input$Rbas]  
+                            data$RF <-  data[,input$Rfol]  
+                            data$Rp <- ifelse(data$RB>0,1,0) 
+                            data$Rf <- ifelse(data$RF>=0,1,0) 
+                            data$Rc <- data$Rp + data$Rf
+                            data2 <- subset(data, data$Rc==2)
+                            min <- round(quantile(data2$fol, probs=c(0)),1)
+                            max <- round(quantile(data2$fol, probs=c(1)),1)
+                            med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                            nc <- length(data2$fol)
+                            ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                        }
+                        
+                        else{
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2))
+                            {
+                                data$fol <-  data[,input$followup] 
+                                data$TB <-  data[,input$Tbas] 
+                                data$TF <-  data[,input$Tfol]
+                                data$Tp <- ifelse(data$TB>0,1,0)
+                                data$Tf <- ifelse(data$TF>=0,1,0) 
+                                data$Tc <- data$Tp + data$Tf
+                                data2 <- subset(data,data$Tc ==2)
+                                min <- round(quantile(data2$fol, probs=c(0)),1)
+                                max <- round(quantile(data2$fol, probs=c(1)),1)
+                                med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                                nc <- length(data2$fol)
+                                ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
+                                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')   }
+                            
+                            else{
+                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
+                                {
+                                    data$fol <-  data[,input$followup] 
+                                    data$HB <-  data[,input$Hbas] 
+                                    data$HF <-  data[,input$Hfol]
+                                    data$Hp <- ifelse(data$HB>0,1,0)
+                                    data$Hf <- ifelse(data$HF>=0,1,0) 
+                                    data$Hc <- data$Hp + data$Hf
+                                    
+                                    data2 <- subset(data, Hc ==2)
+                                    min <- round(quantile(data2$fol, probs=c(0)),1)
+                                    max <- round(quantile(data2$fol, probs=c(1)),1)
+                                    med <- round(quantile(data2$fol, probs=c(0.50)),1)
+                                    nc <- length(data2$fol)
+                                    ncont <- sum(ifelse(data2$fol>=7 & data2$fol<=21,1,0))
+                                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.') 
+                                }
+                                
+                                else{follow <- paste('No egg count data was provided.')}
+                            }
+                        }
+                    }  
+                }   
+            }
+        } 
+    }
+}
