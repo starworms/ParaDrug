@@ -20,6 +20,8 @@ read_paradrug_xls <- function(x, sheet = 1){
     }else{
         data <- read_excel(x, sheet = sheet)
     }
+    data <- unclass(data)
+    class(data) <- "data.frame"
     n <- nrow(data)
     out <- list(data = data, n = n)
     class(out) <- "paradrug_rawdata"
