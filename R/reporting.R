@@ -60,30 +60,29 @@
 #' report <- paradrug_report(x, params = params)
 #' 
 #' \dontshow{
-#' invisible(file.remove(report$output))
+#' invisible(if(file.exists(report$output)) file.remove(report$output))
 #' }
 paradrug_report <- function(x, params = list(), version = c("1.1", "1.0"), ...){
     stopifnot(inherits(x, "paradrug_rawdata"))
     version <- match.arg(version)
+    oldwd <- getwd()
     if(version == "1.0"){
         report_source <- system.file(package = "ParaDrug", "apps", "paradrug-1.0", "input2.Rnw")
+        setwd(system.file(package = "ParaDrug", "apps", "paradrug-1.0"))
     }else if(version == "1.1"){
         report_source <- system.file(package = "ParaDrug", "apps", "paradrug-1.1", "input2.Rnw")
+        setwd(system.file(package = "ParaDrug", "apps", "paradrug-1.1"))
     }
+    on.exit(setwd(oldwd))
     if(!missing(params)){
         input <- params
     }
-    oldwd <- getwd()
-    setwd(system.file(package = "ParaDrug", "apps", "paradrug-1.0"))
-    on.exit(setwd(oldwd))
-    
     PARADRUG = x
     rm(x)
     
-    
     out <- knit2pdf(report_source, clean = TRUE)
     new <- file.path(oldwd, "report.pdf")
-    new <- file.copy(from = out, to = new, overwrite = TRUE)
+    file.copy(from = out, to = new, overwrite = TRUE)
     out <- list(
         report = basename(report_source),
         output = new,

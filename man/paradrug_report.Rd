@@ -75,6 +75,6 @@ params <- list(
 report <- paradrug_report(x, params = params)
 
 \dontshow{
-invisible(file.remove(report$output))
+invisible(if(file.exists(report$output)) file.remove(report$output))
 }
 }
