@@ -113,10 +113,10 @@ if (is.null(inFile)) {
 } else {
     if (input$NTD == "1") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        plot.paradrug_schistosomiasis_eggcount(PARADRUG)
+        plot_paradrug_schistosomiasis_eggcount(PARADRUG)
     } else if (input$NTD == "2") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        plot.paradrug_helminthiasis_eggcount(PARADRUG)
+        plot_paradrug_helminthiasis_eggcount(PARADRUG)
     }
 }
 @
