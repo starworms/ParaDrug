@@ -11,6 +11,8 @@ paradrug_report(x, params = list(), version = c("1.1", "1.0"), ...)
 
 \item{params}{a list of options with elements}
 
+\item{version}{string with the version, either '1.0', or '1.1'}
+
 \item{...}{not used yet}
 }
 \value{

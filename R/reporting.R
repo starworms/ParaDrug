@@ -3,7 +3,7 @@
 #' @description Create a Paradrug report
 #' @param x an object as returned by \code{\link{read_paradrug_xls}}
 #' @param params a list of options with elements
-#' @params version string with the version, either '1.0', or '1.1'
+#' @param version string with the version, either '1.0', or '1.1'
 #' @param ... not used yet
 #' @export
 #' @details
