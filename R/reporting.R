@@ -58,6 +58,10 @@
 #'     Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG",
 #'     followup = "Not recorded")
 #' report <- paradrug_report(x, params = params)
+#' 
+#' \dontshow{
+#' invisible(file.remove(report$output))
+#' }
 paradrug_report <- function(x, params = list(), version = c("1.1", "1.0"), ...){
     stopifnot(inherits(x, "paradrug_rawdata"))
     version <- match.arg(version)
