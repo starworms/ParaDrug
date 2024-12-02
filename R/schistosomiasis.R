@@ -752,7 +752,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
                 
                 SM <- rgamma(10000,shape = aSM, scale = bSM)
                 hist(100*(1-SM), main=expression(italic(Schistosoma~mansoni)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
-                axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                axis(side=2, at=seq(0,10000,1000),labels = seq(0,100,10))
                 abline(v=100*(1-qgamma(0.025,shape = aSM, scale = bSM)), lty=2,lwd=4)
                 abline(v=100*(1-qgamma(0.975,shape = aSM, scale = bSM)), lty=2,lwd=4)
                 abline(v=100*ERRSM, lwd=4)
@@ -819,7 +819,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
                         par(mfrow=c(1,1))
                         SM <- rgamma(10000,shape = aSM, scale = bSM)
                         hist(100*(1-SM), main=expression(italic(Schistosoma~mansoni)),ylab='Frequency (%)',yaxt='n', col='grey',xlab='Egg reduction rate (%)')
-                        axis(side=2, at=seq(0,10000,1000),lab = seq(0,100,10))
+                        axis(side=2, at=seq(0,10000,1000),labels = seq(0,100,10))
                         abline(v=100*(1-qgamma(0.025,shape = aSM, scale = bSM)), lty=2,lwd=4)
                         abline(v=100*(1-qgamma(0.975,shape = aSM, scale = bSM)), lty=2,lwd=4)
                         abline(v=100*ERRSM, lwd=4)
