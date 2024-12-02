@@ -42,7 +42,8 @@
 #'     Tbas = "Not recorded", Tfol = "Not recorded", 
 #'     Hbas = "Not recorded", Hfol = "Not recorded",
 #'     followup = "Not recorded")
-#' report <- paradrug_report(x, params = params)
+#' report <- paradrug_report(x, params = params, version = "1.1")
+#' report <- paradrug_report(x, params = params, version = "1.0")
 #' params <- list(
 #'     Country = "a not further specified country", 
 #'     Name = "Unknown", 
@@ -75,10 +76,13 @@ paradrug_report <- function(x, params = list(), version = c("1.1", "1.0"), ...){
     PARADRUG = x
     rm(x)
     
+    
     out <- knit2pdf(report_source, clean = TRUE)
+    new <- file.path(oldwd, "report.pdf")
+    new <- file.copy(from = out, to = new, overwrite = TRUE)
     out <- list(
         report = basename(report_source),
-        output = out,
+        output = new,
         params = params
     )
     out

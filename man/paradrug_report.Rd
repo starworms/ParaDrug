@@ -57,7 +57,8 @@ params <- list(
     Tbas = "Not recorded", Tfol = "Not recorded", 
     Hbas = "Not recorded", Hfol = "Not recorded",
     followup = "Not recorded")
-report <- paradrug_report(x, params = params)
+report <- paradrug_report(x, params = params, version = "1.1")
+report <- paradrug_report(x, params = params, version = "1.0")
 params <- list(
     Country = "a not further specified country", 
     Name = "Unknown", 
