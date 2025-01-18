@@ -15,11 +15,11 @@ paradrugServer(input, output, session)
 
 \item{...}{not used}
 
-\item{input}{TODO}
+\item{input}{Shiny inputs}
 
-\item{output}{TODO}
+\item{output}{Shiny outputs}
 
-\item{session}{TODO}
+\item{session}{Shiny session}
 }
 \value{
 \code{paradrugUI} returns the the ui elements of the Paradrug app.\cr

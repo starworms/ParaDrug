@@ -292,15 +292,25 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
 }
 
 #' @name paradrugShiny
-#' @param input TODO
-#' @param output TODO
-#' @param session TODO
+#' @param input Shiny inputs
+#' @param output Shiny outputs
+#' @param session Shiny session
 #' @export
 paradrugServer <- function(input, output, session){
-    HB <- HF <- Hc <- RB <- RF <- Rc <- STHdrug <- TB <- TF <- Tc <- read.xlsx <- shB <- shF <- shc <- sjB <- sjF <- smB <- smF <- smc <- NULL
-    requireNamespace("xlsx")
+    HB <- HF <- Hc <- RB <- RF <- Rc <- STHdrug <- TB <- TF <- Tc <- shB <- shF <- shc <- sjB <- sjF <- smB <- smF <- smc <- NULL
     requireNamespace("knitr")
     requireNamespace("shiny")
+    paradrug_data <- eventReactive(input$file1, {
+        data <- list(n = 0, data = data.frame(), fields = character())
+        if(!is.null(input$file1$datapath)){
+            msg <- try(data <- read_paradrug_xls(input$file1$datapath))
+            if(inherits(msg, "try-error")){
+                showNotification(as.character(msg), type = "error")
+            }
+        }
+        data   
+    }, ignoreNULL = TRUE, ignoreInit = TRUE)
+    
     #library(evaluate)
     #Step1: number of subjects in trial
     number <- eventReactive(input$basedata, {
@@ -310,9 +320,9 @@ paradrugServer <- function(input, output, session){
             if (is.null(inFile))
             {paste0(('Please upload data.'))
             } else {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1)
-            data$n <- 1
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             # S haematobium
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
@@ -410,8 +420,9 @@ paradrugServer <- function(input, output, session){
                     # Soil-transmitted helminthiasis
                     if (input$NTD=='2')
                     {
-                        data <- read.xlsx(inFile$datapath,1)
-                        n <- length(data[,1])
+                        PARADRUG <- paradrug_data()
+                        data     <- PARADRUG$data
+                        n        <- PARADRUG$n
                         # roundworms
                         data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                         data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -617,8 +628,9 @@ paradrugServer <- function(input, output, session){
             if (is.null(inFile))
             {paste0('Please upload data.')
             } else {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1)
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             # S haematobium
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
@@ -730,8 +742,9 @@ high-intensity <em>S. japonicum</em> infections were observed in',NsjL,'(',round
                     # Number of cases of soil-transmitted helminthiasis
                     if (input$NTD=='2')
                     {
-                        data <- read.xlsx(inFile$datapath,1)
-                        n <- length(data[,1])
+                        PARADRUG <- paradrug_data()
+                        data     <- PARADRUG$data
+                        n        <- PARADRUG$n
                         # roundworms
                         data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                         data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -998,8 +1011,9 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
             if (is.null(inFile))
             {paste('Please upload data.') 
             } else {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1) 
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
             
@@ -1050,8 +1064,9 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
             }
             }
                 else  {if (input$NTD=='2'){
-                    data <- read.xlsx(inFile$datapath,1)
-                    n <- length(data[,1])
+                    PARADRUG <- paradrug_data()
+                    data     <- PARADRUG$data
+                    n        <- PARADRUG$n
                     # roundworms
                     data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                     data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -1182,8 +1197,9 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
             if (is.null(inFile))
             {paste0('Please upload data.')
             } else {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1)
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             # S haematobium
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
@@ -1284,8 +1300,9 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                     # Number of cases of soil-transmitted helminthiasis
                     if (input$NTD=='2')
                     {
-                        data <- read.xlsx(inFile$datapath,1)
-                        n <- length(data[,1])
+                        PARADRUG <- paradrug_data()
+                        data     <- PARADRUG$data
+                        n        <- PARADRUG$n
                         # roundworms
                         data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                         data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -1508,9 +1525,9 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
             if (is.null(inFile))
             {paste('Please upload data.')
             } else  {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1)
-            data$n <- 1
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             # S haematobium
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
@@ -1653,8 +1670,9 @@ equaled',round(100*ERRSJ,1),'% (',round(100*LLSJ,1), ';',round(100*ULSJ,1),').
                     # Soil-transmitted helminthiasis
                     if (input$NTD=='2')
                     {
-                        data <- read.xlsx(inFile$datapath,1)
-                        n <- length(data[,1])
+                        PARADRUG <- paradrug_data()
+                        data     <- PARADRUG$data
+                        n        <- PARADRUG$n
                         # roundworms
                         data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                         data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -1949,9 +1967,9 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
             if (is.null(inFile))
             {paste0('Please upload data.')
             } else {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1)
-            data$n <- 1
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             # S haematobium
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
@@ -2082,8 +2100,9 @@ it is recommended to contact World Health Organization
                     # Soil-transmitted helminthiasis
                     if (input$NTD=='2')
                     {
-                        data <- read.xlsx(inFile$datapath,1)
-                        n <- length(data[,1])
+                        PARADRUG <- paradrug_data()
+                        data     <- PARADRUG$data
+                        n        <- PARADRUG$n
                         # roundworms
                         data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                         data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -2595,8 +2614,9 @@ it is recommended to contact World Health Organization
             if (is.null(inFile))
             {paste('Please upload data.')
             } else {if (input$NTD=='1')
-            {data <- read.xlsx(inFile$datapath,1) 
-            n <- length(data[,1])
+            {PARADRUG <- paradrug_data()
+            data     <- PARADRUG$data
+            n        <- PARADRUG$n
             data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
             data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
             
@@ -2773,8 +2793,9 @@ it is recommended to contact World Health Organization
                 }
             }
             } else  {if (input$NTD=='2'){
-                data <- read.xlsx(inFile$datapath,1)
-                n <- length(data[,1])
+                PARADRUG <- paradrug_data()
+                data     <- PARADRUG$data
+                n        <- PARADRUG$n
                 # roundworms
                 data$Rb <- ifelse(input$Rbas=='Not recorded',rep(-2,n), ifelse(data[,input$Rbas]>0,1,0))
                 data$Rf <- ifelse(input$Rfol=='Not recorded',rep(-2,n), ifelse(data[,input$Rfol]>=0,1,0))
@@ -3285,27 +3306,28 @@ it is recommended to contact World Health Organization
     
     ## Matching headers with input    
     observe({ 
-        inFile <- input$file1
-        if (is.null(inFile))
-            return(NULL)
-        data <- read.xlsx(inFile$datapath,1)
-        updateSelectInput(session,'baseline',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'incl',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'age',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'sex',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Shbas',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Smbas',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Sjbas',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Rbas',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Tbas',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Hbas',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'followup',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Shfol',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Smfol',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Sjfol',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Rfol',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Tfol',choices=c('Not recorded',names(data)))
-        updateSelectInput(session,'Hfol',choices=c('Not recorded',names(data)))
+        PARADRUG <- paradrug_data()
+        print(str(PARADRUG))
+        data     <- PARADRUG$data
+        n        <- PARADRUG$n
+        fields   <- PARADRUG$fields
+        updateSelectInput(session,'baseline',choices=c('Not recorded', fields))
+        updateSelectInput(session,'incl',choices=c('Not recorded', fields))
+        updateSelectInput(session,'age',choices=c('Not recorded', fields))
+        updateSelectInput(session,'sex',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Shbas',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Smbas',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Sjbas',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Rbas',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Tbas',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Hbas',choices=c('Not recorded', fields))
+        updateSelectInput(session,'followup',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Shfol',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Smfol',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Sjfol',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Rfol',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Tfol',choices=c('Not recorded', fields))
+        updateSelectInput(session,'Hfol',choices=c('Not recorded', fields))
     })
     output$report = downloadHandler(
         filename = 'report.pdf',
