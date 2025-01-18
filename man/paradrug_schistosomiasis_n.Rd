@@ -45,4 +45,5 @@ Analysis of Schistosomiasis (subjects)
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 x <- read_paradrug_xls(path)
 p <- paradrug_schistosomiasis_n(x)
+p <- paradrug_schistosomiasis_n(x, type = "markdown")
 }

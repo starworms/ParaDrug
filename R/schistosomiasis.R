@@ -17,6 +17,7 @@
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
 #' p <- paradrug_schistosomiasis_n(x)
+#' p <- paradrug_schistosomiasis_n(x, type = "markdown")
 paradrug_schistosomiasis_n <- function(object, 
                             Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                             Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
@@ -47,10 +48,11 @@ paradrug_schistosomiasis_n <- function(object,
     data$inf2 <- ifelse(data$shF > -2 | data$smF > -2 | data$sjF > -2, 1, 0)
     
     
-    if(mean(data$inf)==0 | mean(data$inf2) == 0) {number <- paste('No egg count data was provided.')}
-    else {
-        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shF)>-2 & mean(data$smF)>-2)
-        {
+    if(mean(data$inf)==0 | mean(data$inf2) == 0) {
+        number <- paste('No egg count data was provided.')
+        number_md <- paste('Please provide egg count data.')
+    }else {
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shF)>-2 & mean(data$smF)>-2){
             n <- length(data[,1])
             data$shB <-  data[,input$Shbas]  
             data$smB <-  data[,input$Smbas] 
@@ -75,10 +77,14 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                           were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). 
                         Complete data were available for', com, 'subjects, 
                         including', nsh2, 'cases of $S.$ $haematobium$, and', nsm2, 'cases of $S.$ $mansoni$.')
-        }
-        else{
-            if(mean(data$sh)>-2 & mean(data$shF)>-2)
-            {
+            number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. 
+<em>Schistosoma haematobium</em> infections were observed in', nsh, 'subjects (', round(100*nsh/n,1), '% ), 
+<em>S. mansoni</em> infections in', nsm, 'subjects (', round(100*nsm/n,1),'% ). Mixed <em>Schistosoma</em> infections 
+                          were observed in', mix, 'subjects (', round(100*mix/n,1), '% ). 
+                        Complete data were available for', com, 'subjects, 
+                        including', nsh2, 'cases of <em>S. haematobium</em>, and', nsm2, 'cases of <em>S. mansoni</em>.')
+        }else{
+            if(mean(data$sh)>-2 & mean(data$shF)>-2){
                 n <- length(data[,1])
                 data$shB <-  data[,input$Shbas]  
                 data$shF <-  data[,input$Shfol]  
@@ -89,8 +95,9 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                 nsh2 <- dim(subset(data, data$shB>0 & data$shF>=0))[1]
                 number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $haematobium$ infections were observed in', nsh, 
                                 'subjects (', round(100*nsh/n,1), 'percent ). Complete data were available for', nsh2, 'subjects.')
-            }
-            else{
+                number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma haematobium</em> infections were observed in', nsh, 
+                                   'subjects (', round(100*nsh/n,1), '% ). Complete data were available for', nsh2, 'subjects.')
+            }else{
                 if(mean(data$sm)>-2 & mean(data$smF)>-2){
                     n <- length(data[,1])
                     data$smB <-  data[,input$Smbas] 
@@ -102,9 +109,9 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                     nsm2 <- dim(subset(data, data$smB>0 & data$smF>=0))[1]
                     number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $mansoni$ infections were observed in', nsm, 
                                     'subjects (', round(100*nsm/n,1), 'percent ). Complete data were available for', nsm2, 'subjects.')
-                    
-                }
-                else{
+                    number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma mansoni</em> infections were observed in', nsm, 
+                                       'subjects (', round(100*nsm/n,1), '% ). Complete data were available for', nsm2, 'subjects.')
+                }else{
                     if(mean(data$sj)>-2 & mean(data$sjF>-2)){
                         n <- length(data[,1])
                         data$sjB <-  data[,input$Sjbas] 
@@ -115,13 +122,17 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                         nsj <- dim(subset(data, data$sjB>0))[1]
                         nsj2 <- dim(subset(data, data$sjB>0 & data$sjF>=0))[1]
                         number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $japonicum$ infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), 'percent ). Complete data was available for', nsj2, 'subjects')
-                        
-                        
-                    }
-                    else{number <- paste('No egg count data was provided.')}  
+                        number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma japonicum</em> infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), '% ). Complete data was available for', nsj2, 'subjects')
+                    }else{
+                        number <- paste('No egg count data was provided.')
+                        number_md <- paste('Please match egg count data.')
+                    }  
                 }   
             }
         } 
+    }
+    if(type == "markdown"){
+        number <- number_md
     }
     number
 }
