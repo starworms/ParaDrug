@@ -927,6 +927,12 @@ paradrug_helminthiasis_follow <- function(object,
 #' p <- paradrug_helminthiasis_eggreduction(x, drug = "Albendazole (1x 400 mg)")
 #' p <- paradrug_helminthiasis_eggreduction(x, drug = "Mebendazole (1x 500 mg)")
 #' p <- paradrug_helminthiasis_eggreduction(x, drug = "Other")
+#' p <- paradrug_helminthiasis_eggreduction(x, drug = "Albendazole (1x 400 mg)",
+#'                                          type = "markdown")
+#' p <- paradrug_helminthiasis_eggreduction(x, drug = "Mebendazole (1x 500 mg)",
+#'                                          type = "markdown")
+#' p <- paradrug_helminthiasis_eggreduction(x, drug = "Other",
+#'                                          type = "markdown")
 paradrug_helminthiasis_eggreduction <- function(object, 
                                                 Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                                 Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
@@ -960,10 +966,11 @@ paradrug_helminthiasis_eggreduction <- function(object,
     data$inf <- ifelse(data$Rb > -2 | data$Tb > -2 | data$Hb > -2, 1, 0)
     data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
     
-    if(mean(data$inf)==0 | mean(data$inf2)==0 ) {err <- paste('No egg count data was provided.')}
-    else {
-        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
-        {
+    if(mean(data$inf)==0 | mean(data$inf2)==0 ) {
+        err    <- paste('No egg count data was provided.')
+        err_md <- paste('Please provide egg count data.')
+    }else {
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2){
             data$RB <-  data[,input$Rbas]  
             data$TB <-  data[,input$Tbas]
             data$HB <-  data[,input$Hbas] 
@@ -999,23 +1006,34 @@ paradrug_helminthiasis_eggreduction <- function(object,
             LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
             
             if(input$STHdrug == 1 | input$STHdrug == 2) { 
-                err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                   For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', round(100*ULT,1),').
 For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', round(100*ULH,1),').
 The figures below classify the ERR estimates according to the WHO thresholds. 
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
-            } else{err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For <em>T. trichiura</em>, the ERR equaled',round(100*ERRT,1),'% (',round(100*LLT,1),';', round(100*ULT,1),').
+For hookworms, the ERR equaled',round(100*ERRH,1),'% (',round(100*LLH,1),';', round(100*ULH,1),').
+The figures below classify the ERR estimates according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+            }else{
+                err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                   For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', 
                                 round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),
                                 ';', round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
                 estimates.')
-            
+                err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For <em>T. trichiura</em>, the ERR equaled',round(100*ERRT,1),'% (',round(100*LLT,1),';', 
+                                round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'% (',round(100*LLH,1),
+                                ';', round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight lines represent the point 
+                estimates.')
             }
-        } else{ 
-            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
-            {
+        }else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2){
                 data$RB <-  data[,input$Rbas]  
                 data$TB <-  data[,input$Tbas]
                 data$RF <-  data[,input$Rfol]  
@@ -1039,19 +1057,28 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                 ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
                 LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
                 if(input$STHdrug == 1 | input$STHdrug == 2) { 
-                    err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                    err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                   For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', round(100*ULT,1),'). The figures below classify the ERR estimates according to the WHO thresholds.  
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
-                } else {err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                    err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For <em>T. trichiura</em>, the ERR equaled',round(100*ERRT,1),'% (',round(100*LLT,1),';', round(100*ULT,1),'). The figures below classify the ERR estimates according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                }else {
+                    err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                   For $T.$ $trichiura$, the ERR equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', 
                                      round(100*ULT,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
                 estimates.')
+                    err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                  For <em>T. trichiura</em>, the ERR equaled',round(100*ERRT,1),'% (',round(100*LLT,1),';', 
+                                    round(100*ULT,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight lines represent the point 
+                estimates.')
                 }
-            } else {
-                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
-                {
+            }else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2){
                     data$RB <-  data[,input$Rbas]  
                     data$HB <-  data[,input$Hbas] 
                     data$RF <-  data[,input$Rfol]  
@@ -1075,21 +1102,30 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                     ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
                     LLH <- 1-qgamma(0.975,shape = aH, scale = bH)   
                     if(input$STHdrug == 1 | input$STHdrug == 2){ 
-                        err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',
+                        err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',
                                      round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                       For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', round(100*ULH,1),'). The figures below classify the ERR estimates according to the WHO thresholds. 
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
-                    } else { err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                        err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',
+                                        round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                      For hookworms, the ERR equaled',round(100*ERRH,1),'% (',round(100*LLH,1),';', round(100*ULH,1),'). The figures below classify the ERR estimates according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                    }else { 
+                        err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                       For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', 
                                           round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
                 estimates.')
-                    
+                        err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                      For hookworms, the ERR equaled',round(100*ERRH,1),'% (',round(100*LLH,1),';', 
+                                        round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight lines represent the point 
+                estimates.')
                     }
-                } else {
-                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
-                    {
+                }else{
+                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2){
                         data$TB <-  data[,input$Tbas]
                         data$HB <-  data[,input$Hbas] 
                         data$TF <-  data[,input$Tfol] 
@@ -1113,23 +1149,32 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                         ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
                         LLH <- 1-qgamma(0.975,shape = aH, scale = bH)
                         if(input$STHdrug == 1 | input$STHdrug == 2){
-                            err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent 
+                            err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent 
 (',round(100*LLT,1),';', round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent (',round(100*LLH,1),';', round(100*ULH,1),'). 
 The figures below classify the ERR estimates according to the WHO thresholds. 
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
-                        } else {err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the 
+                            err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>T. trichiura</em> equaled',round(100*ERRT,1),'% 
+(',round(100*LLT,1),';', round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'% (',round(100*LLH,1),';', round(100*ULH,1),'). 
+The figures below classify the ERR estimates according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                        }else{
+                            err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the 
                                 drug $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';',
-                                             round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent 
+                                         round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'percent 
                                 (',round(100*LLH,1),';', round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight lines represent the point 
                 estimates.')
-                        
+                            err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the 
+                                drug <em>T. trichiura</em> equaled',round(100*ERRT,1),'% (',round(100*LLT,1),';',
+                                            round(100*ULT,1),'). For hookworms, the ERR equaled',round(100*ERRH,1),'% 
+                                (',round(100*LLH,1),';', round(100*ULH,1),'). The figures below illustrate the uncertainty around the ERR point estimates. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight lines represent the point 
+                estimates.')
                         }
-                        
-                    } else {
-                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
-                        {
+                    }else{
+                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2){
                             data$RB <-  data[,input$Rbas]  
                             data$RF <-  data[,input$Rfol]  
                             R <- subset(data, data$RB> 0 & data$RF >= 0)
@@ -1143,20 +1188,28 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                             LLR <- 1-qgamma(0.975,shape = aR, scale = bR)
                             
                             if(input$STHdrug == 1 | input$STHdrug == 2){
-                                err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                                err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), ';',round(100*ULR,1), ').
                       The figure below classifies the ERR estimate according to the WHO thresholds. 
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
-                            } else {err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug 
+                                err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), ';',round(100*ULR,1), ').
+                      The figure below classifies the ERR estimate according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                            }else {
+                                err    <- paste('The egg reduction rate (95 percent confidence intervals) of the drug 
                                   against $A.$ $lumbricoides$ equaled',round(100*ERRR,1),'percent (',round(100*LLR,1), 
-                                                 ';',round(100*ULR,1), '). The figure below illustrates the uncertainty around the ERR point estimate. 
+                                             ';',round(100*ULR,1), '). The figure below illustrates the uncertainty around the ERR point estimate. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
                 estimate.')
-                            
+                                err_md <- paste('The egg reduction rate (95% confidence intervals) of the drug 
+                                  against <em>A. lumbricoides</em> equaled',round(100*ERRR,1),'% (',round(100*LLR,1), 
+                                                ';',round(100*ULR,1), '). The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight line represents the point 
+                estimate.')
                             } 
-                        } else {
-                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
-                            {
+                        }else{
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2){
                                 data$TB <-  data[,input$Tbas]
                                 data$TF <-  data[,input$Tfol] 
                                 Tr <- subset(data, data$TB> 0 & data$TF >= 0)
@@ -1169,21 +1222,28 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                 ULT <- 1-qgamma(0.025,shape = aT, scale = bT)
                                 LLT <- 1-qgamma(0.975,shape = aT, scale = bT)
                                 if(input$STHdrug == 1 | input$STHdrug == 2){
-                                    err <- paste('The egg reduction rate (ERRR; 95 percent confidence intervals) of the drug against $T.$ $trichiura$ equaled',round(100*ERRT,1),
+                                    err    <- paste('The egg reduction rate (ERRR; 95 percent confidence intervals) of the drug against $T.$ $trichiura$ equaled',round(100*ERRT,1),
                                                  'percent (',round(100*LLT,1),';', round(100*ULT,1),'). The figure below classifies the ERR estimate according to the WHO thresholds. 
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                                    err_md <- paste('The egg reduction rate (ERRR; 95% confidence intervals) of the drug against <em>T. trichiura</em> equaled',round(100*ERRT,1),
+                                                    '% (',round(100*LLT,1),';', round(100*ULT,1),'). The figure below classifies the ERR estimate according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
                                 } else { 
-                                    err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against 
+                                    err    <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against 
                               $T.$ $trichiura$ equaled',round(100*ERRT,1),'percent (',round(100*LLT,1),';', 
                                                  round(100*ULT,1),'). The figure below illustrates the uncertainty around the ERR point estimate. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
                 estimate.')
-                                    
+                                    err_md <- paste('The egg reduction rate (95% confidence intervals) of the drug against 
+                              <em>T. trichiura</em> equaled',round(100*ERRT,1),'% (',round(100*LLT,1),';', 
+                                                    round(100*ULT,1),'). The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight line represents the point 
+                estimate.')
                                 }
-                            } else {
-                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
-                                {
+                            }else{
+                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2){
                                     data$HB <-  data[,input$Hbas] 
                                     data$HF <-  data[,input$Hfol] 
                                     H <- subset(data, data$HB> 0 & data$HF >= 0)
@@ -1196,27 +1256,39 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                     ULH <- 1-qgamma(0.025,shape = aH, scale = bH)
                                     LLH <- 1-qgamma(0.975,shape = aH, scale = bH)  
                                     if(input$STHdrug == 1 | input$STHdrug == 2){ 
-                                        err <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),'percent
+                                        err    <- paste('The egg reduction rate (ERR; 95 percent confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),'percent
 (',round(100*LLH,1),';', round(100*ULH,1),'). 
 The figure below classifies the ERR estimate according to the WHO thresholds. 
 Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
 and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
-                                    } else {
-                                        err <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),
+                                        err_md <- paste('The egg reduction rate (ERR; 95% confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),'%
+(',round(100*LLH,1),';', round(100*ULH,1),'). 
+The figure below classifies the ERR estimate according to the WHO thresholds (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),'). 
+Any ERR estimate in the green zone indicates that the efficacy of the drug is satisfactory, any value in the grey zone indicates that the efficacy is doubtful 
+and any value in the red zone indicates that the efficacy is reduced. The black vertical line represents the ERR estimate of the drug administered in this trial.')
+                                    }else{
+                                        err    <- paste('The egg reduction rate (95 percent confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),
                                                      'percent (',round(100*LLH,1),';', round(100*ULH,1),').  The figure below illustrates the uncertainty around the ERR point estimate. 
                 The dashed lines represent the limits of the 95 percent confidence intervals, whereas the straight line represents the point 
                 estimate.')
-                                        
+                                        err_md <- paste('The egg reduction rate (95% confidence intervals) of the drug against hookworms equaled',round(100*ERRH,1),
+                                                        '% (',round(100*LLH,1),';', round(100*ULH,1),').  The figure below illustrates the uncertainty around the ERR point estimate. 
+                The dashed lines represent the limits of the 95% confidence intervals, whereas the straight line represents the point 
+                estimate.')
                                     }                            
-                                    
-                                    
-                                } else {err <- paste('No egg count data was provided.')}
+                                }else{
+                                    err    <- paste('No egg count data was provided.')
+                                    err_md <- paste('Please match egg counting data.')
+                                }
                             }
                         }
                     }  
                 }   
             }
         } 
+    }
+    if(type == "markdown"){
+        err <- err_md
     }
     err
 }
