@@ -1,0 +1,1 @@
+# Disabling shiny autoload\n\n# See ?shiny::loadSupport for more information
