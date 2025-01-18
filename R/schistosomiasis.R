@@ -155,6 +155,7 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
 #' p <- paradrug_schistosomiasis_intensity(x)
+#' p <- paradrug_schistosomiasis_intensity(x, type = "markdown")
 paradrug_schistosomiasis_intensity <- function(object, 
                                                Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                                                Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
@@ -186,10 +187,11 @@ paradrug_schistosomiasis_intensity <- function(object,
     data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
     data$inf2 <- ifelse(data$shF > -2 | data$smF > -2 | data$sjF > -2, 1, 0)
     
-    if(mean(data$inf)==0 | mean(data$inf2)==0) {intense <- paste('No egg count data was provided.')}
-    else {
-        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2))
-        {
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {
+        intense    <- paste('No egg count data was provided.')
+        intense_md <- paste('Please provide egg count data.')
+    }else {
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2)){
             data$shB <-  data[,input$Shbas]  
             data$smB <-  data[,input$Smbas] 
             data$shF <-  data[,input$Shfol]  
@@ -213,14 +215,19 @@ paradrug_schistosomiasis_intensity <- function(object,
             
             nsm <- length(sm$smB)
             nsh <- length(sh$shB)
-            intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+            intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
 The mean (25th quantile; 75th quantile) $S.$ $haematobium$ egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. The mean 
 $S.$ $mansoni$ egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. Low and highy-intensity $S.$ $haematobium$  
 infections were observed in', NshL,'(',round(100*NshL/nsh,1),'percent ) and', NshH, '(',round(100*NshH/nsh,1),'percent ) subjects,  respectively. 
       For $S.$ $mansoni$, the number of low, moderate and high-intensity infections were', NsmL,'(',round(100*NsmL/nsm,1),'percent ),', NsmM,
                              '(',round(100*NsmM/nsm,1),'percent ) and', NsmH, '(',round(100*NsmH/nsm,1),'percent ), respectively.')
-        }
-        else{ 
+            intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) <em>S. haematobium</em> egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. The mean 
+<em>S. mansoni</em> egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. Low and highy-intensity <em>S. haematobium</em>  
+infections were observed in', NshL,'(',round(100*NshL/nsh,1),'% ) and', NshH, '(',round(100*NshH/nsh,1),'% ) subjects,  respectively. 
+      For <em>S. mansoni</em>, the number of low, moderate and high-intensity infections were', NsmL,'(',round(100*NsmL/nsm,1),'% ),', NsmM,
+                                '(',round(100*NsmM/nsm,1),'% ) and', NsmH, '(',round(100*NsmH/nsm,1),'% ), respectively.')
+        }else{ 
             if(mean(data$sh)>-2 & mean(data$shF >-2)){
                 data$shB <-  data[,input$Shbas] 
                 data$shF <-  data[,input$Shfol] 
@@ -232,12 +239,15 @@ infections were observed in', NshL,'(',round(100*NshL/nsh,1),'percent ) and', Ns
                 Msh <- round(mean(sh$shB),1)
                 nsh <- length(sh$shB)
                 
-                intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+                intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
 The mean (25th quantile; 75th quantile) $S.$ $haematobium$ egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. 
 Low and high-intensity $S.$ $haematobium$ infections were observed in', NshL,'(',round(100*NshL/nsh,1),'percent ) and', NshH, '(',round(100*NshH/nsh,1),'percent ) 
                 subjects, respectively.')
-            }
-            else{
+                intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) <em>S. haematobium</em> egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. 
+Low and high-intensity <em>S. haematobium</em> infections were observed in', NshL,'(',round(100*NshL/nsh,1),'% ) and', NshH, '(',round(100*NshH/nsh,1),'% ) 
+                subjects, respectively.')
+            }else{
                 if(mean(data$sm)>-2 & mean(data$smF)> -2){
                     data$smB <-  data[,input$Smbas] 
                     data$smF <-  data[,input$Smfol] 
@@ -249,12 +259,15 @@ Low and high-intensity $S.$ $haematobium$ infections were observed in', NshL,'('
                     q75sm <- round(quantile(sm$smB, probs=c(0.75)),1)
                     Msm <- round(mean(sm$smB),1)
                     nsm <- length(sm$smB)
-                    intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+                    intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
 The mean (25th quantile; 75th quantile) $S.$ $mansoni$ egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. 
 Low, moderate and high-intensity  $S.$ $mansoni$ infections were observed in',NsmL,'(',round(100*NsmL/nsm,1),'percent ),', NsmM,'(',round(100*NsmM/nsm,1),'percent ) 
                   and', NsmH, '(',round(100*NsmH/nsm,1),'percent ) subjects, respectively.')
-                }
-                else{
+                    intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) <em>S. mansoni</em> egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. 
+Low, moderate and high-intensity  <em>S. mansoni</em> infections were observed in',NsmL,'(',round(100*NsmL/nsm,1),'% ),', NsmM,'(',round(100*NsmM/nsm,1),'% ) 
+                  and', NsmH, '(',round(100*NsmH/nsm,1),'% ) subjects, respectively.')
+                }else{
                     if(mean(data$sj)>-2 & mean(data$sjF) >- 2){
                         data$sjB <-  data[,input$Sjbas] 
                         data$sjF <-  data[,input$Sjfol] 
@@ -266,15 +279,24 @@ Low, moderate and high-intensity  $S.$ $mansoni$ infections were observed in',Ns
                         q75sj <- round(quantile(sj$sjB, probs=c(0.75)),1)
                         Msj <- round(mean(sj$sjB),1)
                         nsj <- length(sj$sjB)
-                        intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+                        intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
 The mean (25th quantile; 75th quantile) $S.$ $japonicum$ egg count equaled',Msj,'(',q25sj,';',q75sj,') eggs per gram of stool. Low, moderate and 
 high-intensity $S.$ $japonicum$ infections were observed in',NsjL,'(',round(100*NsjL/nsj,1),'percent ),', NsjM,'(',round(100*NsjM/nsj,1),'percent ) and', NsjH, 
                                          '(',round(100*NsjH/nsj,1),'percent ) subjects, respectively.')
-                    }
-                    else{intense <- paste('No egg count data was provided.')}  
+                        intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) <em>S. japonicum</em> egg count equaled',Msj,'(',q25sj,';',q75sj,') eggs per gram of stool. Low, moderate and 
+high-intensity <em>S. japonicum</em> infections were observed in',NsjL,'(',round(100*NsjL/nsj,1),'% ),', NsjM,'(',round(100*NsjM/nsj,1),'% ) and', NsjH, 
+                                            '(',round(100*NsjH/nsj,1),'% ) subjects, respectively.')
+                    }else{
+                        intense    <- paste('No egg count data was provided.')
+                        intense_md <- paste('Please match egg count data.')
+                    }  
                 }   
             }
         } 
+    }
+    if(type == "markdown"){
+        intense <- intense_md
     }
     intense
 }
