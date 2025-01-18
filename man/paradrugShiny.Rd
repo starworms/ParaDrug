@@ -8,12 +8,18 @@
 \usage{
 paradrugUI(id, ...)
 
-paradrugServer(id, ...)
+paradrugServer(input, output, session)
 }
 \arguments{
 \item{id}{character string with the id of the module}
 
 \item{...}{not used}
+
+\item{input}{TODO}
+
+\item{output}{TODO}
+
+\item{session}{TODO}
 }
 \value{
 \code{paradrugUI} returns the the ui elements of the Paradrug app.\cr
@@ -27,15 +33,8 @@ if(interactive()){
 library(ParaDrug)
 library(shiny)
 
-ui <- fluidPage(
-  paradrugUI(id = "activity")
-)
-server <- function(input, output, session) {
-  paradrugServer(id = "activity")
-}
-server <- function(input, output, session) {
-  paradrugServer(input = input, output = output, session = session)
-}
+ui <- paradrugUI()
+server <- paradrugServer
 shinyApp(ui, server)
 }
 }
