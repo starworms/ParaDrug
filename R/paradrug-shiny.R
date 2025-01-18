@@ -297,7 +297,6 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
 #' @param session Shiny session
 #' @export
 paradrugServer <- function(input, output, session){
-    HB <- HF <- Hc <- RB <- RF <- Rc <- STHdrug <- TB <- TF <- Tc <- shB <- shF <- shc <- sjB <- sjF <- smB <- smF <- smc <- NULL
     requireNamespace("knitr")
     requireNamespace("shiny")
     paradrug_data <- eventReactive(input$file1, {
@@ -355,12 +354,12 @@ paradrugServer <- function(input, output, session){
                     data$shc <- data$shp + data$shf
                     data$smc <- data$smp + data$smf
                     data$com <- data$shc + data$smc
-                    mix <- dim(subset(data, smB>0 & shB>0))[1]
-                    com <- dim(subset(data, shc==2 | smc ==2))[1]
-                    nsm <- dim(subset(data, smB>0))[1]
-                    nsm2 <- dim(subset(data, smB>0 & smF>=0))[1]
-                    nsh <- dim(subset(data,shB>0))[1]
-                    nsh2 <- dim(subset(data, shB>0 & shF>=0))[1]
+                    mix <- dim(subset(data, data$smB>0 & data$shB>0))[1]
+                    com <- dim(subset(data, data$shc==2 | data$smc ==2))[1]
+                    nsm <- dim(subset(data, data$smB>0))[1]
+                    nsm2 <- dim(subset(data, data$smB>0 & data$smF>=0))[1]
+                    nsh <- dim(subset(data,data$shB>0))[1]
+                    nsh2 <- dim(subset(data, data$shB>0 & data$shF>=0))[1]
                     paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. 
 <em>Schistosoma haematobium</em> infections were observed in', nsh, 'subjects (', round(100*nsh/n,1), '% ), 
 <em>S. mansoni</em> infections in', nsm, 'subjects (', round(100*nsm/n,1),'% ). Mixed <em>Schistosoma</em> infections 
@@ -377,8 +376,8 @@ paradrugServer <- function(input, output, session){
                         data$shp <- ifelse(data$shB>0,1,0) 
                         data$shf <- ifelse(data$shF>=0,1,0) 
                         data$shc <- data$shp + data$shf
-                        nsh <- dim(subset(data,shB>0))[1]
-                        nsh2 <- dim(subset(data, shB>0 & shF>=0))[1]
+                        nsh <- dim(subset(data,data$shB>0))[1]
+                        nsh2 <- dim(subset(data, data$shB>0 & data$shF>=0))[1]
                         paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma haematobium</em> infections were observed in', nsh, 
                               'subjects (', round(100*nsh/n,1), '% ). Complete data were available for', nsh2, 'subjects.')
                     }
@@ -390,8 +389,8 @@ paradrugServer <- function(input, output, session){
                             data$smp <- ifelse(data$smB>0,1,0)
                             data$smf <- ifelse(data$smF>=0,1,0) 
                             data$smc <- data$smp + data$smf
-                            nsm <- dim(subset(data, smB>0))[1]
-                            nsm2 <- dim(subset(data, smB>0 & smF>=0))[1]
+                            nsm <- dim(subset(data, data$smB>0))[1]
+                            nsm2 <- dim(subset(data, data$smB>0 & data$smF>=0))[1]
                             paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma mansoni</em> infections were observed in', nsm, 
                                   'subjects (', round(100*nsm/n,1), '% ). Complete data were available for', nsm2, 'subjects.')
                             
@@ -404,8 +403,8 @@ paradrugServer <- function(input, output, session){
                                 data$sjp <- ifelse(data$sjB>0,1,0)
                                 data$sjf <- ifelse(data$sjF>=0,1,0) 
                                 data$sjc <- data$sjp + data$sjf
-                                nsj <- dim(subset(data, sjB>0))[1]
-                                nsj2 <- dim(subset(data, sjB>0 & sjF>=0))[1]
+                                nsj <- dim(subset(data, data$sjB>0))[1]
+                                nsj2 <- dim(subset(data, data$sjB>0 & data$sjF>=0))[1]
                                 paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma japonicum</em> infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), '% ). Complete data was available for', nsj2, 'subjects')
                                 
                                 
@@ -462,14 +461,14 @@ paradrugServer <- function(input, output, session){
                                 data$Tc <- data$Tp + data$Tpf
                                 data$Hc <- data$Hp + data$Hpf
                                 data$mix <- data$Rp + data$Tp + data$Hp
-                                mix <- dim(subset(data,mix>1))[1]
-                                com <- dim(subset(data, Rc==2 | Tc ==2 | Hc ==2))[1]
-                                nR <- dim(subset(data, RB>0))[1]
-                                nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
-                                nT <- dim(subset(data, TB>0))[1]
-                                nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
-                                nH <- dim(subset(data, HB>0))[1]
-                                nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                                mix <- dim(subset(data,data$mix>1))[1]
+                                com <- dim(subset(data, data$Rc==2 | data$Tc ==2 | data$Hc ==2))[1]
+                                nR <- dim(subset(data, data$RB>0))[1]
+                                nR2 <- dim(subset(data, data$RB>0 & data$RF>=0))[1]
+                                nT <- dim(subset(data, data$TB>0))[1]
+                                nT2 <- dim(subset(data, data$TB>0 & data$TF>=0))[1]
+                                nH <- dim(subset(data, data$HB>0))[1]
+                                nH2 <- dim(subset(data, data$HB>0 & data$HF>=0))[1]
                                 
                                 paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Ascaris lumbricoides</em> infections were observed in', nR, 'subjects (', round(100*nR/n,1), '% ), <em>T. trichiura</em> infections in', nT, 'subjects (', round(100*nT/n,1),'% ) and hookworms in', nH, '(',round (100*nH/n,1),'% ) subjects. Mixed STH infections 
                        were observed in', mix, 'subjects (', round(100*mix/n,1), '% ). Complete data were available for', com, 'subjects, including', nR2, 'cases of <em>A. lumbricoides</em>,', nT2, 'cases of <em>T. trichiura</em>, and',nH2, 'cases of hookworms.')
@@ -493,12 +492,12 @@ paradrugServer <- function(input, output, session){
                                     data$Tc <- data$Tp + data$Tf
                                     
                                     data$mix <- data$Rp + data$Tp
-                                    mix <- dim(subset(data, mix>1))[1]
-                                    com <- dim(subset(data, Rc==2 | Tc ==2))[1]
-                                    nR <- dim(subset(data, RB>0))[1]
-                                    nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
-                                    nT <- dim(subset(data, TB>0))[1]
-                                    nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
+                                    mix <- dim(subset(data, data$mix>1))[1]
+                                    com <- dim(subset(data, data$Rc==2 | data$Tc ==2))[1]
+                                    nR <- dim(subset(data, data$RB>0))[1]
+                                    nR2 <- dim(subset(data, data$RB>0 & data$RF>=0))[1]
+                                    nT <- dim(subset(data, data$TB>0))[1]
+                                    nT2 <- dim(subset(data, data$TB>0 & data$TF>=0))[1]
                                     
                                     paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Ascaris lumbricoides</em> infections were observed in', nR, 'subjects (', round(100*nR/n,1), '% ), <em>T. trichiura</em> infections in', nT, 'subjects (', round(100*nT/n,1),'% ). Mixed STH infections 
                        were observed in', mix, 'subjects (', round(100*mix/n,1), '% ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of <em>A. lumbricoides</em>, and ', nT2, 'cases of <em>T. trichiura</em>.')
@@ -522,12 +521,12 @@ paradrugServer <- function(input, output, session){
                                         data$Hc <- data$Hp + data$Hf
                                         
                                         data$mix <- data$Rp + data$Hp
-                                        mix <- dim(subset(data, mix>1))[1]
-                                        com <- dim(subset(data, Rc==2 | Hc ==2))[1]
-                                        nR <- dim(subset(data, RB>0))[1]
-                                        nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
-                                        nH <- dim(subset(data, HB>0))[1]
-                                        nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                                        mix <- dim(subset(data, data$mix>1))[1]
+                                        com <- dim(subset(data, data$Rc==2 | data$Hc ==2))[1]
+                                        nR <- dim(subset(data, data$RB>0))[1]
+                                        nR2 <- dim(subset(data, data$RB>0 & data$RF>=0))[1]
+                                        nH <- dim(subset(data, data$HB>0))[1]
+                                        nH2 <- dim(subset(data, data$HB>0 & data$HF>=0))[1]
                                         
                                         paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Ascaris lumbricoides</em> infections were observed in', nR, 'subjects (', round(100*nR/n,1), '% ), hookworm infections in', nH, 'subjects (', round(100*nH/n,1),'% ). Mixed STH infections 
                        were observed in', mix, 'subjects (', round(100*mix/n,1), '% ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of <em>A. lumbricoides</em>, and ', nH2, 'cases of hookworms.')
@@ -550,12 +549,12 @@ paradrugServer <- function(input, output, session){
                                             data$Hc <- data$Hp + data$Hf
                                             
                                             data$mix <- data$Tp + data$Hp
-                                            mix <- dim(subset(data,mix>1))[1]
-                                            com <- dim(subset(data, Tc ==2 | Hc ==2))[1]
-                                            nT <- dim(subset(data, TB>0))[1]
-                                            nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
-                                            nH <- dim(subset(data, HB>0))[1]
-                                            nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                                            mix <- dim(subset(data,data$mix>1))[1]
+                                            com <- dim(subset(data, data$Tc ==2 | data$Hc ==2))[1]
+                                            nT <- dim(subset(data, data$TB>0))[1]
+                                            nT2 <- dim(subset(data, data$TB>0 & data$TF>=0))[1]
+                                            nH <- dim(subset(data, data$HB>0))[1]
+                                            nH2 <- dim(subset(data, data$HB>0 & data$HF>=0))[1]
                                             
                                             paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Trichuris trichiura</em> infections were observed in', nT, 'subjects (', round(100*nT/n,1), '% ), hookworm infections in', nH, 'subjects (', round(100*nH/n,1),'% ). Mixed STH infections 
                        were observed in', mix, 'subjects (', round(100*mix/n,1), '% ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nT2, 'cases of <em>T. trichiura</em>, and ', nH2, 'cases of hookworms.')
@@ -564,16 +563,16 @@ paradrugServer <- function(input, output, session){
                                             if(mean(data$Rb)>-2 & mean(data$Rf)>-2){
                                                 data$RB <-  data[,input$Rbas]  
                                                 data$RF <-  data[,input$Rfol]  
-                                                nR <- dim(subset(data, RB>0))[1]
-                                                nR2 <- dim(subset(data, RB>0 & RF>=0))[1]
+                                                nR <- dim(subset(data, data$RB>0))[1]
+                                                nR2 <- dim(subset(data, data$RB>0 & data$RF>=0))[1]
                                                 paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Ascaris lumbricoides</em> infections were observed in', nR, 'subjects (', round(100*nR/n,1), '% ). In total,', nR2, 'infected subjects provided a sample at both baseline and follow-up.')
                                             }
                                             else{
                                                 if(mean(data$Tb)>-2 & mean(data$Tf)>-2){
                                                     data$TB <-  data[,input$Tbas]  
                                                     data$TF <-  data[,input$Tfol]  
-                                                    nT <- dim(subset(data, TB>0))[1]
-                                                    nT2 <- dim(subset(data, TB>0 & TF>=0))[1]
+                                                    nT <- dim(subset(data, data$TB>0))[1]
+                                                    nT2 <- dim(subset(data, data$TB>0 & data$TF>=0))[1]
                                                     paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Trichuris trichiura</em> infections were observed in', nT, 'subjects (', round(100*nT/n,1), '% ). In total,', nT2, 'infected subjects provided a sample at both baseline and follow-up.')
                                                 }
                                                 
@@ -584,8 +583,8 @@ paradrugServer <- function(input, output, session){
                                                         data$Hp <- ifelse(data$HB>0,1,0) 
                                                         data$Hf <- ifelse(data$HF>=0,1,0) 
                                                         data$Hc <- data$Hp + data$Hf
-                                                        nH <- dim(subset(data, HB>0))[1]
-                                                        nH2 <- dim(subset(data, HB>0 & HF>=0))[1]
+                                                        nH <- dim(subset(data, data$HB>0))[1]
+                                                        nH2 <- dim(subset(data, data$HB>0 & data$HF>=0))[1]
                                                         paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. Hookworms infections were observed in', nH, 'subjects (', round(100*nH/n,1), '% ). In total,', nH2, 'infected subjects provided a sample at both baseline and follow-up.')
                                                     }
                                                     else{paste('Please match egg counting data.')}
@@ -655,8 +654,8 @@ paradrugServer <- function(input, output, session){
                     data$smB <-  data[,input$Smbas] 
                     data$shF <-  data[,input$Shfol]  
                     data$smF <-  data[,input$Smfol] 
-                    sh <- subset(data, shB >0 &  shF >=0)
-                    sm <- subset(data, smB >0 &  smF >=0)
+                    sh <- subset(data, data$shB >0 &  data$shF >=0)
+                    sm <- subset(data, data$smB >0 &  data$smF >=0)
                     NshH <- sum(ifelse(sh$shB>=50,1,0))
                     NshL <- sum(ifelse(sh$shB>0 & sh$shB<50,1,0))
                     
@@ -685,7 +684,7 @@ infections were observed in', NshL,'(',round(100*NshL/nsh,1),'% ) and', NshH, '(
                     if(mean(data$sh)>-2 & mean(data$shF >-2)){
                         data$shB <-  data[,input$Shbas] 
                         data$shF <-  data[,input$Shfol] 
-                        sh <- subset(data, shB >0 &  shF >=0)
+                        sh <- subset(data, data$shB >0 &  data$shF >=0)
                         NshH <- sum(ifelse(sh$shB>=50,1,0))
                         NshL <- sum(ifelse(sh$shB>0 & sh$shB<50,1,0))
                         q25sh <- round(quantile(sh$shB, probs=c(0.25)),1)
@@ -702,7 +701,7 @@ Low and high-intensity <em>S. haematobium</em> infections were observed in', Nsh
                         if(mean(data$sm)>-2 & mean(data$smF)> -2){
                             data$smB <-  data[,input$Smbas] 
                             data$smF <-  data[,input$Smfol] 
-                            sm <- subset(data, smB >0 &  smF >=0)
+                            sm <- subset(data, data$smB >0 &  data$smF >=0)
                             NsmH <- sum(ifelse(sm$smB>=400,1,0))
                             NsmM <- sum(ifelse(sm$smB>=100 & sm$smB<400,1,0))
                             NsmL <- sum(ifelse(sm$smB>0 & sm$smB<100,1,0))
@@ -719,7 +718,7 @@ Low, moderate and high-intensity  <em>S. mansoni</em> infections were observed i
                             if(mean(data$sj)>-2 & mean(data$sjF) >- 2){
                                 data$sjB <-  data[,input$Sjbas] 
                                 data$sjF <-  data[,input$Sjfol] 
-                                sj <- subset(data, sjB >0 &  sjF >=0)
+                                sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                                 NsjH <- sum(ifelse(sj$sjB>=400,1,0))
                                 NsjM <- sum(ifelse(sj$sjB>=100 & sj$sjB<400,1,0))
                                 NsjL <- sum(ifelse(sj$sjB>0 & sj$sjB<100,1,0))
@@ -772,9 +771,9 @@ high-intensity <em>S. japonicum</em> infections were observed in',NsjL,'(',round
                                 data$RF <-  data[,input$Rfol]  
                                 data$TF <-  data[,input$Tfol] 
                                 data$HF <-  data[,input$Hfol] 
-                                R <- subset(data, RB> 0 & RF >= 0)
-                                Tr <- subset(data, TB> 0 & TF >= 0)
-                                H <- subset(data, HB> 0 & HF >= 0)
+                                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                H <- subset(data, data$HB> 0 & data$HF >= 0)
                                 
                                 NRH <- sum(ifelse(R$RB>=50000,1,0))
                                 NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
@@ -821,8 +820,8 @@ The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equal
                                     data$TB <-  data[,input$Tbas]
                                     data$RF <-  data[,input$Rfol]  
                                     data$TF <-  data[,input$Tfol] 
-                                    R <- subset(data, RB>0 & RF >= 0)
-                                    Tr <- subset(data, TB> 0 & TF >= 0)
+                                    R <- subset(data, data$RB>0 & data$RF >= 0)
+                                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                     
                                     NRH <- sum(ifelse(R$RB>=50000,1,0))
                                     NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
@@ -860,8 +859,8 @@ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate
                                         data$HB <-  data[,input$Hbas] 
                                         data$RF <-  data[,input$Rfol]  
                                         data$HF <-  data[,input$Hfol] 
-                                        R <- subset(data, RB>0 & RF >= 0)
-                                        H <- subset(data, HB>0 & HF >= 0)
+                                        R <- subset(data, data$RB>0 & data$RF >= 0)
+                                        H <- subset(data, data$HB>0 & data$HF >= 0)
                                         
                                         NRH <- sum(ifelse(R$RB>=50000,1,0))
                                         NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
@@ -899,8 +898,8 @@ The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equal
                                             data$HB <-  data[,input$Hbas] 
                                             data$TF <-  data[,input$Tfol] 
                                             data$HF <-  data[,input$Hfol] 
-                                            Tr <- subset(data, TB> 0 & TF >= 0)
-                                            H <- subset(data, HB>0 & HF >= 0)
+                                            Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                            H <- subset(data, data$HB>0 & data$HF >= 0)
                                             
                                             NTH <- sum(ifelse(Tr$TB>=10000,1,0))
                                             NTM <- sum(ifelse(Tr$TB>=1000 & Tr$TB<10000,1,0))
@@ -932,7 +931,7 @@ The mean (25th quantile; 75th quantile) <em>T. trichiura</em> egg count equaled'
                                             {
                                                 data$RB <-  data[,input$Rbas]  
                                                 data$RF <-  data[,input$Rfol]  
-                                                R <- subset(data, RB>0 & RF >= 0)
+                                                R <- subset(data, data$RB>0 & data$RF >= 0)
                                                 NRH <- sum(ifelse(R$RB>=50000,1,0))
                                                 NRM <- sum(ifelse(R$RB>=5000 & R$RB<50000,1,0))
                                                 NRL <- sum(ifelse(R$RB>0 & R$RB<5000,1,0))
@@ -950,7 +949,7 @@ The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equal
                                                 {
                                                     data$TB <-  data[,input$Tbas]
                                                     data$TF <-  data[,input$Tfol] 
-                                                    Tr <- subset(data, TB> 0 & TF >= 0)
+                                                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                                     NTH <- sum(ifelse(Tr$TB>=5000,1,0))
                                                     NTM <- sum(ifelse(Tr$TB>=1000 & Tr$TB<5000,1,0))
                                                     NTL <- sum(ifelse(Tr$TB>=1 & Tr$TB<1000,1,0)) 
@@ -968,7 +967,7 @@ The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equal
                                                     {
                                                         data$HB <-  data[,input$Hbas] 
                                                         data$HF <-  data[,input$Hfol] 
-                                                        H <- subset(data, HB> 0 & HF >= 0)
+                                                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                                                         NHH <- sum(ifelse(H$HB>=4000,1,0))
                                                         NHM <- sum(ifelse(H$HB>=2000 & H$HB<4000,1,0))
                                                         NHL <- sum(ifelse(H$HB>=1 & H$HB<2000,1,0)) 
@@ -1034,8 +1033,8 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                 data$smB <-  data[,input$Smbas] 
                 data$shF <-  data[,input$Shfol]  
                 data$smF <-  data[,input$Smfol] 
-                sh <- subset(data, shB >0 &  shF >=0)
-                sm <- subset(data, smB >0 &  smF >=0)
+                sh <- subset(data, data$shB >0 &  data$shF >=0)
+                sm <- subset(data, data$smB >0 &  data$smF >=0)
                 par(mfrow=c(1,2))
                 hist(sh$shB, col = "#EB4C4C", main=expression(italic(Schistosoma~haematobium)), freq=T,ylab = 'Number of subjects', xlab='Urine egg counts (eggs per 10 ml)')
                 hist(sm$smB, col = "#EB4C4C", main=expression(italic(Schistosoma~mansoni)), freq=T, ylab='Number of subjects', xlab='Fecal egg counts (eggs per gram of stool)')}
@@ -1043,19 +1042,19 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                 {if(mean(data$sh)>-2 & mean(data$shf> - 2)){
                     data$shB <-  data[,input$Shbas]  
                     data$shF <-  data[,input$Shfol]  
-                    sh <- subset(data, shB >0 &  shF >=0)
+                    sh <- subset(data, data$shB >0 &  data$shF >=0)
                     hist(sh$shB, col = "#EB4C4C", main=expression(italic(Schistosoma~haematobium)), freq=T, ylab='Number of subjects',xlab='Urine egg counts (eggs per 10 ml)')}
                     else 
                     {if(mean(data$sm)>-2 & mean(data$smf)>-2) {
                         data$smB <-  data[,input$Smbas] 
                         data$smF <-  data[,input$Smfol] 
-                        sm <- subset(data, smB >0 &  smF >=0)
+                        sm <- subset(data, data$smB >0 &  data$smF >=0)
                         hist(sm$smB, col = "#EB4C4C", main=expression(italic(Schistosoma~mansoni)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')}
                         else
                         {if(mean(data$sj)>-2 & mean(data$sjf)>-2) {
                             data$sjB <-  data[,input$Sjbas]  
                             data$sjF <-  data[,input$Sjfol]  
-                            sj <- subset(data, sjB >0 &  sjF >=0)
+                            sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                             hist(sj$sjB, col = "#EB4C4C", main=expression(italic(Schistosoma~japonicum)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')}
                             else  {  }
                         }
@@ -1091,9 +1090,9 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                         data$RF <-  data[,input$Rfol]  
                         data$TF <-  data[,input$Tfol] 
                         data$HF <-  data[,input$Hfol] 
-                        R <- subset(data, RB> 0 & RF >= 0)
-                        Tr <- subset(data, TB> 0 & TF >= 0)
-                        H <- subset(data, HB> 0 & HF >= 0)
+                        R <- subset(data, data$RB> 0 & data$RF >= 0)
+                        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                         
                         par(mfrow=c(1,3))
                         hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
@@ -1107,8 +1106,8 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                 data$TB <-  data[,input$Tbas]
                                 data$RF <-  data[,input$Rfol]  
                                 data$TF <-  data[,input$Tfol] 
-                                R <- subset(data, RB> 0 & RF >= 0)
-                                Tr <- subset(data, TB> 0 & TF >= 0)
+                                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                 
                                 par(mfrow=c(1,2))
                                 hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')
@@ -1121,8 +1120,8 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                     data$HB <-  data[,input$Hbas] 
                                     data$RF <-  data[,input$Rfol]  
                                     data$HF <-  data[,input$Hfol] 
-                                    R <- subset(data, RB> 0 & RF >= 0)
-                                    H <- subset(data, HB> 0 & HF >= 0)
+                                    R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                    H <- subset(data, data$HB> 0 & data$HF >= 0)
                                     
                                     par(mfrow=c(1,2))
                                     hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
@@ -1135,8 +1134,8 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                         data$HB <-  data[,input$Hbas] 
                                         data$TF <-  data[,input$Tfol] 
                                         data$HF <-  data[,input$Hfol] 
-                                        Tr <- subset(data, TB> 0 & TF >= 0)
-                                        H <- subset(data, HB> 0 & HF >= 0)
+                                        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                                         
                                         par(mfrow=c(1,2))
                                         hist(Tr$TB, col = "#EB4C4C", main=expression(italic(Trichuris~trichiura)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
@@ -1147,7 +1146,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                         {
                                             data$RB <-  data[,input$Rbas]  
                                             data$RF <-  data[,input$Rfol]  
-                                            R <- subset(data, RB> 0 & RF >= 0)
+                                            R <- subset(data, data$RB> 0 & data$RF >= 0)
                                             
                                             par(mfrow=c(1,1))
                                             hist(R$RB, col = "#EB4C4C", main=expression(italic(Ascaris~lumbricoides)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
@@ -1157,7 +1156,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                             {
                                                 data$TB <-  data[,input$Tbas]
                                                 data$TF <-  data[,input$Tfol] 
-                                                Tr <- subset(data, TB> 0 & TF >= 0)
+                                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                                 par(mfrow=c(1,1))
                                                 hist(Tr$TB, col = "#EB4C4C", main=expression(italic(Trichuris~trichiura)), ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
                                             }
@@ -1166,7 +1165,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                                 {
                                                     data$HB <-  data[,input$Hbas] 
                                                     data$HF <-  data[,input$Hfol] 
-                                                    H <- subset(data, HB> 0 & HF >= 0)
+                                                    H <- subset(data, data$HB> 0 & data$HF >= 0)
                                                     
                                                     par(mfrow=c(1,1))
                                                     hist(H$HB, col = "#EB4C4C", main='Hookworm', ylab='Number of subjects',freq=T, xlab='Fecal egg counts (eggs per gram of stool)')
@@ -1342,7 +1341,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                 data$Tc <- data$Tp + data$Tf
                                 data$Hc <- data$Hp + data$Hf
                                 
-                                data2 <- subset(data, Rc==2 | Tc ==2 | Hc ==2)
+                                data2 <- subset(data, data$Rc==2 | data$Tc ==2 | data$Hc ==2)
                                 min <- round(quantile(data2$fol, probs=c(0)),1)
                                 max <- round(quantile(data2$fol, probs=c(1)),1)
                                 med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1368,7 +1367,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                     data$Rc <- data$Rp + data$Rf
                                     data$Tc <- data$Tp + data$Tf
                                     
-                                    data2 <- subset(data, Rc==2 | Tc ==2)
+                                    data2 <- subset(data, data$Rc==2 | data$Tc ==2)
                                     min <- round(quantile(data2$fol, probs=c(0)),1)
                                     max <- round(quantile(data2$fol, probs=c(1)),1)
                                     med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1398,7 +1397,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                         data$Rc <- data$Rp + data$Rf
                                         data$Hc <- data$Hp + data$Hf
                                         data$fol <-  data[,input$followup] 
-                                        data2 <- subset(data, Rc==2 | Hc ==2)
+                                        data2 <- subset(data, data$Rc==2 | data$Hc ==2)
                                         min <- round(quantile(data2$fol, probs=c(0)),1)
                                         max <- round(quantile(data2$fol, probs=c(1)),1)
                                         med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1429,7 +1428,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                             data$Tc <- data$Tp + data$Tf
                                             data$Hc <- data$Hp + data$Hf
                                             
-                                            data2 <- subset(data, Tc ==2 | Hc ==2)
+                                            data2 <- subset(data, data$Tc ==2 | data$Hc ==2)
                                             min <- round(quantile(data2$fol, probs=c(0)),1)
                                             max <- round(quantile(data2$fol, probs=c(1)),1)
                                             med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1447,7 +1446,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                                 data$Rp <- ifelse(data$RB>0,1,0) 
                                                 data$Rf <- ifelse(data$RF>=0,1,0) 
                                                 data$Rc <- data$Rp + data$Rf
-                                                data2 <- subset(data, Rc==2)
+                                                data2 <- subset(data, data$Rc==2)
                                                 min <- round(quantile(data2$fol, probs=c(0)),1)
                                                 max <- round(quantile(data2$fol, probs=c(1)),1)
                                                 med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1466,7 +1465,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                                     data$Tp <- ifelse(data$TB>0,1,0)
                                                     data$Tf <- ifelse(data$TF>=0,1,0) 
                                                     data$Tc <- data$Tp + data$Tf
-                                                    data2 <- subset(data,Tc ==2)
+                                                    data2 <- subset(data,data$Tc ==2)
                                                     min <- round(quantile(data2$fol, probs=c(0)),1)
                                                     max <- round(quantile(data2$fol, probs=c(1)),1)
                                                     med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1485,7 +1484,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                                                         data$Hf <- ifelse(data$HF>=0,1,0) 
                                                         data$Hc <- data$Hp + data$Hf
                                                         
-                                                        data2 <- subset(data, Hc ==2)
+                                                        data2 <- subset(data, data$Hc ==2)
                                                         min <- round(quantile(data2$fol, probs=c(0)),1)
                                                         max <- round(quantile(data2$fol, probs=c(1)),1)
                                                         med <- round(quantile(data2$fol, probs=c(0.50)),1)
@@ -1551,8 +1550,8 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
                     data$smB <-  data[,input$Smbas] 
                     data$shF <-  data[,input$Shfol]  
                     data$smF <-  data[,input$Smfol] 
-                    sh <- subset(data, shB >0 &  shF >=0)
-                    sm <- subset(data, smB >0 &  smF >=0)
+                    sh <- subset(data, data$shB >0 &  data$shF >=0)
+                    sm <- subset(data, data$smB >0 &  data$smF >=0)
                     ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
                     term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
                     term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
@@ -1587,7 +1586,7 @@ The figures below illustrate the uncertainty around the ERR point estimates.
                     if(mean(data$sh)>-2 & mean(data$shf)>-2){
                         data$shB <-  data[,input$Shbas]  
                         data$shF <-  data[,input$Shfol]  
-                        sh <- subset(data, shB >0 &  shF >=0)
+                        sh <- subset(data, data$shB >0 &  data$shF >=0)
                         ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
                         term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
                         term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
@@ -1613,7 +1612,7 @@ Any ERR estimate in the green zone indicates that the efficacy of the drug is sa
                         if(mean(data$sm)>-2 & mean(data$smf)>-2){
                             data$smB <-  data[,input$Smbas] 
                             data$smF <-  data[,input$Smfol] 
-                            sm <- subset(data, smB >0 &  smF >=0)
+                            sm <- subset(data, data$smB >0 &  data$smF >=0)
                             
                             ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
                             term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
@@ -1640,7 +1639,7 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                             if(mean(data$sj)>-2 & mean(data$sjf>-2)){
                                 data$sjB <-  data[,input$Sjbas] 
                                 data$sjF <-  data[,input$Sjfol] 
-                                sj <- subset(data, sjB >0 &  sjF >=0)
+                                sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                                 ERRSJ <- (1- mean(sj$sjF)/mean(sj$sjB))
                                 term1SJ <- (mean(sj$sjF)/mean(sj$sjB))**2; term2SJ <- ifelse(mean(sj$sjF)==0,0,var(sj$sjF)/mean(sj$sjF)**2); term3SJ <- var(sj$sjB)/mean(sj$sjB)**2              
                                 term4SJ <- ifelse(mean(sj$sjF)==0,0,-2*cor(sj$sjB,sj$sjF)*sqrt(var(sj$sjF))*sqrt(var(sj$sjB))/(mean(sj$sjB)*mean(sj$sjF)))
@@ -1698,9 +1697,9 @@ equaled',round(100*ERRSJ,1),'% (',round(100*LLSJ,1), ';',round(100*ULSJ,1),').
                                 data$RF <-  data[,input$Rfol]  
                                 data$TF <-  data[,input$Tfol] 
                                 data$HF <-  data[,input$Hfol] 
-                                R <- subset(data, RB> 0 & RF >= 0)
-                                Tr <- subset(data, TB> 0 & TF >= 0)
-                                H <- subset(data, HB> 0 & HF >= 0)
+                                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                H <- subset(data, data$HB> 0 & data$HF >= 0)
                                 
                                 ERRR <- (1- mean(R$RF)/mean(R$RB))
                                 term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -1748,8 +1747,8 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                     data$TB <-  data[,input$Tbas]
                                     data$RF <-  data[,input$Rfol]  
                                     data$TF <-  data[,input$Tfol] 
-                                    R <- subset(data, RB> 0 & RF >= 0)
-                                    Tr <- subset(data, TB> 0 & TF >= 0)
+                                    R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                     
                                     ERRR <- (1- mean(R$RF)/mean(R$RB))
                                     term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -1784,8 +1783,8 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                         data$HB <-  data[,input$Hbas] 
                                         data$RF <-  data[,input$Rfol]  
                                         data$HF <-  data[,input$Hfol] 
-                                        R <- subset(data, RB> 0 & RF >= 0)
-                                        H <- subset(data, HB> 0 & HF >= 0)
+                                        R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                                         
                                         ERRR <- (1- mean(R$RF)/mean(R$RB))
                                         term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -1822,8 +1821,8 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                             data$HB <-  data[,input$Hbas] 
                                             data$TF <-  data[,input$Tfol] 
                                             data$HF <-  data[,input$Hfol] 
-                                            Tr <- subset(data, TB> 0 & TF >= 0)
-                                            H <- subset(data, HB> 0 & HF >= 0)
+                                            Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                            H <- subset(data, data$HB> 0 & data$HF >= 0)
                                             
                                             ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
                                             term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
@@ -1860,7 +1859,7 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                             {
                                                 data$RB <-  data[,input$Rbas]  
                                                 data$RF <-  data[,input$Rfol]  
-                                                R <- subset(data, RB> 0 & RF >= 0)
+                                                R <- subset(data, data$RB> 0 & data$RF >= 0)
                                                 
                                                 ERRR <- (1- mean(R$RF)/mean(R$RB))
                                                 term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -1887,7 +1886,7 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                                 {
                                                     data$TB <-  data[,input$Tbas]
                                                     data$TF <-  data[,input$Tfol] 
-                                                    Tr <- subset(data, TB> 0 & TF >= 0)
+                                                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                                     
                                                     ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
                                                     term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
@@ -1914,7 +1913,7 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                                                     {
                                                         data$HB <-  data[,input$Hbas] 
                                                         data$HF <-  data[,input$Hfol] 
-                                                        H <- subset(data, HB> 0 & HF >= 0)
+                                                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                                                         
                                                         ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
                                                         term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
@@ -1992,8 +1991,8 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
                     data$smB <-  data[,input$Smbas] 
                     data$shF <-  data[,input$Shfol]  
                     data$smF <-  data[,input$Smfol] 
-                    sh <- subset(data, shB >0 &  shF >=0)
-                    sm <- subset(data, smB >0 &  smF >=0)
+                    sh <- subset(data, data$shB >0 &  data$shF >=0)
+                    sm <- subset(data, data$smB >0 &  data$smF >=0)
                     ERRSH <- 100*(1- mean(sh$shF)/mean(sh$shB))
                     ERRSM <- 100*(1- mean(sm$smF)/mean(sm$smB))
                     if(input$Sdrug == 1){
@@ -2030,7 +2029,7 @@ it is recommended to contact World Health Organization
                     if(mean(data$sh)>-2 & mean(data$shf)>-2){
                         data$shB <-  data[,input$Shbas]  
                         data$shF <-  data[,input$Shfol]  
-                        sh <- subset(data, shB >0 &  shF >=0)
+                        sh <- subset(data, data$shB >0 &  data$shF >=0)
                         ERRSH <- 100*(1- mean(sh$shF)/mean(sh$shB))
                         if(input$Sdrug == 1) {
                             shstar <- ifelse(ERRSH>=90, 1, ifelse(ERRSH<80, 3,2))
@@ -2051,7 +2050,7 @@ it is recommended to contact World Health Organization
                         if(mean(data$sm)>-2 & mean(data$smf)>-2){
                             data$smB <-  data[,input$Smbas] 
                             data$smF <-  data[,input$Smfol] 
-                            sm <- subset(data, smB >0 &  smF >=0)
+                            sm <- subset(data, data$smB >0 &  data$smF >=0)
                             
                             ERRSM <- 100*(1- mean(sm$smF)/mean(sm$smB))
                             if(input$Sdrug == 1) { 
@@ -2073,7 +2072,7 @@ it is recommended to contact World Health Organization
                             if(mean(data$sj)>-2 & mean(data$sjf>-2)){
                                 data$sjB <-  data[,input$Sjbas] 
                                 data$sjF <-  data[,input$Sjfol] 
-                                sj <- subset(data, sjB >0 &  sjF >=0)
+                                sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                                 ERRSJ <- 100*(1- mean(sj$sjF)/mean(sj$sjB))
                                 if(input$Sdrug == 1) { 
                                     sjstar <- ifelse(ERRSJ>=90, 1, ifelse(ERRSJ<80, 3,2))
@@ -2128,9 +2127,9 @@ it is recommended to contact World Health Organization
                                 data$RF <-  data[,input$Rfol]  
                                 data$TF <-  data[,input$Tfol] 
                                 data$HF <-  data[,input$Hfol] 
-                                R <- subset(data, RB> 0 & RF >= 0)
-                                Tr <- subset(data, TB> 0 & TF >= 0)
-                                H <- subset(data, HB> 0 & HF >= 0)
+                                R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                H <- subset(data, data$HB> 0 & data$HF >= 0)
                                 
                                 ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                                 ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
@@ -2298,8 +2297,8 @@ it is recommended to contact World Health Organization
                                     data$TB <-  data[,input$Tbas]
                                     data$RF <-  data[,input$Rfol]  
                                     data$TF <-  data[,input$Tfol] 
-                                    R <- subset(data, RB> 0 & RF >= 0)
-                                    Tr <- subset(data, TB> 0 & TF >= 0)
+                                    R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                     
                                     ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                                     ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
@@ -2349,8 +2348,8 @@ it is recommended to contact World Health Organization
                                         data$HB <-  data[,input$Hbas] 
                                         data$RF <-  data[,input$Rfol]  
                                         data$HF <-  data[,input$Hfol] 
-                                        R <- subset(data, RB> 0 & RF >= 0)
-                                        H <- subset(data, HB> 0 & HF >= 0)
+                                        R <- subset(data, data$RB> 0 & data$RF >= 0)
+                                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                                         
                                         ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                                         ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
@@ -2425,8 +2424,8 @@ it is recommended to contact World Health Organization
                                             data$HB <-  data[,input$Hbas] 
                                             data$TF <-  data[,input$Tfol] 
                                             data$HF <-  data[,input$Hfol] 
-                                            Tr <- subset(data, TB> 0 & TF >= 0)
-                                            H <- subset(data, HB> 0 & HF >= 0)
+                                            Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                            H <- subset(data, data$HB> 0 & data$HF >= 0)
                                             
                                             ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
                                             ERRH <- 100*(1- mean(H$HF)/mean(H$HB))
@@ -2500,7 +2499,7 @@ it is recommended to contact World Health Organization
                                             {
                                                 data$RB <-  data[,input$Rbas]  
                                                 data$RF <-  data[,input$Rfol]  
-                                                R <- subset(data, RB> 0 & RF >= 0)
+                                                R <- subset(data, data$RB> 0 & data$RF >= 0)
                                                 
                                                 ERRR <- 100*(1- mean(R$RF)/mean(R$RB))
                                                 
@@ -2524,7 +2523,7 @@ it is recommended to contact World Health Organization
                                                 {
                                                     data$TB <-  data[,input$Tbas]
                                                     data$TF <-  data[,input$Tfol] 
-                                                    Tr <- subset(data, TB> 0 & TF >= 0)
+                                                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                                     
                                                     ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
                                                     
@@ -2548,7 +2547,7 @@ it is recommended to contact World Health Organization
                                                     {
                                                         data$HB <-  data[,input$Hbas] 
                                                         data$HF <-  data[,input$Hfol] 
-                                                        H <- subset(data, HB> 0 & HF >= 0)
+                                                        H <- subset(data, data$HB> 0 & data$HF >= 0)
                                                         
                                                         ERRH <- 100*(1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
                                                         
@@ -2565,7 +2564,7 @@ it is recommended to contact World Health Organization
                                                                 } 
                                                             }
                                                         } else {
-                                                            if(STHdrug == 2){
+                                                            if(input$STHdrug == 2){
                                                                 hstar<-ifelse(ERRH >=70,1,2)
                                                                 if(hstar == 2){
                                                                     paste('The efficacy of the drug administered is below the expected efficacy hookworm infections (70%). 
@@ -2638,8 +2637,8 @@ it is recommended to contact World Health Organization
                     data$smB <-  data[,input$Smbas] 
                     data$shF <-  data[,input$Shfol]  
                     data$smF <-  data[,input$Smfol] 
-                    sh <- subset(data, shB > 0 &shF >=0)
-                    sm <- subset(data, smB > 0 & smF >=0)
+                    sh <- subset(data, data$shB > 0 &data$shF >=0)
+                    sm <- subset(data, data$smB > 0 & data$smF >=0)
                     ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
                     term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
                     term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
@@ -2696,7 +2695,7 @@ it is recommended to contact World Health Organization
                         data$shB <-  data[,input$Shbas]  
                         data$shF <-  data[,input$Shfol]  
                         
-                        sh <- subset(data, shB >0 &  shF >=0)
+                        sh <- subset(data, data$shB >0 &  data$shF >=0)
                         ERRSH <- (1- mean(sh$shF)/mean(sh$shB))
                         term1SH <- (mean(sh$shF)/mean(sh$shB))**2; term2SH <- ifelse(mean(sh$shF)==0,0,var(sh$shF)/mean(sh$shF)**2); term3SH <- var(sh$shB)/mean(sh$shB)**2
                         term4SH <- ifelse(mean(sh$shF)==0,0,-2*cor(sh$shB,sh$shF)*sqrt(var(sh$shF))*sqrt(var(sh$shB))/(mean(sh$shB)*mean(sh$shF)))
@@ -2728,7 +2727,7 @@ it is recommended to contact World Health Organization
                         if(mean(data$sm)>-2 & mean(data$smf)> - 2){
                             data$smB <-  data[,input$Smbas] 
                             data$smF <-  data[,input$Smfol] 
-                            sm <- subset(data, smB >0 &  smF >=0)
+                            sm <- subset(data, data$smB >0 &  data$smF >=0)
                             
                             ERRSM <- (1- mean(sm$smF)/mean(sm$smB))
                             term1SM <- (mean(sm$smF)/mean(sm$smB))**2; term2SM <- ifelse(mean(sm$smF)==0,0,var(sm$smF)/mean(sm$smF)**2); term3SM <- var(sm$smB)/mean(sm$smB)**2
@@ -2762,7 +2761,7 @@ it is recommended to contact World Health Organization
                             if(mean(data$sj)>-2 & mean(data$sjf)> - 2){
                                 data$sjB <-  data[,input$Sjbas] 
                                 data$sjF <-  data[,input$Sjfol] 
-                                sj <- subset(data, sjB >0 &  sjF >=0)
+                                sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                                 ERRSJ <- (1- mean(sj$sjF)/mean(sj$sjB))
                                 term1SJ <- (mean(sj$sjF)/mean(sj$sjB))**2; term2SJ <- ifelse(mean(sj$sjF)==0,0,var(sj$sjF)/mean(sj$sjF)**2); term3SJ <- var(sj$sjB)/mean(sj$sjB)**2              
                                 term4SJ <- ifelse(mean(sj$sjF)==0,0,-2*cor(sj$sjB,sj$sjF)*sqrt(var(sj$sjF))*sqrt(var(sj$sjB))/(mean(sj$sjB)*mean(sj$sjF)))
@@ -2817,9 +2816,9 @@ it is recommended to contact World Health Organization
                     data$RF <-  data[,input$Rfol]  
                     data$TF <-  data[,input$Tfol] 
                     data$HF <-  data[,input$Hfol] 
-                    R <- subset(data, RB> 0 & RF >= 0)
-                    Tr <- subset(data, TB> 0 & TF >= 0)
-                    H <- subset(data, HB> 0 & HF >= 0)
+                    R <- subset(data, data$RB> 0 & data$RF >= 0)
+                    Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                    H <- subset(data, data$HB> 0 & data$HF >= 0)
                     
                     ERRR <- (1- mean(R$RF)/mean(R$RB))
                     term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -2939,8 +2938,8 @@ it is recommended to contact World Health Organization
                         data$TB <-  data[,input$Tbas]
                         data$RF <-  data[,input$Rfol]  
                         data$TF <-  data[,input$Tfol] 
-                        R <- subset(data, RB> 0 & RF >= 0)
-                        Tr <- subset(data, TB> 0 & TF >= 0)
+                        R <- subset(data, data$RB> 0 & data$RF >= 0)
+                        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                         
                         ERRR <- (1- mean(R$RF)/mean(R$RB))
                         term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -3002,8 +3001,8 @@ it is recommended to contact World Health Organization
                             data$HB <-  data[,input$Hbas] 
                             data$RF <-  data[,input$Rfol]  
                             data$HF <-  data[,input$Hfol] 
-                            R <- subset(data, RB> 0 & RF >= 0)
-                            H <- subset(data, HB> 0 & HF >= 0)
+                            R <- subset(data, data$RB> 0 & data$RF >= 0)
+                            H <- subset(data, data$HB> 0 & data$HF >= 0)
                             
                             ERRR <- (1- mean(R$RF)/mean(R$RB))
                             term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -3087,8 +3086,8 @@ it is recommended to contact World Health Organization
                                 data$HB <-  data[,input$Hbas] 
                                 data$TF <-  data[,input$Tfol] 
                                 data$HF <-  data[,input$Hfol] 
-                                Tr <- subset(data, TB> 0 & TF >= 0)
-                                H <- subset(data, HB> 0 & HF >= 0)
+                                Tr <- subset(data, data$TB> 0 & data$TF >= 0)
+                                H <- subset(data, data$HB> 0 & data$HF >= 0)
                                 
                                 ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
                                 term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
@@ -3169,7 +3168,7 @@ it is recommended to contact World Health Organization
                                 {
                                     data$RB <-  data[,input$Rbas]  
                                     data$RF <-  data[,input$Rfol]  
-                                    R <- subset(data, RB> 0 & RF >= 0)
+                                    R <- subset(data, data$RB> 0 & data$RF >= 0)
                                     
                                     ERRR <- (1- mean(R$RF)/mean(R$RB))
                                     term1R <- (mean(R$RF)/mean(R$RB))**2; term2R <- ifelse(mean(R$RF)==0,0,var(R$RF)/mean(R$RF)**2); term3R <- var(R$RB)/mean(R$RB)**2
@@ -3205,7 +3204,7 @@ it is recommended to contact World Health Organization
                                     {
                                         data$TB <-  data[,input$Tbas]
                                         data$TF <-  data[,input$Tfol] 
-                                        Tr <- subset(data, TB> 0 & TF >= 0)
+                                        Tr <- subset(data, data$TB> 0 & data$TF >= 0)
                                         
                                         ERRT <- (1- mean(Tr$TF)/mean(Tr$TB))
                                         term1T <- (mean(Tr$TF)/mean(Tr$TB))**2; term2T <- ifelse(mean(Tr$TF)==0,0,var(Tr$TF)/mean(Tr$TF)**2); term3T <- var(Tr$TB)/mean(Tr$TB)**2
@@ -3240,7 +3239,7 @@ it is recommended to contact World Health Organization
                                         {
                                             data$HB <-  data[,input$Hbas] 
                                             data$HF <-  data[,input$Hfol] 
-                                            H <- subset(data, HB> 0 & HF >= 0)
+                                            H <- subset(data, data$HB> 0 & data$HF >= 0)
                                             
                                             ERRH <- (1- mean(H$HF[H$HB>0 & H$HF>=0])/mean(H$HB[H$HB>0 & H$HF>=0]))
                                             term1H <- (mean(H$HF)/mean(H$HB))**2; term2H <- ifelse(mean(H$HF)==0,0,var(H$HF)/mean(H$HF)**2); term3H <- var(H$HB)/mean(H$HB)**2
