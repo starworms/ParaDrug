@@ -401,6 +401,7 @@ plot_paradrug_schistosomiasis_eggcount  <- function(object,
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
 #' p <- paradrug_schistosomiasis_follow(x)
+#' p <- paradrug_schistosomiasis_follow(x, type = "markdown")
 paradrug_schistosomiasis_follow <- function(object, 
                                             Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                                             Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
@@ -432,10 +433,11 @@ paradrug_schistosomiasis_follow <- function(object,
     
     data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
     
-    if(mean(data$FU)==-2) {follow <- paste('No follow-up data was provided')}
-    else {
-        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2) & mean(data$FU>-2))
-        {
+    if(mean(data$FU)==-2) {
+        follow    <- paste('No follow-up data was provided')
+        follow_md <- 'Please match follow-up period data'
+    }else {
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2) & mean(data$FU>-2)){
             data$fol <-  data[,input$followup] 
             data$shB <-  data[,input$Shbas]  
             data$smB <-  data[,input$Smbas] 
@@ -453,10 +455,11 @@ paradrug_schistosomiasis_follow <- function(object,
             med <- round(quantile(data2$fol, probs=c(0.50)),1)
             nc <- length(data2$fol)
             ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+            follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')
-        }
-        else{ 
+            follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+        }else{ 
             if(mean(data$sh)>-2 & mean(data$shF >-2) & mean(data$FU>-2)){
                 data$fol <-  data[,input$followup] 
                 data$shB <-  data[,input$Shbas]  
@@ -470,10 +473,11 @@ paradrug_schistosomiasis_follow <- function(object,
                 med <- round(quantile(data2$fol, probs=c(0.50)),1)
                 nc <- length(data2$fol)
                 ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')
-            }
-            else{
+                follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+            }else{
                 if(mean(data$sm)>-2 & mean(data$smF)> -2 & mean(data$FU>-2)){
                     data$fol <-  data[,input$followup]  
                     data$smB <-  data[,input$Smbas] 
@@ -487,10 +491,11 @@ paradrug_schistosomiasis_follow <- function(object,
                     med <- round(quantile(data2$fol, probs=c(0.50)),1)
                     nc <- length(data2$fol)
                     ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
-        complete cases were re-sampled between 14 and 21 days after drug administration.')    }
-                
-                else{
+                    follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')    
+                    follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+                }else{
                     if(mean(data$sj)>-2 & mean(data$sjF) >- 2 & mean(data$FU>-2)){
                         data$fol <-  data[,input$followup] 
                         data$sjB <-  data[,input$Sjbas]  
@@ -504,13 +509,20 @@ paradrug_schistosomiasis_follow <- function(object,
                         med <- round(quantile(data2$fol, probs=c(0.50)),1)
                         nc <- length(data2$fol)
                         ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                        follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                        follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')
-                    }
-                    else{follow <- paste('No egg count data was provided.')}  
+                        follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+                    }else{
+                        follow    <- paste('No egg count data was provided.')
+                        follow_md <- paste('Please match egg count data.')
+                    }  
                 }   
             }
         } 
+    }
+    if(type == "markdown"){
+        follow <- follow_md
     }
     follow
 }
