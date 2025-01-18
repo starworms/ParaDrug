@@ -405,56 +405,11 @@ paradrugServer <- function(input, output, session){
             {paste('Please upload data.') 
             } else {if (input$NTD=='1')
             {PARADRUG <- paradrug_data()
-            data     <- PARADRUG$data
-            n        <- PARADRUG$n
-            data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
-            data$shf <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
-            
-            # S mansoni
-            data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
-            data$smf <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
-            
-            # S japonicum
-            data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
-            data$sjf <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
-            
-            data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
-            data$inf2 <- ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0)
-            if(mean(data$inf)==0 |mean(data$inf2)==0) {}
-            else 
-            {if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smf)>-2 & mean(data$shf> - 2)){
-                data$shB <-  data[,input$Shbas]  
-                data$smB <-  data[,input$Smbas] 
-                data$shF <-  data[,input$Shfol]  
-                data$smF <-  data[,input$Smfol] 
-                sh <- subset(data, data$shB >0 &  data$shF >=0)
-                sm <- subset(data, data$smB >0 &  data$smF >=0)
-                par(mfrow=c(1,2))
-                hist(sh$shB, col = "#EB4C4C", main=expression(italic(Schistosoma~haematobium)), freq=T,ylab = 'Number of subjects', xlab='Urine egg counts (eggs per 10 ml)')
-                hist(sm$smB, col = "#EB4C4C", main=expression(italic(Schistosoma~mansoni)), freq=T, ylab='Number of subjects', xlab='Fecal egg counts (eggs per gram of stool)')}
-                else
-                {if(mean(data$sh)>-2 & mean(data$shf> - 2)){
-                    data$shB <-  data[,input$Shbas]  
-                    data$shF <-  data[,input$Shfol]  
-                    sh <- subset(data, data$shB >0 &  data$shF >=0)
-                    hist(sh$shB, col = "#EB4C4C", main=expression(italic(Schistosoma~haematobium)), freq=T, ylab='Number of subjects',xlab='Urine egg counts (eggs per 10 ml)')}
-                    else 
-                    {if(mean(data$sm)>-2 & mean(data$smf)>-2) {
-                        data$smB <-  data[,input$Smbas] 
-                        data$smF <-  data[,input$Smfol] 
-                        sm <- subset(data, data$smB >0 &  data$smF >=0)
-                        hist(sm$smB, col = "#EB4C4C", main=expression(italic(Schistosoma~mansoni)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')}
-                        else
-                        {if(mean(data$sj)>-2 & mean(data$sjf)>-2) {
-                            data$sjB <-  data[,input$Sjbas]  
-                            data$sjF <-  data[,input$Sjfol]  
-                            sj <- subset(data, data$sjB >0 &  data$sjF >=0)
-                            hist(sj$sjB, col = "#EB4C4C", main=expression(italic(Schistosoma~japonicum)), freq=T, ylab='Number of subjects',xlab='Fecal egg counts (eggs per gram of stool)')}
-                            else  {  }
-                        }
-                    }
-                }
-            }
+            plot_paradrug_schistosomiasis_eggcount(PARADRUG, 
+                                                   Shbas = input$Shbas, Shfol = input$Shfol, 
+                                                   Smbas = input$Smbas, Smfol = input$Smfol, 
+                                                   Sjbas = input$Sjbas, Sjfol = input$Sjfol)
+
             }
                 else  {if (input$NTD=='2'){
                     PARADRUG <- paradrug_data()
