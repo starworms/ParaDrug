@@ -45,4 +45,5 @@ Analysis of Helminthiasis (subjects)
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 x <- read_paradrug_xls(path)
 p <- paradrug_helminthiasis_n(x)
+p <- paradrug_helminthiasis_n(x, type = "markdown")
 }
