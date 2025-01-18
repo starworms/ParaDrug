@@ -12,6 +12,7 @@ paradrug_schistosomiasis_n(
   Smfol = "FU_KK2_TT_EPG",
   Sjbas = "BL_KK2_HW_EPG",
   Sjfol = "FU_KK2_HW_EPG",
+  type = c("latex", "markdown"),
   ...
 )
 }
@@ -29,6 +30,8 @@ paradrug_schistosomiasis_n(
 \item{Sjbas}{column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP}
 
 \item{Sjfol}{column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+
+\item{type}{either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.}
 
 \item{...}{not used yet}
 }

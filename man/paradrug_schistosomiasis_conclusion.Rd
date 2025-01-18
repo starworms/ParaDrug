@@ -13,6 +13,7 @@ paradrug_schistosomiasis_conclusion(
   Sjbas = "BL_KK2_HW_EPG",
   Sjfol = "FU_KK2_HW_EPG",
   drug = c("Praziquantel (1x 40 mg/kg)", "Other"),
+  type = c("latex", "markdown"),
   ...
 )
 }
@@ -32,6 +33,8 @@ paradrug_schistosomiasis_conclusion(
 \item{Sjfol}{column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP}
 
 \item{drug}{either "Praziquantel (1x 40 mg/kg)" or "Other"}
+
+\item{type}{either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.}
 
 \item{...}{not used yet}
 }

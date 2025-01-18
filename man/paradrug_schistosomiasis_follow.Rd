@@ -13,6 +13,7 @@ paradrug_schistosomiasis_follow(
   Sjbas = "BL_KK2_HW_EPG",
   Sjfol = "FU_KK2_HW_EPG",
   followup = "Age",
+  type = c("latex", "markdown"),
   ...
 )
 }
@@ -32,6 +33,8 @@ paradrug_schistosomiasis_follow(
 \item{Sjfol}{column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP}
 
 \item{followup}{column in name in object$data for Number of days between the baseline and the follow-up survey}
+
+\item{type}{either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.}
 
 \item{...}{not used yet}
 }
