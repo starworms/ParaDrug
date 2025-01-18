@@ -19,6 +19,7 @@
 #' shinyApp(ui, server)
 #' }
 paradrugUI <- function(id, ...){
+    addResourcePath(prefix = "images", directoryPath = system.file(package = 'ParaDrug', "apps", "paradrug-1.0", "www"))
     fluidPage(
         #tags$head(includeScript("GoogleAnalytics.js")), 
         # Application title
@@ -118,9 +119,9 @@ in school children in seven countries where soil-transmitted helminths are endem
                     p('ParaDrug 1.0 is developed by Bruno Levecke. The development of this tool was financed by the Bill & Melinda Gates Foundation and the Research Foundation - Flanders (FWO).'),
                     br(),
                     fluidRow(
-                        column(4,a(href='http://www.starworms.org/',img(src="combo2.jpg", height = 182, width = 300))),
-                        column(4,a(href='https://www.ugent.be/en',img(src="Ugent.jpg", height = 180, width = 200))),
-                        column(4,a(href='http://www.fwo.be/en',img(src="FWO.jpg", height = 90, width = 230)))
+                        column(4,a(href='http://www.starworms.org/',img(src="images/combo2.jpg", height = 182, width = 300))),
+                        column(4,a(href='https://www.ugent.be/en',img(src="images/Ugent.jpg", height = 180, width = 200))),
+                        column(4,a(href='http://www.fwo.be/en',img(src="images/FWO.jpg", height = 90, width = 230)))
                         
                     )),
                 
@@ -223,7 +224,7 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
            lie below (or 25% of the values lie above). Second, a histogram is provided to illustrate the distribution of the egg counts across
            the complete cases per worm species. The figure below shows the distribution of the baseline hookworm egg counts for all complete cases for this worm species in a previously conducted drug efficacy trial.'),
                          fluidRow(
-                             column(4,img(src="Rplot01.jpg", height = 273, width = 300))),
+                             column(4,img(src="images/Rplot01.jpg", height = 273, width = 300))),
                          
                          
                          br(),
@@ -232,7 +233,7 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
                          p('The number of low, moderate and high intensity infections is determined for each worm species seperately. WHO thresholds defining the three classes of infection intensity for the different worm species are summarized in the table below (', a('WHO et al., 1998', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf'),'). In addition, the proportions of low, moderate and high intensity infections (%) are reported.
           To this end, the number of low, moderate and high infections is divided over the number of complete cases for that particular worm species and multiplied by 100.'),
                          fluidRow(
-                             column(4,a(href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf',img(src="Slide2.jpg", height = 203, width = 400)))),
+                             column(4,a(href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf',img(src="images/Slide2.jpg", height = 203, width = 400)))),
                          
                          br(),
                          br(),
@@ -247,7 +248,7 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
            and the way the mean egg count is calculated (arithmetic vs. geometric). The group-based formula is now recommended by WHO to summarize egg reduction data 
 (', a('WHO et al., 2013', style="color:#EB4C4C",href='http://apps.who.int/iris/bitstream/10665/79019/1/9789241564557_eng.pdf'),').'),
                          fluidRow(
-                             column(4,a(img(src="ERRform.jpg", height = 53, width = 300)))),
+                             column(4,a(img(src="images/ERRform.jpg", height = 53, width = 300)))),
                          br(),
                          
                          p('Compared to the other formulae, 
@@ -260,13 +261,13 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
                          p('The 95% confidence intervals (95%CI) are calculated using the mathematical framework described by ', a('Levecke et al., 2015',href='http://www.sciencedirect.com/science/article/pii/S0065308X15000081?via%3Dihub'),'. In short, this methodology derives the variance of the ERR applying the 
         Taylor method (delta method;', a('Casella and Berger, 2001',href='https://fsalamri.files.wordpress.com/2015/02/casella_berger_statistical_inference1.pdf'),'), and assumes that 100%-ERR follows a Gamma distribution. The variance of the ERR applying the Taylor method equals'), 
                          fluidRow(
-                             column(4,a(img(src="Variance.jpg", height = 196.3, width = 800)))),
+                             column(4,a(img(src="images/Variance.jpg", height = 196.3, width = 800)))),
                          br(),  
                          p('The lower and upper limit of the 95% CI equal 1 - 97.5th quantile and 1 - 2.5th quantile of the Gamma distribution with a shape parameter', 
                            HTML("&gamma;"),'and a scale parameter', HTML("&theta;"),', respectively. Based on the ERR, its variance and a sample size N, the two parameters of the 
           Gamma distribution of 1 - ERR can be written as'),
                          fluidRow(
-                             column(4,a(img(src="gamma.jpg", height = 109, width = 150)))),
+                             column(4,a(img(src="images/gamma.jpg", height = 109, width = 150)))),
                          br(),
                          p(strong('Interpretation of the observed ERR')),
                          p('Based on the observed ERR, the efficacy of the anthelmintic drug can be classified into different 
@@ -277,7 +278,7 @@ at baseline. In addition, the proportion of cases (%) are reported for each of t
           inferior to the reference value by at least 10 percent points. The table below summarizes the thresholds and the corresponding levels of drug efficacy for 
           the different worm species and the different anthelmintic drugs used in preventive chemotherapy programs.'),
                          fluidRow(
-                             column(4,a(href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf',img(src="Slide3.jpg", height = 180, width = 400))))
+                             column(4,a(href='http://apps.who.int/iris/bitstream/10665/63821/1/WHO_CTD_SIP_98.1.pdf',img(src="images/Slide3.jpg", height = 180, width = 400))))
                          
                          
                          
