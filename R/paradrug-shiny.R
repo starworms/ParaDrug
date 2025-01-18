@@ -369,7 +369,7 @@ paradrugServer <- function(input, output, session){
             {paste0('Please upload data.')
             } else {if (input$NTD=='1')
             {PARADRUG <- paradrug_data()
-            paradrug_schistosomiasis_n(PARADRUG, 
+            paradrug_schistosomiasis_intensity(PARADRUG, 
                                        Shbas = input$Shbas, Shfol = input$Shfol, 
                                        Smbas = input$Smbas, Smfol = input$Smfol, 
                                        Sjbas = input$Sjbas, Sjfol = input$Sjbas,
@@ -2734,7 +2734,7 @@ it is recommended to contact World Health Organization
                 file.remove(file.path(getwd(), "logo.pdf"))
                 file.remove(file.path(getwd(), "Rplot02.jpg"))
             })
-            out = knit2pdf(system.file(package = "ParaDrug", "apps", "paradrug-1.0", "input2.Rnw"), clean = TRUE)
+            out = knitr::knit2pdf(system.file(package = "ParaDrug", "apps", "paradrug-1.0", "input2.Rnw"), clean = TRUE)
             file.rename(out, file) # move pdf to file for downloading
         },
         contentType = 'application/pdf'
