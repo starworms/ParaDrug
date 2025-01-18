@@ -20,6 +20,7 @@
 \begin{document}
 
 <<echo=FALSE>>=
+library(xlsx)
 Dis <- ifelse(input$NTD == 1, 'schistosomiasis', 'soil-transmitted helminthiasis')
 Drug <- ifelse(input$NTD == 1 & input$Sdrug == 1, 'praziquantel (40 mg/kg)', 
                ifelse(input$NTD == 2 & input$STHdrug == 1,'albendazole (400 mg)', 
