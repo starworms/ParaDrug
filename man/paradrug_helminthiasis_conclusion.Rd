@@ -50,4 +50,10 @@ x <- read_paradrug_xls(path)
 p <- paradrug_helminthiasis_conclusion(x, drug = "Albendazole (1x 400 mg)")
 p <- paradrug_helminthiasis_conclusion(x, drug = "Mebendazole (1x 500 mg)")
 p <- paradrug_helminthiasis_conclusion(x, drug = "Other")
+p <- paradrug_helminthiasis_conclusion(x, drug = "Albendazole (1x 400 mg)", 
+                                       type = "markdown")
+p <- paradrug_helminthiasis_conclusion(x, drug = "Mebendazole (1x 500 mg)", 
+                                       type = "markdown")
+p <- paradrug_helminthiasis_conclusion(x, drug = "Other", 
+                                       type = "markdown")
 }
