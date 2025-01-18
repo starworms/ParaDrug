@@ -49,4 +49,8 @@ path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 x <- read_paradrug_xls(path)
 p <- paradrug_schistosomiasis_conclusion(x, drug = "Praziquantel (1x 40 mg/kg)")
 p <- paradrug_schistosomiasis_conclusion(x, drug = "Other")
+p <- paradrug_schistosomiasis_conclusion(x, drug = "Praziquantel (1x 40 mg/kg)",
+                                         type = "markdown")
+p <- paradrug_schistosomiasis_conclusion(x, drug = "Other",
+                                         type = "markdown")
 }
