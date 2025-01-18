@@ -8,6 +8,7 @@
 #' @param Smfol column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -20,7 +21,9 @@ paradrug_schistosomiasis_n <- function(object,
                             Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                             Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
                             Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG", 
+                            type = c("latex", "markdown"),
                             ...){
+    type <- match.arg(type)
     data <- object$data
     input <- list(Shbas = Shbas, Shfol = Shfol, 
                   Smbas = Smbas, Smfol = Smfol, 
@@ -132,6 +135,7 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
 #' @param Smfol column in name in object$data for Smbas/Smfol: S. mansoni, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -144,7 +148,9 @@ paradrug_schistosomiasis_intensity <- function(object,
                                                Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                                                Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
                                                Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG", 
+                                               type = c("latex", "markdown"),
                                                ...){
+    type <- match.arg(type)
     data <- object$data
     input <- list(Shbas = Shbas, Shfol = Shfol, 
                   Smbas = Smbas, Smfol = Smfol, 
@@ -353,6 +359,7 @@ plot_paradrug_schistosomiasis_eggcount  <- function(object,
 #' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param followup column in name in object$data for Number of days between the baseline and the follow-up survey
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -366,7 +373,9 @@ paradrug_schistosomiasis_follow <- function(object,
                                             Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
                                             Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG",
                                             followup = "Age",
+                                            type = c("latex", "markdown"),
                                                 ...){
+    type <- match.arg(type)
     data <- object$data
     input <- list(Shbas = Shbas, Shfol = Shfol, 
                   Smbas = Smbas, Smfol = Smfol, 
@@ -486,6 +495,7 @@ paradrug_schistosomiasis_follow <- function(object,
 #' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param drug either "Praziquantel (1x 40 mg/kg)" or "Other"
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -500,7 +510,9 @@ paradrug_schistosomiasis_eggreduction <- function(object,
                                             Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
                                             Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG",
                                             drug = c("Praziquantel (1x 40 mg/kg)", "Other"),
+                                            type = c("latex", "markdown"),
                                             ...){
+    type <- match.arg(type)
     drug <- match.arg(drug)
     drug <- list("Praziquantel (1x 40 mg/kg)" = 1, "Other" = 2)[[drug]]
     data <- object$data
@@ -876,6 +888,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
 #' @param Sjbas column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param drug either "Praziquantel (1x 40 mg/kg)" or "Other"
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -890,7 +903,9 @@ paradrug_schistosomiasis_conclusion <- function(object,
                                                 Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
                                                 Sjbas = "BL_KK2_HW_EPG", Sjfol = "FU_KK2_HW_EPG", 
                                                 drug = c("Praziquantel (1x 40 mg/kg)", "Other"),
+                                                type = c("latex", "markdown"),
                                                 ...){
+    type <- match.arg(type)
     drug <- match.arg(drug)
     drug <- list("Praziquantel (1x 40 mg/kg)" = 1, "Other" = 2)[[drug]]
     data <- object$data

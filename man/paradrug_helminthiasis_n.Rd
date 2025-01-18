@@ -12,6 +12,7 @@ paradrug_helminthiasis_n(
   Tfol = "FU_KK2_TT_EPG",
   Hbas = "BL_KK2_HW_EPG",
   Hfol = "FU_KK2_HW_EPG",
+  type = c("latex", "markdown"),
   ...
 )
 }
@@ -29,6 +30,8 @@ paradrug_helminthiasis_n(
 \item{Hbas}{column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP}
 
 \item{Hfol}{column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP}
+
+\item{type}{either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.}
 
 \item{...}{not used yet}
 }

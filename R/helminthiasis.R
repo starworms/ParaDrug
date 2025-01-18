@@ -7,6 +7,7 @@
 #' @param Tfol column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -19,7 +20,9 @@ paradrug_helminthiasis_n <- function(object,
                                    Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                    Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
                                    Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                   type = c("latex", "markdown"),
                                    ...){
+    type <- match.arg(type)
     data <- object$data
     input <- list(Rbas = Rbas, Rfol = Rfol, 
                   Tbas = Tbas, Tfol = Tfol, 
@@ -213,6 +216,7 @@ paradrug_helminthiasis_n <- function(object,
 #' @param Tfol column in name in object$data for Tbas/Tfol: Trichuris trichiura, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -225,7 +229,9 @@ paradrug_helminthiasis_intensity <- function(object,
                                      Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                      Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
                                      Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
+                                     type = c("latex", "markdown"),
                                      ...){
+    type <- match.arg(type)
     data <- object$data
     input <- list(Rbas = Rbas, Rfol = Rfol, 
                   Tbas = Tbas, Tfol = Tfol, 
@@ -638,6 +644,7 @@ plot_paradrug_helminthiasis_eggcount <- function(object,
 #' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param followup column in name in object$data for Number of days between the baseline and the follow-up survey
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -651,7 +658,9 @@ paradrug_helminthiasis_follow <- function(object,
                                           Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
                                           Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
                                           followup = "Age",
+                                          type = c("latex", "markdown"),
                                           ...){
+    type <- match.arg(type)
     data <- object$data
     input <- list(Rbas = Rbas, Rfol = Rfol, 
                   Tbas = Tbas, Tfol = Tfol, 
@@ -875,6 +884,7 @@ paradrug_helminthiasis_follow <- function(object,
 #' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param drug either "Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)" or "Other"
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -890,7 +900,9 @@ paradrug_helminthiasis_eggreduction <- function(object,
                                                 Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
                                                 Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
                                                 drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
+                                                type = c("latex", "markdown"),
                                                 ...){
+    type <- match.arg(type)
     drug <- match.arg(drug)
     drug <- list("Albendazole (1x 400 mg)" = 1, "Mebendazole (1x 500 mg)" = 2, "Other" = 3)[[drug]]
     data <- object$data
@@ -1720,6 +1732,7 @@ plot_paradrug_helminthiasis_eggcount_reduction  <- function(object,
 #' @param Hbas column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param drug either "Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)" or "Other"
+#' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
 #' @return TODO
@@ -1735,7 +1748,9 @@ paradrug_helminthiasis_conclusion <- function(object,
                                               Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
                                               Hbas = "BL_KK2_HW_EPG", Hfol = "FU_KK2_HW_EPG", 
                                               drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
+                                              type = c("latex", "markdown"),
                                               ...){
+    type <- match.arg(type)
     drug <- match.arg(drug)
     drug <- list("Albendazole (1x 400 mg)" = 1, "Mebendazole (1x 500 mg)" = 2, "Other" = 3)[[drug]]
     data <- object$data

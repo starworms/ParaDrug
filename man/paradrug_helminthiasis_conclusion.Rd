@@ -13,6 +13,7 @@ paradrug_helminthiasis_conclusion(
   Hbas = "BL_KK2_HW_EPG",
   Hfol = "FU_KK2_HW_EPG",
   drug = c("Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)", "Other"),
+  type = c("latex", "markdown"),
   ...
 )
 }
@@ -32,6 +33,8 @@ paradrug_helminthiasis_conclusion(
 \item{Hfol}{column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP}
 
 \item{drug}{either "Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)" or "Other"}
+
+\item{type}{either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.}
 
 \item{...}{not used yet}
 }
