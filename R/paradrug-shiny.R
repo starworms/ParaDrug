@@ -3307,7 +3307,6 @@ it is recommended to contact World Health Organization
     ## Matching headers with input    
     observe({ 
         PARADRUG <- paradrug_data()
-        print(str(PARADRUG))
         data     <- PARADRUG$data
         n        <- PARADRUG$n
         fields   <- PARADRUG$fields
