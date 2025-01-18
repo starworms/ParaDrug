@@ -369,114 +369,11 @@ paradrugServer <- function(input, output, session){
             {paste0('Please upload data.')
             } else {if (input$NTD=='1')
             {PARADRUG <- paradrug_data()
-            data     <- PARADRUG$data
-            n        <- PARADRUG$n
-            # S haematobium
-            data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
-            data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
-            
-            # S mansoni
-            data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
-            data$smF <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
-            
-            
-            # S japonicum
-            data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
-            data$sjF <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
-            
-            data$inf <- ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0)
-            data$inf2 <- ifelse(data$shF > -2 | data$smF > -2 | data$sjF > -2, 1, 0)
-            
-            if(mean(data$inf)==0 | mean(data$inf2)==0) {paste('Please provide egg count data.')}
-            else {
-                if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2))
-                {
-                    data$shB <-  data[,input$Shbas]  
-                    data$smB <-  data[,input$Smbas] 
-                    data$shF <-  data[,input$Shfol]  
-                    data$smF <-  data[,input$Smfol] 
-                    sh <- subset(data, data$shB >0 &  data$shF >=0)
-                    sm <- subset(data, data$smB >0 &  data$smF >=0)
-                    NshH <- sum(ifelse(sh$shB>=50,1,0))
-                    NshL <- sum(ifelse(sh$shB>0 & sh$shB<50,1,0))
-                    
-                    NsmH <- sum(ifelse(sm$smB>=400,1,0))
-                    NsmM <- sum(ifelse(sm$smB>=100 & sm$smB<400,1,0))
-                    NsmL <- sum(ifelse(sm$smB>0 & sm$smB<100,1,0))
-                    q25sh <- round(quantile(sh$shB, probs=c(0.25)),1)
-                    q75sh <- round(quantile(sh$shB, probs=c(0.75)),1)
-                    
-                    q25sm <- round(quantile(sm$smB, probs=c(0.25)),1)
-                    q75sm <- round(quantile(sm$smB, probs=c(0.75)),1)
-                    
-                    Msm <- round(mean(sm$smB),1)
-                    Msh <- round(mean(sh$shB),1)
-                    
-                    nsm <- length(sm$smB)
-                    nsh <- length(sh$shB)
-                    paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
-The mean (25th quantile; 75th quantile) <em>S. haematobium</em> egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. The mean 
-<em>S. mansoni</em> egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. Low and highy-intensity <em>S. haematobium</em>  
-infections were observed in', NshL,'(',round(100*NshL/nsh,1),'% ) and', NshH, '(',round(100*NshH/nsh,1),'% ) subjects,  respectively. 
-      For <em>S. mansoni</em>, the number of low, moderate and high-intensity infections were', NsmL,'(',round(100*NsmL/nsm,1),'% ),', NsmM,
-                          '(',round(100*NsmM/nsm,1),'% ) and', NsmH, '(',round(100*NsmH/nsm,1),'% ), respectively.')
-                }
-                else{ 
-                    if(mean(data$sh)>-2 & mean(data$shF >-2)){
-                        data$shB <-  data[,input$Shbas] 
-                        data$shF <-  data[,input$Shfol] 
-                        sh <- subset(data, data$shB >0 &  data$shF >=0)
-                        NshH <- sum(ifelse(sh$shB>=50,1,0))
-                        NshL <- sum(ifelse(sh$shB>0 & sh$shB<50,1,0))
-                        q25sh <- round(quantile(sh$shB, probs=c(0.25)),1)
-                        q75sh <- round(quantile(sh$shB, probs=c(0.75)),1)
-                        Msh <- round(mean(sh$shB),1)
-                        nsh <- length(sh$shB)
-                        
-                        paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
-The mean (25th quantile; 75th quantile) <em>S. haematobium</em> egg count equaled',Msh,'(',q25sh,';',q75sh,') eggs per 10 ml of urine. 
-Low and high-intensity <em>S. haematobium</em> infections were observed in', NshL,'(',round(100*NshL/nsh,1),'% ) and', NshH, '(',round(100*NshH/nsh,1),'% ) 
-                subjects, respectively.')
-                    }
-                    else{
-                        if(mean(data$sm)>-2 & mean(data$smF)> -2){
-                            data$smB <-  data[,input$Smbas] 
-                            data$smF <-  data[,input$Smfol] 
-                            sm <- subset(data, data$smB >0 &  data$smF >=0)
-                            NsmH <- sum(ifelse(sm$smB>=400,1,0))
-                            NsmM <- sum(ifelse(sm$smB>=100 & sm$smB<400,1,0))
-                            NsmL <- sum(ifelse(sm$smB>0 & sm$smB<100,1,0))
-                            q25sm <- round(quantile(sm$smB, probs=c(0.25)),1)
-                            q75sm <- round(quantile(sm$smB, probs=c(0.75)),1)
-                            Msm <- round(mean(sm$smB),1)
-                            nsm <- length(sm$smB)
-                            paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
-The mean (25th quantile; 75th quantile) <em>S. mansoni</em> egg count equaled',Msm,'(',q25sm,';',q75sm,') eggs per gram of stool. 
-Low, moderate and high-intensity  <em>S. mansoni</em> infections were observed in',NsmL,'(',round(100*NsmL/nsm,1),'% ),', NsmM,'(',round(100*NsmM/nsm,1),'% ) 
-                  and', NsmH, '(',round(100*NsmH/nsm,1),'% ) subjects, respectively.')
-                        }
-                        else{
-                            if(mean(data$sj)>-2 & mean(data$sjF) >- 2){
-                                data$sjB <-  data[,input$Sjbas] 
-                                data$sjF <-  data[,input$Sjfol] 
-                                sj <- subset(data, data$sjB >0 &  data$sjF >=0)
-                                NsjH <- sum(ifelse(sj$sjB>=400,1,0))
-                                NsjM <- sum(ifelse(sj$sjB>=100 & sj$sjB<400,1,0))
-                                NsjL <- sum(ifelse(sj$sjB>0 & sj$sjB<100,1,0))
-                                q25sj <- round(quantile(sj$sjB, probs=c(0.25)),1)
-                                q75sj <- round(quantile(sj$sjB, probs=c(0.75)),1)
-                                Msj <- round(mean(sj$sjB),1)
-                                nsj <- length(sj$sjB)
-                                paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
-The mean (25th quantile; 75th quantile) <em>S. japonicum</em> egg count equaled',Msj,'(',q25sj,';',q75sj,') eggs per gram of stool. Low, moderate and 
-high-intensity <em>S. japonicum</em> infections were observed in',NsjL,'(',round(100*NsjL/nsj,1),'% ),', NsjM,'(',round(100*NsjM/nsj,1),'% ) and', NsjH, 
-                                      '(',round(100*NsjH/nsj,1),'% ) subjects, respectively.')
-                            }
-                            else{paste('Please match egg count data.')}  
-                        }   
-                    }
-                } 
-            }
+            paradrug_schistosomiasis_n(PARADRUG, 
+                                       Shbas = input$Shbas, Shfol = input$Shfol, 
+                                       Smbas = input$Smbas, Smfol = input$Smfol, 
+                                       Sjbas = input$Sjbas, Sjfol = input$Sjbas,
+                                       type = "markdown")
             }
                 else {
                     # Number of cases of soil-transmitted helminthiasis
