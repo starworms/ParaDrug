@@ -45,4 +45,5 @@ Analysis of Helminthiasis (intensity)
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 x <- read_paradrug_xls(path)
 p <- paradrug_helminthiasis_intensity(x)
+p <- paradrug_helminthiasis_intensity(x, type = "markdown")
 }

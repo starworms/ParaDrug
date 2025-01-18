@@ -234,6 +234,7 @@ paradrug_helminthiasis_n <- function(object,
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
 #' p <- paradrug_helminthiasis_intensity(x)
+#' p <- paradrug_helminthiasis_intensity(x, type = "markdown")
 paradrug_helminthiasis_intensity <- function(object, 
                                      Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                      Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
@@ -264,11 +265,11 @@ paradrug_helminthiasis_intensity <- function(object,
     data$inf2 <- ifelse(data$Rf > -2 | data$Tf > -2 | data$Hf > -2, 1, 0)
     
     
-    if(mean(data$inf)==0 | mean(data$inf2)==0) {intense <- paste('No egg count data was provided.')}
-    else {
-        
-        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
-        {
+    if(mean(data$inf)==0 | mean(data$inf2)==0) {
+        intense    <- paste('No egg count data was provided.')
+        intense_md <- paste('Please provide egg count data.')
+    }else {
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2){
             data$RB <-  data[,input$Rbas]  
             data$TB <-  data[,input$Tbas]
             data$HB <-  data[,input$Hbas] 
@@ -306,7 +307,7 @@ paradrug_helminthiasis_intensity <- function(object,
             nT <- length(Tr$RB)
             nH <- length(H$HB)
             
-            intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+            intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
 The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. The mean 
 $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. The mean hookworm egg count equaled',MH,'(',q25H,';',q75H,') 
                   eggs per gram of stool. Low, moderate and high-intensity $A.$ $lumbricoides$ infections were observed in', NRL,'(',round(100*NRL/nR,1),'percent ),'
@@ -314,12 +315,16 @@ $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of sto
             For $T.$ $trichiura$, these numbers were', NTL,'(',round(100*NTL/nT,1),'percent ),', NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ),
                   respectively. For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'percent ),', NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/n,1),
                              'percent ), respectively.')
-        }
-        
-        
-        else{ 
-            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2)
-            {
+            intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. The mean 
+<em>T. trichiura</em> egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. The mean hookworm egg count equaled',MH,'(',q25H,';',q75H,') 
+                  eggs per gram of stool. Low, moderate and high-intensity <em>A. lumbricoides</em> infections were observed in', NRL,'(',round(100*NRL/nR,1),'% ),'
+                                , NRM,'(',round(100*NRM/nR,1),'% ) and', NRH, '(',round(100*NRH/nR,1),'% ) subjects,  respectively.
+            For <em>T. trichiura</em>, these numbers were', NTL,'(',round(100*NTL/nT,1),'% ),', NTM,'(',round(100*NTM/nT,1),'% ) and', NTH, '(',round(100*NTH/nT,1),'% ),
+                  respectively. For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'% ),', NHM,'(',round(100*NHM/nH,1),'% ) and', NHH, '(',round(100*NHH/n,1),
+                                '% ), respectively.')
+        }else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2){
                 data$RB <-  data[,input$Rbas]  
                 data$TB <-  data[,input$Tbas]
                 data$RF <-  data[,input$Rfol]  
@@ -348,17 +353,20 @@ $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of sto
                 nT <- length(Tr$TB)
                 
                 
-                intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+                intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
 The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. The mean $T.$ $trichiura$
 egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate and high-intensity $A.$ $lumbricoides$ infections were observed 
                     in', NRL,'(',round(100*NRL/nR,1),'percent ),' , NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects,  respectively.
             For $T.$ $trichiura$, these numbers were', NTL,'(',round(100*NTL/nT,1),'percent ),', NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ),
                     respectively.')
-            }
-            
-            else{
-                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2)
-                {
+                intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. The mean <em>T. trichiura</em>
+egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate and high-intensity <em>A. lumbricoides</em> infections were observed 
+                    in', NRL,'(',round(100*NRL/nR,1),'% ),' , NRM,'(',round(100*NRM/nR,1),'% ) and', NRH, '(',round(100*NRH/nR,1),'% ) subjects,  respectively.
+            For <em>T. trichiura</em>, these numbers were', NTL,'(',round(100*NTL/nT,1),'% ),', NTM,'(',round(100*NTM/nT,1),'% ) and', NTH, '(',round(100*NTH/nT,1),'% ),
+                    respectively.')
+            }else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2){
                     data$RB <-  data[,input$Rbas]  
                     data$HB <-  data[,input$Hbas] 
                     data$RF <-  data[,input$Rfol]  
@@ -385,19 +393,22 @@ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate
                     nR <- length(R$RB)
                     nH <- length(H$HB)
                     
-                    intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+                    intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
 The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. 
                       The mean hookworm egg counts equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. 
                       Low, moderate and high - intensity $A.$ $lumbricoides$ infections were observed in', NRL,'(',round(100*NRL/nR,1),'percent ),', 
                                      NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects, respectively. 
                       For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'percent ),', NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/n,1),'percent ),
                       respectively.')
-                }
-                
-                
-                else{
-                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2)
-                    {
+                    intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. 
+                      The mean hookworm egg counts equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. 
+                      Low, moderate and high - intensity <em>A. lumbricoides</em> infections were observed in', NRL,'(',round(100*NRL/nR,1),'% ),', 
+                                        NRM,'(',round(100*NRM/nR,1),'% ) and', NRH, '(',round(100*NRH/nR,1),'% ) subjects, respectively. 
+                      For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'% ),', NHM,'(',round(100*NHM/nH,1),'% ) and', NHH, '(',round(100*NHH/n,1),'% ),
+                      respectively.')
+                }else{
+                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2){
                         data$TB <-  data[,input$Tbas]
                         data$HB <-  data[,input$Hbas] 
                         data$TF <-  data[,input$Tfol] 
@@ -424,15 +435,18 @@ The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',M
                         nT <- length(Tr$TB)
                         nH <- length(H$HB)
                         
-                        intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+                        intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
 The mean (25th quantile; 75th quantile) $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. 
                         The mean hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low, moderate and high-intensity $T.$ $trichiura$
                         infections were observed in', NTL,'(',round(100*NTL/nT,1),'percent ),', NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ) subjects, 
                         respectively. For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'percent ),', NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/nH,1),'percent ), respectively.')
-                    }
-                    else{
-                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2)
-                        {
+                        intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figures below. 
+The mean (25th quantile; 75th quantile) <em>T. trichiura</em> egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. 
+                        The mean hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low, moderate and high-intensity <em>T. trichiura</em>
+                        infections were observed in', NTL,'(',round(100*NTL/nT,1),'% ),', NTM,'(',round(100*NTM/nT,1),'% ) and', NTH, '(',round(100*NTH/nT,1),'% ) subjects, 
+                        respectively. For hookworms, these numbers were', NHL,'(',round(100*NHL/nH,1),'% ),', NHM,'(',round(100*NHM/nH,1),'% ) and', NHH, '(',round(100*NHH/nH,1),'% ), respectively.')
+                    }else{
+                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2){
                             data$RB <-  data[,input$Rbas]  
                             data$RF <-  data[,input$Rfol]  
                             R <- subset(data, data$RB>0 & data$RF >= 0)
@@ -443,14 +457,14 @@ The mean (25th quantile; 75th quantile) $T.$ $trichiura$ egg count equaled',MT,'
                             q75R <- round(quantile(R$RB, probs=c(0.75)),1) 
                             MR <- round(mean(R$RB),1)
                             nR <- length(R$RB)
-                            intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+                            intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
 The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. Low, moderate and high-intensity infections were observed in', NRL,'(',round(100*NRL/nR,1),'percent ),'
                                              , NRM,'(',round(100*NRM/nR,1),'percent ) and', NRH, '(',round(100*NRH/nR,1),'percent ) subjects, respectively.')
-                        }
-                        
-                        else{
-                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2)
-                            {
+                            intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. 
+The mean (25th quantile; 75th quantile) <em>A. lumbricoides</em> egg count equaled',MR,'(',q25R,';',q75R,') eggs per gram of stool. Low, moderate and high-intensity infections were observed in', NRL,'(',round(100*NRL/nR,1),'% ),'
+                                                , NRM,'(',round(100*NRM/nR,1),'% ) and', NRH, '(',round(100*NRH/nR,1),'% ) subjects, respectively.')
+                        }else{
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2){
                                 data$TB <-  data[,input$Tbas]
                                 data$TF <-  data[,input$Tfol] 
                                 Tr <- subset(data, data$TB> 0 & data$TF >= 0)
@@ -461,14 +475,14 @@ The mean (25th quantile; 75th quantile) $A.$ $lumbricoides$ egg count equaled',M
                                 q75T <- round(quantile(Tr$TB, probs=c(0.75)),1) 
                                 MT <- round(mean(Tr$TB),1)
                                 nT <- length(Tr$TB)
-                                intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
+                                intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
 $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate and high-intensity infections were observed in', NTL,'(',round(100*NTL/nT,1),'percent ),'
                                                  , NTM,'(',round(100*NTM/nT,1),'percent ) and', NTH, '(',round(100*NTH/nT,1),'percent ) subjects,  respectively.')
-                            }
-                            
-                            else{
-                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2)
-                                {
+                                intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
+<em>T. trichiura</em> egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of stool. Low, moderate and high-intensity infections were observed in', NTL,'(',round(100*NTL/nT,1),'% ),'
+                                                    , NTM,'(',round(100*NTM/nT,1),'% ) and', NTH, '(',round(100*NTH/nT,1),'% ) subjects,  respectively.')
+                            }else{
+                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2){
                                     data$HB <-  data[,input$Hbas] 
                                     data$HF <-  data[,input$Hfol] 
                                     H <- subset(data, data$HB> 0 & data$HF >= 0)
@@ -482,12 +496,16 @@ $T.$ $trichiura$ egg count equaled',MT,'(',q25T,';',q75T,') eggs per gram of sto
                                     MH <- round(mean(H$HB),1)
                                     nH <- length(H$HB)
                                     
-                                    intense <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
+                                    intense    <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
 hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low, moderate and high-intensty infections were observed in', NHL,'(',round(100*NHL/nH,1),'percent ),'
                                                      , NHM,'(',round(100*NHM/nH,1),'percent ) and', NHH, '(',round(100*NHH/nH,1),'percent ) subjects,  respectively.')
+                                    intense_md <- paste('The distribution of the baseline egg counts across the subjects who completed the trial is illustrated in the figure below. The mean (25th quantile; 75th quantile) 
+hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low, moderate and high-intensty infections were observed in', NHL,'(',round(100*NHL/nH,1),'% ),'
+                                                        , NHM,'(',round(100*NHM/nH,1),'% ) and', NHH, '(',round(100*NHH/nH,1),'% ) subjects,  respectively.')
+                                }else{
+                                    intense    <- paste('No egg count data was provided.')
+                                    intense_md <- paste('Please match egg counting data.')
                                 }
-                                
-                                else{intense <- paste('No egg count data was provided.')}
                             }
                         }
                     }  
@@ -495,7 +513,11 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
             }
         } 
     }
+    if(type == "markdown"){
+        intense <- intense_md
+    }
     intense
+    
 }
 
 
