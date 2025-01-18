@@ -57,4 +57,4 @@ jobs:
           SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
-        run: Rscript inst/deploy/deploy-shinyapps.R
+        run: Rscript tools/deploy/deploy-shinyapps.R
