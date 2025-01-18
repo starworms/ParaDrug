@@ -159,6 +159,32 @@ if (is.null(inFile)) {
 \Sexpr{err}
 
 <<echo=FALSE>>=
+    inFile <- input$file1
+    if (is.null(inFile))
+    {invisible(paste0(''))
+      } else {if (input$NTD=='1')
+    {
+          PARADRUG <- read_paradrug_xls(inFile$datapath)
+          plot_paradrug_schistosomiasis_eggcount_reduction(PARADRUG, 
+                                                             Shbas = input$Shbas, Shfol = input$Shfol, 
+                                                             Smbas = input$Smbas, Smfol = input$Smfol, 
+                                                             Sjbas = input$Sjbas, Sjfol = input$Sjfol, 
+                                                             drug = switch(input$Sdrug, `1` = "Praziquantel (1x 40 mg/kg)", `2` = "Other"))
+    } else  {if (input$NTD=='2'){
+        PARADRUG <- read_paradrug_xls(inFile$datapath)
+        plot_paradrug_helminthiasis_eggcount_reduction(PARADRUG, 
+                                                               Rbas = input$Rbas, Rfol = input$Rfol, 
+                                                               Tbas = input$Tbas, Tfol = input$Tfol, 
+                                                               Hbas = input$Hbas, Hfol = input$Hfol, 
+                                                               drug = switch(input$STHdrug, `1` = "Albendazole (1x 400 mg)", `2` = "Mebendazole (1x 500 mg)", `3` = "Other"))
+      }   
+      
+    } 
+@
+
+
+\section{Conclusions}
+<<echo = FALSE>>=
 inFile <- input$file1
 if (is.null(inFile)) {
     invisible(paste0(""))
@@ -173,12 +199,6 @@ if (is.null(inFile)) {
                                                    drug = switch(input$STHdrug, `1` = "Albendazole (1x 400 mg)", `2` = "Mebendazole (1x 500 mg)", `3` = "Other"))
     }
 }
-@
-
-
-\section{Conclusions}
-<<echo = FALSE>>=
-
 @
 \Sexpr{concl}
 \newpage
