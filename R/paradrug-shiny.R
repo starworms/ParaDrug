@@ -437,103 +437,12 @@ paradrugServer <- function(input, output, session){
             {paste0('Please upload data.')
             } else {if (input$NTD=='1')
             {PARADRUG <- paradrug_data()
-            data     <- PARADRUG$data
-            n        <- PARADRUG$n
-            # S haematobium
-            data$sh <- ifelse(input$Shbas=='Not recorded',rep(-2,n), ifelse(data[,input$Shbas]>0,1,0))
-            data$shF <- ifelse(input$Shfol=='Not recorded',rep(-2,n), ifelse(data[,input$Shfol]>=0,1,0))
-            
-            # S mansoni
-            data$sm <- ifelse(input$Smbas=='Not recorded',rep(-2,n), ifelse(data[,input$Smbas]>0,1,0))
-            data$smF <- ifelse(input$Smfol=='Not recorded',rep(-2,n), ifelse(data[,input$Smfol]>=0,1,0))
-            
-            
-            # S japonicum
-            data$sj <- ifelse(input$Sjbas=='Not recorded',rep(-2,n), ifelse(data[,input$Sjbas]>0,1,0))
-            data$sjF <- ifelse(input$Sjfol=='Not recorded',rep(-2,n), ifelse(data[,input$Sjfol]>=0,1,0))
-            
-            data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
-            
-            if(mean(data$FU)==-2) {'Please match follow-up period data'}
-            else {
-                if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$smF)>-2 & mean(data$shF> - 2) & mean(data$FU>-2))
-                {
-                    data$fol <-  data[,input$followup] 
-                    data$shB <-  data[,input$Shbas]  
-                    data$smB <-  data[,input$Smbas] 
-                    data$shF2 <-  data[,input$Shfol]  
-                    data$smF2 <-  data[,input$Smfol] 
-                    data$shp <- ifelse(data$shB>0,1,0) 
-                    data$smp <- ifelse(data$smB>0,1,0)
-                    data$shf <- ifelse(data$shF2>=0,1,0) 
-                    data$smf <- ifelse(data$smF2>=0,1,0) 
-                    data$shc <- data$shp + data$shf
-                    data$smc <- data$smp + data$smf
-                    data2 <- subset(data, data$shc == 2 | data$smc == 2)
-                    min <- round(quantile(data2$fol, probs=c(0)),1)
-                    max <- round(quantile(data2$fol, probs=c(1)),1)
-                    med <- round(quantile(data2$fol, probs=c(0.50)),1)
-                    nc <- length(data2$fol)
-                    ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                    paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
-        complete cases were re-sampled between 14 and 21 days after drug administration.')
-                }
-                else{ 
-                    if(mean(data$sh)>-2 & mean(data$shF >-2) & mean(data$FU>-2)){
-                        data$fol <-  data[,input$followup] 
-                        data$shB <-  data[,input$Shbas]  
-                        data$shF2 <-  data[,input$Shfol]  
-                        data$shp <- ifelse(data$shB>0,1,0) 
-                        data$shf <- ifelse(data$shF2>=0,1,0) 
-                        data$shc <- data$shp + data$shf
-                        data2 <- subset(data, data$shc == 2)
-                        min <- round(min(data2$fol),1)
-                        max <- round(max(data2$fol),1)
-                        med <- round(quantile(data2$fol, probs=c(0.50)),1)
-                        nc <- length(data2$fol)
-                        ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                        paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
-        complete cases were re-sampled between 14 and 21 days after drug administration.')
-                    }
-                    else{
-                        if(mean(data$sm)>-2 & mean(data$smF)> -2 & mean(data$FU>-2)){
-                            data$fol <-  data[,input$followup]  
-                            data$smB <-  data[,input$Smbas] 
-                            data$smF2 <-  data[,input$Smfol] 
-                            data$smp <- ifelse(data$smB>0,1,0)
-                            data$smf <- ifelse(data$smF2>=0,1,0) 
-                            data$smc <- data$smp + data$smf
-                            data2 <- subset(data, data$smc == 2)
-                            min <- round(min(data2$fol),1)
-                            max <- round(max(data2$fol),1)
-                            med <- round(quantile(data2$fol, probs=c(0.50)),1)
-                            nc <- length(data2$fol)
-                            ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                            paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
-        complete cases were re-sampled between 14 and 21 days after drug administration.')    }
-                        
-                        else{
-                            if(mean(data$sj)>-2 & mean(data$sjF) >- 2 & mean(data$FU>-2)){
-                                data$fol <-  data[,input$followup] 
-                                data$sjB <-  data[,input$Sjbas]  
-                                data$sjF2 <-  data[,input$Sjfol] 
-                                data$sjp <- ifelse(data$sjB>0,1,0)
-                                data$sjf <- ifelse(data$sjF2>=0,1,0) 
-                                data$sjc <- data$sjp + data$sjf
-                                data2 <- subset(data, data$sjc == 2)
-                                min <- round(min(data2$fol),1)
-                                max <- round(max(data2$fol),1)
-                                med <- round(quantile(data2$fol, probs=c(0.50)),1)
-                                nc <- length(data2$fol)
-                                ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                                paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
-        complete cases were re-sampled between 14 and 21 days after drug administration.')
-                            }
-                            else{paste('Please match egg count data.')}  
-                        }   
-                    }
-                } 
-            }
+            paradrug_schistosomiasis_follow(PARADRUG, 
+                                            Shbas = input$Shbas, Shfol = input$Shfol, 
+                                            Smbas = input$Smbas, Smfol = input$Smfol, 
+                                            Sjbas = input$Sjbas, Sjfol = input$Sjfol,
+                                            followup = input$followup,
+                                            type = "markdown")
             }
                 else {
                     # Number of cases of soil-transmitted helminthiasis
