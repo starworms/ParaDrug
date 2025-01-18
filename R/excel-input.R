@@ -17,9 +17,9 @@
 read_paradrug_xls <- function(x, sheet = 1){
     stopifnot(file.exists(x))
     if(is.character(sheet)){
-        data <- read_excel(x, sheet = sheet)
+        data <- readxl::read_excel(x, sheet = sheet)
     }else{
-        data <- read_excel(x, sheet = sheet)
+        data <- readxl::read_excel(x, sheet = sheet)
     }
     data <- unclass(data)
     class(data) <- "data.frame"
