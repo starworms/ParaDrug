@@ -200,6 +200,7 @@ paradrug_helminthiasis_n <- function(object,
             }
         } 
     }
+    number
 }
 
 
@@ -479,6 +480,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
             }
         } 
     }
+    intense
 }
 
 
@@ -858,6 +860,7 @@ paradrug_helminthiasis_follow <- function(object,
             }
         } 
     }
+    follow
 }
 
 
@@ -1171,6 +1174,7 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
             }
         } 
     }
+    err
 }
 
 #' @title Plot of eggcount reduction of Helminthiasis
@@ -2235,4 +2239,5 @@ it is recommended to contact World Health Organization
             }
         } 
     }
+    concl
 }
