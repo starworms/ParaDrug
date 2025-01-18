@@ -684,6 +684,7 @@ plot_paradrug_helminthiasis_eggcount <- function(object,
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
 #' p <- paradrug_helminthiasis_follow(x)
+#' p <- paradrug_helminthiasis_follow(x, type = "markdown")
 paradrug_helminthiasis_follow <- function(object, 
                                           Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                           Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
@@ -713,11 +714,11 @@ paradrug_helminthiasis_follow <- function(object,
     data$Hf <- ifelse(input$Hfol=='Not recorded',rep(-2,n), ifelse(data[,input$Hfol]>=0,1,0))
     data$FU <- ifelse(input$followup=='Not recorded',rep(-2,n), ifelse(data[,input$followup]>=0,1,0))
     
-    if(mean(data$FU)==-2) {follow<- paste('No egg count data was provided.')}
-    else {
-        
-        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
-        {
+    if(mean(data$FU)==-2) {
+        follow    <- paste('No egg count data was provided.')
+        follow_md <- 'Please match follow-up period data'
+    }else {
+        if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2)){
             data$fol <-  data[,input$followup] 
             data$RB <-  data[,input$Rbas]  
             data$TB <-  data[,input$Tbas] 
@@ -745,14 +746,12 @@ paradrug_helminthiasis_follow <- function(object,
             med <- round(quantile(data2$fol, probs=c(0.50)),1)
             nc <- length(data2$fol)
             ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+            follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')  
-        }
-        
-        
-        else{ 
-            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2))
-            {
+            follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+        }else{ 
+            if(mean(data$Rb)>-2 & mean(data$Tb)>-2 & mean(data$Rf)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2)){
                 data$fol <-  data[,input$followup] 
                 data$RB <-  data[,input$Rbas]  
                 data$TB <-  data[,input$Tbas] 
@@ -771,14 +770,13 @@ paradrug_helminthiasis_follow <- function(object,
                 med <- round(quantile(data2$fol, probs=c(0.50)),1)
                 nc <- length(data2$fol)
                 ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')  
                 
-            }
-            
-            else{
-                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
-                {
+            }else{
+                if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2)){
                     
                     data$RB <-  data[,input$Rbas]  
                     data$HB <-  data[,input$Hbas] 
@@ -802,14 +800,12 @@ paradrug_helminthiasis_follow <- function(object,
                     nc <- length(data2$fol)
                     ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
                     
-                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                    follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')  
-                    
-                }
-                
-                else{
-                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
-                    {
+                    follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                }else{
+                    if(mean(data$Tb)>-2 & mean(data$Hb)>-2 & mean(data$Tf)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2)){
                         data$fol <-  data[,input$followup] 
                         data$TB <-  data[,input$Tbas] 
                         data$HB <-  data[,input$Hbas] 
@@ -832,12 +828,12 @@ paradrug_helminthiasis_follow <- function(object,
                         med <- round(quantile(data2$fol, probs=c(0.50)),1)
                         nc <- length(data2$fol)
                         ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                        follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                        follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')  
-                    }
-                    else{
-                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2 & mean(data$FU>-2))
-                        {
+                        follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.') 
+                    }else{
+                        if(mean(data$Rb)>-2 & mean(data$Rf)>-2 & mean(data$FU>-2)){
                             data$fol <-  data[,input$followup] 
                             data$RB <-  data[,input$Rbas]  
                             data$RF <-  data[,input$Rfol]  
@@ -850,13 +846,12 @@ paradrug_helminthiasis_follow <- function(object,
                             med <- round(quantile(data2$fol, probs=c(0.50)),1)
                             nc <- length(data2$fol)
                             ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                            follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                            follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.')  
-                        }
-                        
-                        else{
-                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2))
-                            {
+                            follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                        }else{
+                            if(mean(data$Tb)>-2 & mean(data$Tf)>-2 & mean(data$FU>-2)){
                                 data$fol <-  data[,input$followup] 
                                 data$TB <-  data[,input$Tbas] 
                                 data$TF <-  data[,input$Tfol]
@@ -869,12 +864,12 @@ paradrug_helminthiasis_follow <- function(object,
                                 med <- round(quantile(data2$fol, probs=c(0.50)),1)
                                 nc <- length(data2$fol)
                                 ncont <- sum(ifelse(data2$fol>=14 & data2$fol<=21,1,0))
-                                follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
-        complete cases were re-sampled between 14 and 21 days after drug administration.')   }
-                            
-                            else{
-                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2))
-                                {
+                                follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')  
+                                follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.')
+                            }else{
+                                if(mean(data$Hb)>-2 & mean(data$Hf)>-2 & mean(data$FU>-2)){
                                     data$fol <-  data[,input$followup] 
                                     data$HB <-  data[,input$Hbas] 
                                     data$HF <-  data[,input$Hfol]
@@ -888,17 +883,23 @@ paradrug_helminthiasis_follow <- function(object,
                                     med <- round(quantile(data2$fol, probs=c(0.50)),1)
                                     nc <- length(data2$fol)
                                     ncont <- sum(ifelse(data2$fol>=7 & data2$fol<=21,1,0))
-                                    follow <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
+                                    follow    <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'percent ) 
         complete cases were re-sampled between 14 and 21 days after drug administration.') 
+                                    follow_md <- paste('The follow-up period ranged from',min,'to', max, 'days, with a median of',med,'days. A total of',ncont,'out of ',nc,'(',round(100*(ncont/nc),1),'% ) 
+        complete cases were re-sampled between 14 and 21 days after drug administration.') 
+                                }else{
+                                    follow    <- paste('No egg count data was provided.')
+                                    follow_md <- paste('Please match egg counting data.')
                                 }
-                                
-                                else{follow <- paste('No egg count data was provided.')}
                             }
                         }
                     }  
                 }   
             }
         } 
+    }
+    if(type == "markdown"){
+        follow <- follow_md
     }
     follow
 }
