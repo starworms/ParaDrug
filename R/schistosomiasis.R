@@ -49,7 +49,7 @@ paradrug_schistosomiasis_n <- function(object,
     
     
     if(mean(data$inf)==0 | mean(data$inf2) == 0) {
-        number <- paste('No egg count data was provided.')
+        number    <- paste('No egg count data was provided.')
         number_md <- paste('Please provide egg count data.')
     }else {
         if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shF)>-2 & mean(data$smF)>-2){
@@ -71,7 +71,7 @@ paradrug_schistosomiasis_n <- function(object,
             nsm2 <- dim(subset(data, data$smB>0 & data$smF>=0))[1]
             nsh <- dim(subset(data, data$shB>0))[1]
             nsh2 <- dim(subset(data, data$shB>0 & data$shF>=0))[1]
-            number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. 
+            number    <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. 
 $Schistosoma$ $haematobium$ infections were observed in', nsh, 'subjects (', round(100*nsh/n,1), 'percent ), 
 $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ). Mixed $Schistosoma$ infections 
                           were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). 
@@ -93,7 +93,7 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                 data$shc <- data$shp + data$shf
                 nsh <- dim(subset(data, data$shB>0))[1]
                 nsh2 <- dim(subset(data, data$shB>0 & data$shF>=0))[1]
-                number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $haematobium$ infections were observed in', nsh, 
+                number    <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $haematobium$ infections were observed in', nsh, 
                                 'subjects (', round(100*nsh/n,1), 'percent ). Complete data were available for', nsh2, 'subjects.')
                 number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma haematobium</em> infections were observed in', nsh, 
                                    'subjects (', round(100*nsh/n,1), '% ). Complete data were available for', nsh2, 'subjects.')
@@ -107,7 +107,7 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                     data$smc <- data$smp + data$smf
                     nsm <- dim(subset(data, data$smB>0))[1]
                     nsm2 <- dim(subset(data, data$smB>0 & data$smF>=0))[1]
-                    number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $mansoni$ infections were observed in', nsm, 
+                    number    <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $mansoni$ infections were observed in', nsm, 
                                     'subjects (', round(100*nsm/n,1), 'percent ). Complete data were available for', nsm2, 'subjects.')
                     number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma mansoni</em> infections were observed in', nsm, 
                                        'subjects (', round(100*nsm/n,1), '% ). Complete data were available for', nsm2, 'subjects.')
@@ -121,10 +121,10 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                         data$sjc <- data$sjp + data$sjf
                         nsj <- dim(subset(data, data$sjB>0))[1]
                         nsj2 <- dim(subset(data, data$sjB>0 & data$sjF>=0))[1]
-                        number <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $japonicum$ infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), 'percent ). Complete data was available for', nsj2, 'subjects')
+                        number    <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Schistosoma$ $japonicum$ infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), 'percent ). Complete data was available for', nsj2, 'subjects')
                         number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Schistosoma japonicum</em> infections were observed in', nsj, 'subjects (', round(100*nsj/n,1), '% ). Complete data was available for', nsj2, 'subjects')
                     }else{
-                        number <- paste('No egg count data was provided.')
+                        number    <- paste('No egg count data was provided.')
                         number_md <- paste('Please match egg count data.')
                     }  
                 }   
