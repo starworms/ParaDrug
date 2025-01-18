@@ -987,6 +987,10 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
 #' x <- read_paradrug_xls(path)
 #' p <- paradrug_schistosomiasis_conclusion(x, drug = "Praziquantel (1x 40 mg/kg)")
 #' p <- paradrug_schistosomiasis_conclusion(x, drug = "Other")
+#' p <- paradrug_schistosomiasis_conclusion(x, drug = "Praziquantel (1x 40 mg/kg)",
+#'                                          type = "markdown")
+#' p <- paradrug_schistosomiasis_conclusion(x, drug = "Other",
+#'                                          type = "markdown")
 paradrug_schistosomiasis_conclusion <- function(object, 
                                                 Shbas = "BL_KK2_AL_EPG", Shfol = "FU_KK2_AL_EPG", 
                                                 Smbas = "BL_KK2_TT_EPG", Smfol = "FU_KK2_TT_EPG", 
@@ -1019,10 +1023,11 @@ paradrug_schistosomiasis_conclusion <- function(object,
     data$inf <- mean(ifelse(data$sh > -2 | data$sm > -2 | data$sj > -2, 1, 0))
     data$inf2 <- mean(ifelse(data$shf > -2 | data$smf > -2 | data$sjf > -2, 1, 0))
     
-    if(mean(data$inf)==0 | mean(data$inf2)==0 ) {concl <- paste('No egg count data was provided.')}
-    else {
-        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shf)>-2 & mean(data$smf)>-2)
-        {
+    if(mean(data$inf)==0 | mean(data$inf2)==0 ) {
+        concl    <- paste('No egg count data was provided.')
+        concl_md <- paste('Please provide egg count data.') 
+    }else{
+        if(mean(data$sh)>-2 & mean(data$sm)>-2 & mean(data$shf)>-2 & mean(data$smf)>-2){
             data$shB <-  data[,input$Shbas]  
             data$smB <-  data[,input$Smbas] 
             data$shF <-  data[,input$Shfol]  
@@ -1035,33 +1040,47 @@ paradrug_schistosomiasis_conclusion <- function(object,
                 shstar <- ifelse(ERRSH>=90, 1, ifelse(ERRSM<80, 3,2))
                 smstar <- ifelse(ERRSM>=90, 1, ifelse(ERRSM<80, 3,2))
                 if (shstar == 1 & smstar == 2){
-                    concl <- paste('The efficacy of the drug administered is satisfactory for both $S. haematobium$ and $S.$ $mansoni$ infections.')
-                } else {
-                    if (shstar == 2 & smstar ==1){concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections,
+                    concl    <- paste('The efficacy of the drug administered is satisfactory for both $S. haematobium$ and $S.$ $mansoni$ infections.')
+                    concl_md <- paste('The efficacy of the drug administered is satisfactory for both <em>S. haematobium</em> and <em>S. mansoni</em> infections.') 
+                }else{
+                    if(shstar == 2 & smstar == 1){
+                        concl    <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections,
 but is below the expected efficacy of 90 precent for $S.$ $haematobium$ infections.')
-                    
-                    } else {
-                        if (shstar == 1 & smstar == 2)
-                        {concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections, but is below the expected
+                        concl_md <- paste('The efficacy of the drug administered is satisfactory for <em>S. mansoni</em> infections,
+but is below the expected efficacy of 90% for <em>S. haematobium</em> infections.') 
+                    }else{
+                        if(shstar == 1 & smstar == 2){
+                            concl    <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections, but is below the expected
 efficacy of 90 precent for $S.$ $haematobium$ infections. Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
 it is recommended to contact World Health Organization
                           (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
 (Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
-                        
-                        } else {
-                            concl <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for both $S.$ $mansoni$ and
+                            concl_md <- paste('The efficacy of the drug administered is satisfactory for <em>S. mansoni</em> infections, but is below the expected
+efficacy of 90% for <em>S. haematobium</em> infections. Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.') 
+                        }else{
+                            concl    <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for both $S.$ $mansoni$ and
 $S.$ $haematobium$ infections. Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
 it is recommended to contact World Health Organization
                           (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
 (Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
-                            
+                            concl_md <- paste('The efficacy of the drug administered is below the expected efficacy of 90% for both <em>S. mansoni</em> and
+<em>S. haematobium</em> infections. Please inform the local authorities (e.g., Ministry of Health) about these findings. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.') 
                         }
                     }
                 }
-                
-            } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
-                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
-        } else {
+            }else {
+                concl    <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')
+                concl_md <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.') 
+            }
+        }else{
             if(mean(data$sh)>-2 & mean(data$shf)>-2){
                 data$shB <-  data[,input$Shbas]  
                 data$shF <-  data[,input$Shfol]  
@@ -1070,19 +1089,27 @@ it is recommended to contact World Health Organization
                 if(input$Sdrug == 1) {
                     shstar <- ifelse(ERRSH>=90, 1, ifelse(ERRSH<80, 3,2))
                     if (shstar == 1){
-                        concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $haematobium$ infections.')
+                        concl    <- paste('The efficacy of the drug administered is satisfactory for $S.$ $haematobium$ infections.')
+                        concl_md <- paste('The efficacy of the drug administered is satisfactory for <em>S. haematobium</em> infections.') 
                     } else {
-                        concl <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for $S.$ $haematobium$ infections. Please inform the 
+                        concl    <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for $S.$ $haematobium$ infections. Please inform the 
 local authorities (e.g., Ministry of Health) about this finding. In addition, 
 it is recommended to contact World Health Organization
                           (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
 (Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
-                        
-                        
+                        concl_md <- paste('The efficacy of the drug administered is below the expected efficacy of 90% for <em>S. haematobium</em> infections. Please inform the 
+local authorities (e.g., Ministry of Health) about this finding. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.') 
                     }
-                } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
-                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
-            } else {
+                }else{
+                    concl    <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')
+                    concl_md <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.') 
+                }
+            }else{
                 if(mean(data$sm)>-2 & mean(data$smf)>-2){
                     data$smB <-  data[,input$Smbas] 
                     data$smF <-  data[,input$Smfol] 
@@ -1092,43 +1119,65 @@ it is recommended to contact World Health Organization
                     if(input$Sdrug == 1) { 
                         smstar <- ifelse(ERRSM>=90, 1, ifelse(ERRSM<80, 3,2))
                         if (smstar == 1){
-                            concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections.')
+                            concl    <- paste('The efficacy of the drug administered is satisfactory for $S.$ $mansoni$ infections.')
+                            concl_md <- paste('The efficacy of the drug administered is satisfactory for <em>S. mansoni</em> infections.') 
                         } else {
-                            concl <- paste('The efficacy of the drug administered is below the expected drug efficacy of 90 percent $S.$ $mansoni$ infections. 
+                            concl    <- paste('The efficacy of the drug administered is below the expected drug efficacy of 90 percent $S.$ $mansoni$ infections. 
 Please inform the local authorities (e.g., Ministry of Health) about this finding. In addition, 
 it is recommended to contact World Health Organization
                           (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
 (Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
-                            
-                            
+                            concl_md <- paste('The efficacy of the drug administered is below the expected drug efficacy of 90 percent <em>S. mansoni</em> infections. 
+Please inform the local authorities (e.g., Ministry of Health) about this finding. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.') 
                         } 
-                    } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
-                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
-                } else {
+                    }else {
+                        concl    <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')
+                        concl_md <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.') 
+                    }
+                }else{
                     if(mean(data$sj)>-2 & mean(data$sjf>-2)){
                         data$sjB <-  data[,input$Sjbas] 
                         data$sjF <-  data[,input$Sjfol] 
                         sj <- subset(data, data$sjB >0 &  data$sjF >=0)
                         ERRSJ <- 100*(1- mean(sj$sjF)/mean(sj$sjB))
-                        if(input$Sdrug == 1) { 
+                        if(input$Sdrug == 1){ 
                             sjstar <- ifelse(ERRSJ>=90, 1, ifelse(ERRSJ<80, 3,2))
-                            if (sjstar == 1){
-                                concl <- paste('The efficacy of the drug administered is satisfactory for $S.$ $japonicum$ infections.')
-                            } else {
-                                concl <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for $S.$ $japonicum$ infections. 
+                            if(sjstar == 1){
+                                concl    <- paste('The efficacy of the drug administered is satisfactory for $S.$ $japonicum$ infections.')
+                                concl_md <- paste('The efficacy of the drug administered is satisfactory for <em>S. japonicum</em> infections.') 
+                            }else{
+                                concl    <- paste('The efficacy of the drug administered is below the expected efficacy of 90 precent for $S.$ $japonicum$ infections. 
 Please inform the local authorities (e.g., Ministry of Health) about this finding. In addition, 
 it is recommended to contact World Health Organization
                           (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
 (Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.')
-                                
-                                
+                                concl_md <- paste('The efficacy of the drug administered is below the expected efficacy of 90% for <em>S. japonicum</em> infections. 
+Please inform the local authorities (e.g., Ministry of Health) about this finding. In addition, 
+it is recommended to contact World Health Organization
+                          (wormcontrol@who.int or Antonio Montresor (montresora@who.int)) and its collaborating centre 
+(Bruno Levecke: bruno.levecke@ugent.be) to exclude any possible confounding factors that may explain this poor drug efficacy and to discuss further actions.') 
                             } 
-                        } else {concl <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
-                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')}
-                    } else {concl <- paste('No egg count data was provided.')}  
+                        }else{
+                            concl    <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.')
+                            concl_md <- paste('Currently, an expected efficacy has only been defined for a single oral dose of praziquantel (40 mg / kg). 
+                                      Consequently, no conclusions can be drawn on the efficacy of this drug or drug regimen against schistosomiasis.') 
+                        }
+                    }else{
+                        concl    <- paste('No egg count data was provided.')
+                        concl_md <- paste('Please match egg count data.') 
+                    }  
                 }   
             }
         } 
+    }
+    if(type == "markdown"){
+        concl <- concl_md
     }
     concl
 }
