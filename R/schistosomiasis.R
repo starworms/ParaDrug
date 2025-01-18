@@ -115,11 +115,12 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
                         
                         
                     }
-                    else{nubmer <- paste('No egg count data was provided.')}  
+                    else{number <- paste('No egg count data was provided.')}  
                 }   
             }
         } 
     }
+    number
 }
 
 #' @title Analysis of Schistosomiasis (intensity)
@@ -258,6 +259,7 @@ high-intensity $S.$ $japonicum$ infections were observed in',NsjL,'(',round(100*
             }
         } 
     }
+    intense
 }
 
 
@@ -468,6 +470,7 @@ paradrug_schistosomiasis_follow <- function(object,
             }
         } 
     }
+    follow
 }
 
 
@@ -645,6 +648,7 @@ equaled',round(100*ERRSJ,1),'percent (',round(100*LLSJ,1), ';',round(100*ULSJ,1)
             }
         } 
     }
+    err
 }
 
 
@@ -1022,4 +1026,5 @@ it is recommended to contact World Health Organization
             }
         } 
     }
+    concl
 }
