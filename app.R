@@ -3,10 +3,10 @@
 x = installed.packages()[, c("Package", "LibPath", "Version")]
 #x = head(x)
 warning(paste(sprintf("%s: %s --- %s", x[, "Package"], x[, "Version"], x[, "LibPath"]), collapse = "\n"))
-install.packages("remotes")
+#install.packages("remotes")
 library(shiny)
 library(remotes)
-remotes::install_github(repo = "starworms/ParaDrug")
+#remotes::install_github(repo = "starworms/ParaDrug")
 library(ParaDrug)
 shiny::runApp(appDir = list(
  ui = paradrugUI(id = "pd"), 
