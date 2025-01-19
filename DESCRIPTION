@@ -31,3 +31,4 @@ Suggests:
     colourpicker,
     cpp11,
     progress
+Remotes: starworms/ParaDrug
