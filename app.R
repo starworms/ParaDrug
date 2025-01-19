@@ -3,6 +3,7 @@
 x = installed.packages()[, c("Package", "LibPath", "Version")]
 #x = head(x)
 warning(paste(sprintf("%s: %s --- %s", x[, "Package"], x[, "Version"], x[, "LibPath"]), collapse = "\n"))
+install.packages("remotes")
 library(shiny)
 library(remotes)
 remotes::install_github(repo = "starworms/ParaDrug")
