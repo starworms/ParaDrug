@@ -11,4 +11,8 @@ app_files = c(
     "R/",
     "inst/"
 )
+app_files = c(
+    "app.R",
+    "DESCRIPTION"
+)
 rsconnect::deployApp(appName = "paradrug", appFiles = app_files, appMode = "shiny", forceUpdate = TRUE)
