@@ -6,7 +6,7 @@ warning(paste(sprintf("%s: %s --- %s", x[, "Package"], x[, "Version"], x[, "LibP
 #install.packages("remotes")
 library(shiny)
 library(remotes)
-#remotes::install_github(repo = "starworms/ParaDrug")
+remotes::install_github(repo = "starworms/ParaDrug")
 library(ParaDrug)
 shiny::runApp(appDir = list(
  ui = paradrugUI(id = "pd"), 
