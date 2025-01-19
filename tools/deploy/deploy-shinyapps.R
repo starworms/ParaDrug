@@ -15,4 +15,4 @@ app_files = c(
     "app.R",
     "DESCRIPTION"
 )
-rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose", envManagement = TRUE)
+rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose")
