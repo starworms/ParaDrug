@@ -57,7 +57,4 @@ jobs:
           SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
-        run: |
-          Rscript 'install.packages("remotes")'
-          Rscript 'remotes::install_github(repo = "starworms/ParaDrug")'
-          Rscript tools/deploy/deploy-shinyapps.R
+        run: Rscript tools/deploy/deploy-shinyapps.R

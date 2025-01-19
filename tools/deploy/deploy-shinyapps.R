@@ -4,6 +4,8 @@ if (!interactive()) {
         token  = Sys.getenv("SHINYAPPS_TOKEN"),
         secret = Sys.getenv("SHINYAPPS_SECRET"))
 }
+install.packages("remotes")
+remotes::install_github(repo = "starworms/ParaDrug")
 app_files = c(
     "app.R",
     "DESCRIPTION",
