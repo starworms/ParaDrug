@@ -56,9 +56,8 @@ jobs:
           SHINYAPPS_ACCOUNT: ${{ secrets.SHINYAPPS_ACCOUNT }}
           SHINYAPPS_TOKEN: ${{ secrets.SHINYAPPS_TOKEN }}
           SHINYAPPS_SECRET: ${{ secrets.SHINYAPPS_SECRET }}
-        working-directory: ./app
+        working-directory: inst/apps/paradrug-1.1
         run: |
-          cd inst/apps/paradrug-1.1
           Rscript -e 'install.packages("renv", repos = "https://cran.rstudio.com/")'
           Rscript -e 'renv::restore(project = getwd(), lockfile = "renv.lock", prompt = FALSE)'
           Rscript deploy.R
