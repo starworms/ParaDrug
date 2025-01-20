@@ -1,10 +1,12 @@
 library(renv)
+## Create the .lockfile based on the DESCRIPTION file
 renv::settings$snapshot.type("explicit")
 options(renv.snapshot.ignore.self = FALSE)
-#renv::init(project = "inst/apps/paradrug-1.1")
 renv::init()
-## TO update package to the newest versions
+
+## Maintenance related
 if(FALSE){
+    ## TO update package to the newest versions
     renv::install("rsconnect", lock = TRUE)
     renv::update("jsonlite", lock = TRUE)
     renv::update()
