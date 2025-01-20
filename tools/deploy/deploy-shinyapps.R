@@ -16,4 +16,4 @@ app_files = c(
     "inst/apps/paradrug-1.1/ui.R",
     "inst/apps/paradrug-1.1/server.R"
 )
-rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose")
+rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose", appMode = "shiny")
