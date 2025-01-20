@@ -4,6 +4,9 @@ if (!interactive()) {
         token  = Sys.getenv("SHINYAPPS_TOKEN"),
         secret = Sys.getenv("SHINYAPPS_SECRET"))
 }
+library(renv)
+renv::settings$snapshot.type("explicit")
+options(renv.snapshot.ignore.self = FALSE)
 app_files = c(
     "app.R",
     "DESCRIPTION",

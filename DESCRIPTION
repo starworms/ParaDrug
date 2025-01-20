@@ -27,7 +27,8 @@ Suggests:
     xlsx,
     tinytex,
     pkgload,
-    rsconnect,
     colourpicker,
     cpp11,
-    progress
+    progress,
+    rsconnect,
+    renv
