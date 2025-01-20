@@ -26,9 +26,6 @@ Imports:
 Suggests:
     xlsx,
     tinytex,
-    pkgload,
     colourpicker,
     cpp11,
-    progress,
-    rsconnect,
-    renv
+    progress
