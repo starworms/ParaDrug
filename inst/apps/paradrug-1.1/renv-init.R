@@ -8,4 +8,5 @@ if(FALSE){
     renv::update("jsonlite")
     renv::update()
     renv::init()    
+    renv::restore()
 }
