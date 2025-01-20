@@ -1,3 +1,4 @@
+options(echo = TRUE)
 if (!interactive()) {
     rsconnect::setAccountInfo(
         name   = Sys.getenv("SHINYAPPS_ACCOUNT"),
@@ -6,6 +7,7 @@ if (!interactive()) {
 }
 oldwd = getwd()
 setwd("inst/apps/paradrug-1.1")
+renv::restore(project = getwd(), lockfile = "renv.lock", prompt = FALSE)
 source("renv/activate.R")
 app_files = c(
     "DESCRIPTION",
