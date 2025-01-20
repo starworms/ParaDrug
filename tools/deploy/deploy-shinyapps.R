@@ -4,19 +4,14 @@ if (!interactive()) {
         token  = Sys.getenv("SHINYAPPS_TOKEN"),
         secret = Sys.getenv("SHINYAPPS_SECRET"))
 }
-library(renv)
-renv::settings$snapshot.type("explicit")
-options(renv.snapshot.ignore.self = FALSE)
+oldwd = getwd()
+setwd("inst/apps/paradrug-1.1")
+source("renv/activate.R")
 app_files = c(
-    "app.R",
     "DESCRIPTION",
-    "NAMESPACE",
-    "R/",
-    "inst/"
-)
-app_files = c(
-    "inst/apps/paradrug-1.1/DESCRIPTION",
-    "inst/apps/paradrug-1.1/ui.R",
-    "inst/apps/paradrug-1.1/server.R"
+    "app.R",
+    ".Rprofile",
+    "renv.lock"
 )
 rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose", appMode = "shiny")
+setwd(oldwd)
