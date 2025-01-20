@@ -1,1 +1,2 @@
-paradrugServer
+function(input, output, session) {
+}
