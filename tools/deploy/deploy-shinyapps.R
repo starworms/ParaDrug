@@ -13,7 +13,9 @@ app_files = c(
     "DESCRIPTION",
     "app.R",
     ".Rprofile",
-    "renv.lock"
+    "renv.lock",
+    "renv/activate.R",
+    "renv/settings.json"
 )
 rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose", appMode = "shiny")
 setwd(oldwd)
