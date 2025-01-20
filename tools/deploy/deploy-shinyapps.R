@@ -4,8 +4,6 @@ if (!interactive()) {
         token  = Sys.getenv("SHINYAPPS_TOKEN"),
         secret = Sys.getenv("SHINYAPPS_SECRET"))
 }
-install.packages("remotes")
-remotes::install_github(repo = "starworms/ParaDrug")
 app_files = c(
     "app.R",
     "DESCRIPTION",
@@ -14,7 +12,8 @@ app_files = c(
     "inst/"
 )
 app_files = c(
-    "app.R",
-    "DESCRIPTION"
+    "apps/paradrug-1.1/DESCRIPTION",
+    "apps/paradrug-1.1/ui.R",
+    "apps/paradrug-1.1/server.R"
 )
 rsconnect::deployApp(appName = "paradrug", appFiles = app_files, forceUpdate = TRUE, logLevel = "verbose")

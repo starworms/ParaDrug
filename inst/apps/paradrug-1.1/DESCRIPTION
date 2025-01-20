@@ -1,0 +1,8 @@
+Type: project
+Description: Paradrug App
+Depends:
+    ParaDrug,
+    shiny,
+    tinytex
+Remotes:
+    starworms/ParaDrug
