@@ -5,6 +5,7 @@ options(renv.snapshot.ignore.self = FALSE)
 renv::init()
 ## TO update package to the newest versions
 if(FALSE){
+    renv::update("jsonlite")
     renv::update()
     renv::init()    
 }
