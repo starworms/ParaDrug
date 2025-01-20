@@ -25,4 +25,8 @@ Imports:
     graphics
 Suggests:
     xlsx,
-    tinytex
+    tinytex,
+    colourpicker,
+    cpp11,
+    progress,
+    renv
