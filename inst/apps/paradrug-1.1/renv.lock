@@ -29,7 +29,6 @@
       "RemoteUsername": "starworms",
       "RemoteRepo": "ParaDrug",
       "RemoteRef": "main",
-      "RemoteSha": "a4d240482bae4114ffbad94cfbd49790c5495adf",
       "Requirements": [
         "bslib",
         "graphics",
