@@ -620,7 +620,7 @@ paradrugServer <- function(input, output, session){
                 file.remove(file.path(getwd(), "logo.pdf"))
                 file.remove(file.path(getwd(), "Rplot02.jpg"))
             })
-            out = knitr::knit2pdf(system.file(package = "ParaDrug", "apps", "paradrug-1.0", "input2.Rnw"), clean = TRUE)
+            out = knitr::knit2pdf(system.file(package = "ParaDrug", "apps", "paradrug-1.1", "input2.Rnw"), clean = TRUE)
             file.rename(out, file) # move pdf to file for downloading
         },
         contentType = 'application/pdf'
