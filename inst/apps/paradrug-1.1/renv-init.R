@@ -8,6 +8,7 @@ renv::init()
 if(FALSE){
     ## TO update package to the newest versions
     renv::install("rsconnect", lock = TRUE)
+    renv::install("starworms/ParaDrug", lock = TRUE)
     renv::update("jsonlite", lock = TRUE)
     renv::update()
     renv::init()    
