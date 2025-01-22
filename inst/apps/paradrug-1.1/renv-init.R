@@ -6,9 +6,9 @@ renv::init()
 
 ## Maintenance related
 if(FALSE){
-    ## TO update package to the newest versions
-    renv::install("rsconnect", lock = TRUE)
+    ## TO update package on shinyapps.io to the newest versions
     renv::install("starworms/ParaDrug", lock = TRUE)
+    renv::install("rsconnect", lock = TRUE)
     renv::update("jsonlite", lock = TRUE)
     renv::update()
     renv::init()    
