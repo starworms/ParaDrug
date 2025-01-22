@@ -612,15 +612,17 @@ paradrugServer <- function(input, output, session){
         content = function(file) {
             #out = knit2pdf('input2.Rnw', clean = TRUE, texi2dvi="pdflatex")
             #list.files(system.file(package = "ParaDrug", "apps", "paradrug-1.0"))
-            file.copy(from = system.file(package = "ParaDrug", "apps", "paradrug-1.0", "logo.pdf"),
+            version = "paradrug-1.0"
+            version = "paradrug-1.1"
+            file.copy(from = system.file(package = "ParaDrug", "apps", version, "logo.pdf"),
                       to = file.path(getwd(), "logo.pdf"), overwrite = TRUE)
-            file.copy(from = system.file(package = "ParaDrug", "apps", "paradrug-1.0", "Rplot02.jpg"),
+            file.copy(from = system.file(package = "ParaDrug", "apps", version, "Rplot02.jpg"),
                       to = file.path(getwd(), "Rplot02.jpg"), overwrite = TRUE)
             on.exit({
                 file.remove(file.path(getwd(), "logo.pdf"))
                 file.remove(file.path(getwd(), "Rplot02.jpg"))
             })
-            out = knitr::knit2pdf(system.file(package = "ParaDrug", "apps", "paradrug-1.1", "input2.Rnw"), clean = TRUE)
+            out = knitr::knit2pdf(system.file(package = "ParaDrug", "apps", version, "input2.Rnw"), clean = TRUE)
             file.rename(out, file) # move pdf to file for downloading
         },
         contentType = 'application/pdf'
