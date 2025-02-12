@@ -417,7 +417,6 @@ paradrugServer <- function(input, output, session){
                                                          Rbas = input$Rbas, Rfol = input$Rfol, 
                                                          Tbas = input$Tbas, Tfol = input$Tfol, 
                                                          Hbas = input$Hbas, Hfol = input$Hfol)
-
                 }
                 }
             } 
@@ -482,7 +481,7 @@ paradrugServer <- function(input, output, session){
                                                   Shbas = input$Shbas, Shfol = input$Shfol, 
                                                   Smbas = input$Smbas, Smfol = input$Smfol, 
                                                   Sjbas = input$Sjbas, Sjfol = input$Sjfol,
-                                                  drug = ifelse(input$Sdrug %in% 1, "Praziquantel (1x 40 mg/kg)", "Other"),
+                                                  drug = switch(input$Sdrug, `1` = "Praziquantel (1x 40 mg/kg)", `2` = "Other"),
                                                   type = "markdown")
             }
                 else {
@@ -494,8 +493,7 @@ paradrugServer <- function(input, output, session){
                                                             Rbas = input$Rbas, Rfol = input$Rfol, 
                                                             Tbas = input$Tbas, Tfol = input$Tfol, 
                                                             Hbas = input$Hbas, Hfol = input$Hfol, 
-                                                            drug = ifelse(input$STHdrug %in% 1, "Albendazole (1x 400 mg)", 
-                                                                          ifelse(input$STHdrug %in% 2, "Mebendazole (1x 500 mg)", "Other")),
+                                                            drug = switch(input$STHdrug, `1` = "Albendazole (1x 400 mg)", `2` = "Mebendazole (1x 500 mg)", `3` = "Other"),
                                                             type = "markdown")
                     }
                 }
@@ -523,7 +521,7 @@ paradrugServer <- function(input, output, session){
                                                 Shbas = input$Shbas, Shfol = input$Shfol, 
                                                 Smbas = input$Smbas, Smfol = input$Smfol, 
                                                 Sjbas = input$Sjbas, Sjfol = input$Sjfol, 
-                                                drug = ifelse(input$Sdrug %in% 1, "Praziquantel (1x 40 mg/kg)", "Other"),
+                                                drug = switch(input$Sdrug, `1` = "Praziquantel (1x 40 mg/kg)", `2` = "Other"),
                                                 type = "markdown")
             }
                 else {
@@ -535,8 +533,7 @@ paradrugServer <- function(input, output, session){
                                                           Rbas = input$Rbas, Rfol = input$Rfol, 
                                                           Tbas = input$Tbas, Tfol = input$Tfol, 
                                                           Hbas = input$Hbas, Hfol = input$Hfol, 
-                                                          drug = ifelse(input$STHdrug %in% 1, "Albendazole (1x 400 mg)", 
-                                                                        ifelse(input$STHdrug %in% 2, "Mebendazole (1x 500 mg)", "Other")),
+                                                          drug = switch(input$STHdrug, `1` = "Albendazole (1x 400 mg)", `2` = "Mebendazole (1x 500 mg)", `3` = "Other"),
                                                           type = "markdown")
                     }
                 }
