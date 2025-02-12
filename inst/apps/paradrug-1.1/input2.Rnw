@@ -113,10 +113,16 @@ if (is.null(inFile)) {
 } else {
     if (input$NTD == "1") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        plot_paradrug_schistosomiasis_eggcount(PARADRUG)
+        plot_paradrug_schistosomiasis_eggcount(PARADRUG,
+                                               Shbas = input$Shbas, Shfol = input$Shfol, 
+                                               Smbas = input$Smbas, Smfol = input$Smfol, 
+                                               Sjbas = input$Sjbas, Sjfol = input$Sjfol)
     } else if (input$NTD == "2") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        plot_paradrug_helminthiasis_eggcount(PARADRUG)
+        plot_paradrug_helminthiasis_eggcount(PARADRUG,
+                                             Rbas = input$Rbas, Rfol = input$Rfol, 
+                                             Tbas = input$Tbas, Tfol = input$Tfol, 
+                                             Hbas = input$Hbas, Hfol = input$Hfol)
     }
 }
 @
@@ -130,10 +136,18 @@ if (is.null(inFile)) {
 } else {
     if (input$NTD == "1") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        follow <- paradrug_schistosomiasis_follow(PARADRUG)
+        follow <- paradrug_schistosomiasis_follow(PARADRUG,
+                                                  Shbas = input$Shbas, Shfol = input$Shfol, 
+                                                  Smbas = input$Smbas, Smfol = input$Smfol, 
+                                                  Sjbas = input$Sjbas, Sjfol = input$Sjfol,
+                                                  followup = input$followup)
     } else if (input$NTD == "2") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
-        follow <- paradrug_helminthiasis_follow(PARADRUG)
+        follow <- paradrug_helminthiasis_follow(PARADRUG,
+                                                Rbas = input$Rbas, Rfol = input$Rfol, 
+                                                Tbas = input$Tbas, Tfol = input$Tfol, 
+                                                Hbas = input$Hbas, Hfol = input$Hfol, 
+                                                followup = input$followup)
     }
 }
 @
@@ -148,10 +162,16 @@ if (is.null(inFile)) {
     if (input$NTD == "1") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
         err <- paradrug_schistosomiasis_eggreduction(PARADRUG, 
+                                                     Shbas = input$Shbas, Shfol = input$Shfol, 
+                                                     Smbas = input$Smbas, Smfol = input$Smfol, 
+                                                     Sjbas = input$Sjbas, Sjfol = input$Sjfol,
                                                      drug = switch(input$Sdrug, `1` = "Praziquantel (1x 40 mg/kg)", `2` = "Other"))
     } else if (input$NTD == "2") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
         err <- paradrug_helminthiasis_eggreduction(PARADRUG, 
+                                                   Rbas = input$Rbas, Rfol = input$Rfol, 
+                                                   Tbas = input$Tbas, Tfol = input$Tfol, 
+                                                   Hbas = input$Hbas, Hfol = input$Hfol, 
                                                    drug = switch(input$STHdrug, `1` = "Albendazole (1x 400 mg)", `2` = "Mebendazole (1x 500 mg)", `3` = "Other"))
     }
 }
@@ -166,10 +186,16 @@ if (is.null(inFile)) {
     if (input$NTD == "1") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
         concl <- paradrug_schistosomiasis_conclusion(PARADRUG, 
+                                                     Shbas = input$Shbas, Shfol = input$Shfol, 
+                                                     Smbas = input$Smbas, Smfol = input$Smfol, 
+                                                     Sjbas = input$Sjbas, Sjfol = input$Sjfol, 
                                                      drug = switch(input$Sdrug, `1` = "Praziquantel (1x 40 mg/kg)", `2` = "Other"))
     } else if (input$NTD == "2") {
         PARADRUG <- read_paradrug_xls(inFile$datapath)
         concl <- paradrug_helminthiasis_conclusion(PARADRUG, 
+                                                   Rbas = input$Rbas, Rfol = input$Rfol, 
+                                                   Tbas = input$Tbas, Tfol = input$Tfol, 
+                                                   Hbas = input$Hbas, Hfol = input$Hfol, 
                                                    drug = switch(input$STHdrug, `1` = "Albendazole (1x 400 mg)", `2` = "Mebendazole (1x 500 mg)", `3` = "Other"))
     }
 }
