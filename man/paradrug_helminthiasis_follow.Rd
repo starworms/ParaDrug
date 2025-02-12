@@ -39,7 +39,7 @@ paradrug_helminthiasis_follow(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a character string indicating the analysis of the follow up period and basic statistics of the eggs
 }
 \description{
 Analysis of Helminthiasis (follow)

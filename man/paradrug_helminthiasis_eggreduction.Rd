@@ -39,7 +39,7 @@ paradrug_helminthiasis_eggreduction(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a character string indicating the analysis of the egg count reduction in the trial
 }
 \description{
 Analysis of Helminthiasis (egg reduction)

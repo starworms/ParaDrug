@@ -36,7 +36,7 @@ plot_paradrug_helminthiasis_eggcount_reduction(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a plot of the egg count reduction in the trial is generated
 }
 \description{
 Plot of eggcount reduction of Helminthiasis

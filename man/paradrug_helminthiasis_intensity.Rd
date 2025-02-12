@@ -36,7 +36,7 @@ paradrug_helminthiasis_intensity(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a character string with information on the intensity of the eggs in the trial
 }
 \description{
 Analysis of Helminthiasis (intensity)

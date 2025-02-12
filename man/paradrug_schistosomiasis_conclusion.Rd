@@ -39,7 +39,7 @@ paradrug_schistosomiasis_conclusion(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a character string with the general conclusion of the trial
 }
 \description{
 Conclusion of Schistosomiasis

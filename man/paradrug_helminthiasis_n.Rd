@@ -36,7 +36,7 @@ paradrug_helminthiasis_n(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a character string with information on the number of subjects in the trial
 }
 \description{
 Analysis of Helminthiasis (subjects)

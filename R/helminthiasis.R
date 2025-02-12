@@ -10,7 +10,7 @@
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string with information on the number of subjects in the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -228,7 +228,7 @@ paradrug_helminthiasis_n <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string with information on the intensity of the eggs in the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -532,7 +532,7 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
 #' @param Hfol column in name in object$data for Hbas/Hfol: Hookworms, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a plot with the egg counts in the trial as returned by \code{\link[graphics]{hist}}
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -687,7 +687,7 @@ plot_paradrug_helminthiasis_eggcount <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string indicating the analysis of the follow up period and basic statistics of the eggs
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -928,7 +928,7 @@ paradrug_helminthiasis_follow <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string indicating the analysis of the egg count reduction in the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -1314,7 +1314,7 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
 #' @param drug either "Albendazole (1x 400 mg)", "Mebendazole (1x 500 mg)" or "Other"
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a plot of the egg count reduction in the trial is generated
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -1856,7 +1856,7 @@ plot_paradrug_helminthiasis_eggcount_reduction  <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string with the general conclusion of the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")

@@ -19,7 +19,7 @@ paradrug_report(x, params = list(), version = c("1.1", "1.0"), ...)
 a list with elements
 \itemize{
 \item{report: the source file of the report}
-\item{out: the pdf of the report}
+\item{output: the path to the pdf of the report}
 \item{params: the list of params for the report}
 }
 }

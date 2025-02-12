@@ -33,7 +33,7 @@ plot_paradrug_helminthiasis_eggcount(
 \item{...}{not used yet}
 }
 \value{
-TODO
+a plot with the egg counts in the trial as returned by \code{\link[graphics]{hist}}
 }
 \description{
 Plot of eggcount of Helminthiasis

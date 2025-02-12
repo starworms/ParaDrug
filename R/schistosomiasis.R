@@ -11,7 +11,7 @@
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string with information on the number of subjects in the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -149,7 +149,7 @@ $S.$ $mansoni$ infections in', nsm, 'subjects (', round(100*nsm/n,1),'percent ).
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string with information on the intensity of the eggs in the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -313,7 +313,7 @@ high-intensity <em>S. japonicum</em> infections were observed in',NsjL,'(',round
 #' @param Sjfol column in name in object$data for Shbas/Shfol: Sjbas/Sjfol: S. japonicum, in eggs per gram of stool - BASELINE/FOLLOW-UP
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a plot with the egg counts in the trial as returned by \code{\link[graphics]{hist}}
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -395,7 +395,7 @@ plot_paradrug_schistosomiasis_eggcount  <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string indicating the analysis of the follow up period and basic statistics of the eggs
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -543,7 +543,7 @@ paradrug_schistosomiasis_follow <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string indicating the analysis of the egg count reduction in the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -766,7 +766,7 @@ equaled',round(100*ERRSJ,1),'% (',round(100*LLSJ,1), ';',round(100*ULSJ,1),').
 #' @param drug either "Praziquantel (1x 40 mg/kg)" or "Other"
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a plot of the egg count reduction in the trial is generated
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
@@ -980,7 +980,7 @@ plot_paradrug_schistosomiasis_eggcount_reduction  <- function(object,
 #' @param type either 'latex' or 'markdown' to return a latex representation of the analysis or a markdown version. Defaults to 'latex'.
 #' @param ... not used yet
 #' @export
-#' @return TODO
+#' @return a character string with the general conclusion of the trial
 #' @export
 #' @examples 
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
