@@ -111,8 +111,8 @@ paradrug_helminthiasis_n <- function(object,
                 
                 number    <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Ascaris$ $lumbricoides$ infections were observed in', nR, 'subjects (', round(100*nR/n,1), 'percent ), $T.$ $trichiura$ infections in', nT, 'subjects (', round(100*nT/n,1),'percent ). Mixed STH infections 
                        were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of $A.$ $lumbricoides$, and ', nT2, 'cases of $T.$ $trichiura$.')
-                number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. $Ascaris$ $lumbricoides$ infections were observed in', nR, 'subjects (', round(100*nR/n,1), 'percent ), $T.$ $trichiura$ infections in', nT, 'subjects (', round(100*nT/n,1),'percent ). Mixed STH infections 
-                       were observed in', mix, 'subjects (', round(100*mix/n,1), 'percent ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of $A.$ $lumbricoides$, and ', nT2, 'cases of $T.$ $trichiura$.')
+                number_md <- paste('In total,', n, 'subjects were enrolled in this drug efficacy trial. <em>Ascaris lumbricoides</em> infections were observed in', nR, 'subjects (', round(100*nR/n,1), '% ), <em>T. trichiura</em> infections in', nT, 'subjects (', round(100*nT/n,1),'% ). Mixed STH infections 
+                       were observed in', mix, 'subjects (', round(100*mix/n,1), '% ). In total,', com, 'infected subjects provided a sample at both baseline and follow-up, including', nR2, 'cases of <em>A. lumbricoides</em>, and ', nT2, 'cases of <em>T. trichiura</em>.')
             }else{
                 if(mean(data$Rb)>-2 & mean(data$Hb)>-2 & mean(data$Rf)>-2 & mean(data$Hf)>-2){
                     data$RB <-  data[,input$Rbas]  
