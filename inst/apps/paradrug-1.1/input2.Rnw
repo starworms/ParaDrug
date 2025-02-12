@@ -35,7 +35,7 @@ Region <- ifelse(input$Region =='', 'district/province not further specified', i
     \LARGE 
         \textbf{The efficacy of \Sexpr{Drug} against \Sexpr{Dis} in \Sexpr{Country} (\Sexpr{Region}):} \par    
          \vspace{1cm}
-        {\LARGE A ParaDrug 1.0 drug efficacy report \par}
+        {\LARGE A ParaDrug 1.1 drug efficacy report \par}
         \vspace{1cm}
         {\large by \Sexpr{Name}\par}
         \vspace{6cm}
