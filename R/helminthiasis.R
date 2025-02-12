@@ -538,6 +538,15 @@ hookworm egg count equaled',MH,'(',q25H,';',q75H,') eggs per gram of stool. Low,
 #' path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 #' x <- read_paradrug_xls(path)
 #' p <- plot_paradrug_helminthiasis_eggcount(x)
+#' p <- plot_paradrug_helminthiasis_eggcount(x, 
+#'   Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+#'   Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG",  
+#'   Hbas = "Not recorded", Hfol = "Not recorded")
+#' p <- plot_paradrug_helminthiasis_eggcount(x, 
+#'   Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+#'   Tbas = "Not recorded", Tfol = "Not recorded",  
+#'   Hbas = "Not recorded", Hfol = "Not recorded")
+#' 
 plot_paradrug_helminthiasis_eggcount <- function(object, 
                                              Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                              Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
@@ -1313,6 +1322,14 @@ and any value in the red zone indicates that the efficacy is reduced. The black 
 #' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Albendazole (1x 400 mg)")
 #' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Mebendazole (1x 500 mg)")
 #' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Other")
+#' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Albendazole (1x 400 mg)", 
+#'   Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+#'   Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG",  
+#'   Hbas = "Not recorded", Hfol = "Not recorded")
+#' p <- plot_paradrug_helminthiasis_eggcount_reduction(x, drug = "Albendazole (1x 400 mg)", 
+#'   Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+#'   Tbas = "Not recorded", Tfol = "Not recorded",  
+#'   Hbas = "Not recorded", Hfol = "Not recorded")
 plot_paradrug_helminthiasis_eggcount_reduction  <- function(object, 
                                                             Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                                             Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 

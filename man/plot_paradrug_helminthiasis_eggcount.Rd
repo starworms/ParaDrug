@@ -42,4 +42,13 @@ Plot of eggcount of Helminthiasis
 path <- system.file(package = "ParaDrug", "extdata", "data", "mydata.xlsx")
 x <- read_paradrug_xls(path)
 p <- plot_paradrug_helminthiasis_eggcount(x)
+p <- plot_paradrug_helminthiasis_eggcount(x, 
+  Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+  Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG",  
+  Hbas = "Not recorded", Hfol = "Not recorded")
+p <- plot_paradrug_helminthiasis_eggcount(x, 
+  Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
+  Tbas = "Not recorded", Tfol = "Not recorded",  
+  Hbas = "Not recorded", Hfol = "Not recorded")
+
 }
