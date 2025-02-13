@@ -1870,6 +1870,10 @@ plot_paradrug_helminthiasis_eggcount_reduction  <- function(object,
 #'                                        type = "markdown")
 #' p <- paradrug_helminthiasis_conclusion(x, drug = "Other", 
 #'                                        type = "markdown")
+#' p <- paradrug_helminthiasis_conclusion(x, drug = "Albendazole (1x 400 mg)", 
+#'                                        Rbas = "Not recorded", Rfol = "Not recorded", 
+#'                                        Hbas = "Not recorded", Hfol = "Not recorded",  
+#'                                        type = "markdown")
 paradrug_helminthiasis_conclusion <- function(object, 
                                               Rbas = "BL_KK2_AL_EPG", Rfol = "FU_KK2_AL_EPG", 
                                               Tbas = "BL_KK2_TT_EPG", Tfol = "FU_KK2_TT_EPG", 
@@ -2427,7 +2431,7 @@ it is recommended to contact World Health Organization
                                 ERRT <- 100*(1- mean(Tr$TF)/mean(Tr$TB))
                                 
                                 if(input$STHdrug == 1 | input$STHdrug == 2){ 
-                                    tstar <- ifelse(ERRR>=50,1,2)
+                                    tstar <- ifelse(ERRT>=50,1,2)
                                     if(tstar == 1){
                                         concl    <- paste('The efficacy of the drug administered is satisfactory for $T.$ $trichiura$ infections.')  
                                         concl_md <- paste('The efficacy of the drug administered is satisfactory for <em>T. trichiura</em> infections.')   

@@ -56,4 +56,8 @@ p <- paradrug_helminthiasis_conclusion(x, drug = "Mebendazole (1x 500 mg)",
                                        type = "markdown")
 p <- paradrug_helminthiasis_conclusion(x, drug = "Other", 
                                        type = "markdown")
+p <- paradrug_helminthiasis_conclusion(x, drug = "Albendazole (1x 400 mg)", 
+                                       Rbas = "Not recorded", Rfol = "Not recorded", 
+                                       Hbas = "Not recorded", Hfol = "Not recorded",  
+                                       type = "markdown")
 }
