@@ -29,7 +29,7 @@
       "RemoteUsername": "starworms",
       "RemoteRepo": "ParaDrug",
       "RemoteRef": "main",
-      "RemoteSha": "8468a8b818e3404ce145dc64f722ea005c7b8db6",
+      "RemoteSha": "ec7f4630935e8236aaaef89f8f3d5aebe15ca874",
       "Requirements": [
         "bslib",
         "graphics",
@@ -38,7 +38,7 @@
         "shiny",
         "stats"
       ],
-      "Hash": "5f4d3bb5142fe4e8095edcfca6e2bb53"
+      "Hash": "aaaa6fba5f3fdd1f35d4e28737df3e9a"
     },
     "R6": {
       "Package": "R6",
